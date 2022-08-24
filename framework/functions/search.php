@@ -1043,7 +1043,7 @@ if( !function_exists('homey_half_map') ) {
             $listing_id = get_the_ID();
             $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
             $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
-            $price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );
+            $price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );  
             $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
 
             $searched_guests = isset($_POST['guest']) ? $_POST['guest'] : '';
@@ -1100,7 +1100,7 @@ if( !function_exists('homey_half_map') ) {
             $listing->guests = $guests;
             $listing->beds = $beds;
             $listing->baths = $baths;
-            $listing->price_no = $price_no;
+            $listing->price_no = $price_no; 
             
             if($cgl_types != 1) {
                 $listing->listing_type = '';

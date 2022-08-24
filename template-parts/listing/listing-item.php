@@ -5,7 +5,7 @@ $listing_images = get_post_meta( get_the_ID(), $homey_prefix.'listing_images', f
 $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
 $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
-$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );
+$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true ); 
 
 $allow_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'allow_additional_guests', true );
 $num_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'num_additional_guests', true );
@@ -62,7 +62,7 @@ $homey_permalink = homey_listing_permalink();
                 ?>
                 </a>
                 
-                <?php
+                <?php 
                 if(!empty($price_no))
                 {?>
                     <div class="item-media-price">
@@ -72,6 +72,7 @@ $homey_permalink = homey_listing_permalink();
                     </div>
                        
                 <?php }
+
                else if(!empty($listing_price)) { ?>
                 <div class="item-media-price">
                     <span class="item-price">

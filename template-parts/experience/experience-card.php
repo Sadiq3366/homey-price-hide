@@ -4,7 +4,7 @@ $experience_images = get_post_meta( get_the_ID(), $homey_prefix.'experience_imag
 $address        = get_post_meta( get_the_ID(), $homey_prefix.'experience_address', true );
 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'experience_bedrooms', true );
 $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
-$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );
+$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true ); 
 
 $allow_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'allow_additional_guests', true );
 $num_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'num_additional_guests', true );
@@ -69,6 +69,7 @@ $homey_permalink = homey_experience_permalink();
                 <div class="title-head">
 
                     <?php 
+
                     if(!empty($price_no))
                     {?>
                         <div class="item-media-price">
@@ -78,6 +79,7 @@ $homey_permalink = homey_experience_permalink();
                         </div>
                            
                     <?php }
+                    
                    else if(!empty($experience_price)) { ?>
                     <span class="item-price">
                         <?php echo homey_formatted_price($experience_price, false, true); ?><sub><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label();?></sub>

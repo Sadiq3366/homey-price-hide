@@ -86,6 +86,7 @@ if($weekends_days == 'sat_sun') {
 
 ?>
 <?php 
+
 $price_no=get_post_meta($listing_id,'homey_yes_no',true);
 if(!empty($price_no))
 {
@@ -93,6 +94,7 @@ if(!empty($price_no))
 }
 else
 {
+
 ?>
 <div id="price-section" class="price-section">
     <div class="block">

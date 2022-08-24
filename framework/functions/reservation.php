@@ -1780,7 +1780,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_weekly') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
         $extra_prices_html = $prices_array['extra_prices_html'];
         $upfront_payment = $prices_array['upfront_payment'];
         $balance = $prices_array['balance'];
@@ -1823,11 +1823,11 @@ if( !function_exists('homey_calculate_booking_cost_ajax_weekly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price ">'.homey_formatted_price($total_price).'</div>';
         
@@ -1932,7 +1932,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_monthly') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
         $extra_prices_html = $prices_array['extra_prices_html'];
         $upfront_payment = $prices_array['upfront_payment'];
         $balance = $prices_array['balance'];
@@ -1971,11 +1971,11 @@ if( !function_exists('homey_calculate_booking_cost_ajax_monthly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         
@@ -2103,7 +2103,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_day_date') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $booking_has_weekend = $prices_array['booking_has_weekend'];
         $booking_has_custom_pricing = $prices_array['booking_has_custom_pricing'];
@@ -2152,11 +2152,11 @@ if( !function_exists('homey_calculate_booking_cost_ajax_day_date') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         
         $output .= '<div class="payment-list-price-detail-total-price"><span style="'.$style.'">'.homey_formatted_price($total_price).'</span>'.' '.$new_total_price.'</div>';
@@ -2259,7 +2259,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_nightly') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $booking_has_weekend = $prices_array['booking_has_weekend'];
         $booking_has_custom_pricing = $prices_array['booking_has_custom_pricing'];
@@ -2297,11 +2297,11 @@ if( !function_exists('homey_calculate_booking_cost_ajax_nightly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             
         $new_total_price = $discount_coupen > 0 ? $total_price - $discount_coupen : 0;
@@ -2411,7 +2411,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_1_5_3') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $booking_has_weekend = $prices_array['booking_has_weekend'];
         $booking_has_custom_pricing = $prices_array['booking_has_custom_pricing'];
@@ -2449,11 +2449,11 @@ if( !function_exists('homey_calculate_booking_cost_ajax_1_5_3') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         
@@ -2567,7 +2567,7 @@ if( !function_exists('homey_calculate_booking_cost_instance_monthly') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $extra_prices_html = $prices_array['extra_prices_html'];
         $upfront_payment = $prices_array['upfront_payment'];
@@ -2606,11 +2606,11 @@ if( !function_exists('homey_calculate_booking_cost_instance_monthly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -2714,7 +2714,7 @@ if( !function_exists('homey_calculate_booking_cost_instance_weekly') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $extra_prices_html = $prices_array['extra_prices_html'];
         $upfront_payment = $prices_array['upfront_payment'];
@@ -2753,11 +2753,11 @@ if( !function_exists('homey_calculate_booking_cost_instance_weekly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -2861,7 +2861,7 @@ if( !function_exists('homey_calculate_booking_cost_instance_daily') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $extra_prices_html = $prices_array['extra_prices_html'];
 
@@ -2899,11 +2899,11 @@ if( !function_exists('homey_calculate_booking_cost_instance_daily') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -3012,7 +3012,7 @@ if( !function_exists('homey_calculate_booking_cost_instance') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id,'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id,'homey_yes_no', true); 
 
         $extra_prices_html = $prices_array['extra_prices_html'];
 
@@ -3050,11 +3050,11 @@ if( !function_exists('homey_calculate_booking_cost_instance') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no))
+        if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
         $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -3168,7 +3168,7 @@ if( !function_exists('homey_calculate_booking_cost') ) {
         $additional_guests = $prices_array['additional_guests'];
         $additional_guests_price = $prices_array['additional_guests_price'];
         $additional_guests_total_price = $prices_array['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = $prices_array['upfront_payment'];
         $balance = $prices_array['balance'];
@@ -3208,11 +3208,11 @@ if( !function_exists('homey_calculate_booking_cost') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -3349,7 +3349,7 @@ if( !function_exists('homey_calculate_reservation_cost_monthly') ) {
         $additional_guests = $reservation_meta['additional_guests'];
         $additional_guests_price = $reservation_meta['additional_guests_price'];
         $additional_guests_total_price = $reservation_meta['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = $reservation_meta['upfront'];
 
@@ -3430,11 +3430,11 @@ if( !function_exists('homey_calculate_reservation_cost_monthly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -3574,7 +3574,7 @@ if( !function_exists('homey_calculate_reservation_cost_weekly') ) {
         $additional_guests = $reservation_meta['additional_guests'];
         $additional_guests_price = $reservation_meta['additional_guests_price'];
         $additional_guests_total_price = $reservation_meta['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = $reservation_meta['upfront'];
 
@@ -3655,11 +3655,11 @@ if( !function_exists('homey_calculate_reservation_cost_weekly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -3798,7 +3798,7 @@ if( !function_exists('homey_calculate_reservation_cost_nightly') ) {
         $additional_guests = isset($reservation_meta['additional_guests'])?$reservation_meta['additional_guests']:0;
         $additional_guests_price = isset($reservation_meta['additional_guests_price'])?$reservation_meta['additional_guests_price']:0;
         $additional_guests_total_price = isset($reservation_meta['additional_guests_total_price'])?$reservation_meta['additional_guests_total_price']:0;
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = isset($reservation_meta['upfront'])?$reservation_meta['upfront']:0;
 
@@ -3876,11 +3876,11 @@ if( !function_exists('homey_calculate_reservation_cost_nightly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -4028,7 +4028,7 @@ if( !function_exists('homey_calculate_reservation_cost_day_date') ) {
         $additional_guests = isset($reservation_meta['additional_guests'])?$reservation_meta['additional_guests']:0;
         $additional_guests_price = isset($reservation_meta['additional_guests_price'])?$reservation_meta['additional_guests_price']:0;
         $additional_guests_total_price = isset($reservation_meta['additional_guests_total_price'])?$reservation_meta['additional_guests_total_price']:0;
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = isset($reservation_meta['upfront'])?$reservation_meta['upfront']:0;
 
@@ -4107,11 +4107,11 @@ if( !function_exists('homey_calculate_reservation_cost_day_date') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
-        else
+        else 
         {
             $output .= '<div class="payment-list-price-detail-total-price">'.homey_formatted_price($total_price).'</div>';
         // }
@@ -4259,7 +4259,7 @@ if( !function_exists('homey_calculate_reservation_cost_1_5_3') ) {
         $additional_guests = $reservation_meta['additional_guests'];
         $additional_guests_price = $reservation_meta['additional_guests_price'];
         $additional_guests_total_price = $reservation_meta['additional_guests_total_price'];
-        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
+        $Price_no =get_post_meta($listing_id, 'homey_yes_no', true); 
 
         $upfront_payment = $reservation_meta['upfront'];
 
@@ -4337,11 +4337,11 @@ if( !function_exists('homey_calculate_reservation_cost_1_5_3') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no))
+            if(!empty($Price_no)) 
             {
                 $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
             }
-            else
+            else 
             {
             $new_total_price = $discount_coupen > 0 ? $total_price - $discount_coupen : 0;
             $style = $discount_coupen > 0 ? "text-decoration: line-through;" : '';

@@ -1036,10 +1036,12 @@ if( !function_exists('listing_submission_filter')) {
             }
 
             // condition yes/no
+
             if( isset( $_POST['yes_no'] ) && $_POST['yes_no']=='no' ) {
                 update_post_meta( $listing_id, $prefix.'yes_no',sanitize_text_field( $_POST['yes_no'] ) );
             }
 
+            
             // Instance
             update_post_meta( $listing_id, $prefix.'instant_booking', 0 );
 
