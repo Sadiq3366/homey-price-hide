@@ -7,7 +7,6 @@ $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', t
 $instant_coupen  = get_post_meta($listing_id, $homey_prefix.'coupens', true);
 $Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 $offsite_payment = homey_option('off-site-payment');
-$coupen_code = get_post_meta($listing_id, $homey_prefix.'coupens_code',true);
 $prefilled = homey_get_dates_for_booking();
 
 $key = '';

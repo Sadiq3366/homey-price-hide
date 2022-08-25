@@ -301,7 +301,7 @@ if(@$hide_fields['price_postfix'] != 1) {
                     </div>
                 </div>
                 <?php } ?>
-
+ 
             <div class="row">
                <div class="col-sm-6 col-xs-12">
                  <div class="form-group">
@@ -313,7 +313,7 @@ if(@$hide_fields['price_postfix'] != 1) {
                    </div>
                 </div>
             </div>
-
+ 
                 <?php if($hide_fields['tax_rate'] != 1 && homey_option('tax_type') == 'single_tax') { ?>
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
