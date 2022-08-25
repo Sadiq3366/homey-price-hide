@@ -72,11 +72,11 @@ $homey_permalink = homey_listing_permalink();
 
                     if(!empty($price_no))
                     {?>
-                        <div class="item-media-price">
+                        
                             <span class="item-price">
                                 <h3>On Request</h3>
                             </span>
-                        </div>
+                       
                            
                     <?php }
 

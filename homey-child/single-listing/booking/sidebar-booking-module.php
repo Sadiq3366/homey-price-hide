@@ -6,6 +6,7 @@ $listing_id = $post->ID;
 $price_per_night = get_post_meta($listing_id, $homey_prefix.'night_price', true);
 $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', true);
 $offsite_payment = homey_option('off-site-payment');
+$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 
 $prefilled = homey_get_dates_for_booking();
 
@@ -34,7 +35,10 @@ $listing_price = homey_get_price();
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($listing_price)) { ?>
+					if(!empty($Price_no)){
+                        echo 'On Request';
+					}
+				else if(!empty($listing_price)) { ?>
 
 					<span class="item-price">
 					<?php 	
