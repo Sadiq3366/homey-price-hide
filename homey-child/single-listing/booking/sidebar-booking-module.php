@@ -35,9 +35,11 @@ $listing_price = homey_get_price();
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($Price_no)){
-                        echo 'On Request';
-					}
+					if(!empty($Price_no)){?>
+                        <span class="item-price">
+                            On Request
+					    </span>
+					<?php}
 				else if(!empty($listing_price)) { ?>
 
 					<span class="item-price">

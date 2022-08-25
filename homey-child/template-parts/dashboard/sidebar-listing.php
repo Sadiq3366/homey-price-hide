@@ -97,9 +97,11 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
             <div class="item-media-price">
                 <span class="item-price">
                  <?php
-                 if(!empty($Price_no)){
-                    echo 'On Request';
-                }
+                 if(!empty($Price_no)){?>
+                <span class="price-count" id="price-place">
+                       On Request
+                </span>
+                <?php}
                 else
                 {
                  ?>

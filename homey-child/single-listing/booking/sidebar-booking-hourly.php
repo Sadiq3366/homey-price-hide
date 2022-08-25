@@ -8,6 +8,7 @@ $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', t
 $start_hour = get_post_meta($listing_id, $homey_prefix.'start_hour', true);
 $end_hour = get_post_meta($listing_id, $homey_prefix.'end_hour', true);
 $offsite_payment = homey_option('off-site-payment');
+$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 
 $key = '';
 $userID      =   $current_user->ID;
@@ -59,9 +60,11 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($Price_no)){
-                        echo 'On Request';
-					}
+					if(!empty($Price_no)){?>
+                        <span class="item-price">
+                            On Request
+					    </span>
+					<?php}
 				else if(!empty($listing_price)) { ?>
 
 					<span class="item-price">
