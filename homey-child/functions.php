@@ -18,6 +18,11 @@ add_action('wp_enqueue_scripts', 'homey_enqueue_styles');
 // include php files
 require_once('inc/simple_html_dom.php');
 require_once('inc/sultan-calendar.php');
+require_once( get_template_directory() . '/framework/functions/listings.php' );
+require_once( get_template_directory() . '/framework/functions/reservation.php' );
+require_once( get_template_directory() . '/framework/functions/search.php' );
+
+
 
 // This is your option name where all the Redux data is stored.
 $opt_name = "homey_options";
