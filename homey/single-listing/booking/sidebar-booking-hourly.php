@@ -7,6 +7,7 @@ $price_per_night = get_post_meta($listing_id, $homey_prefix.'night_price', true)
 $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', true);
 $start_hour = get_post_meta($listing_id, $homey_prefix.'start_hour', true);
 $end_hour = get_post_meta($listing_id, $homey_prefix.'end_hour', true);
+$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 $offsite_payment = homey_option('off-site-payment');
 
 $key = '';

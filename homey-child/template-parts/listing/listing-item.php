@@ -7,7 +7,6 @@ $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
 $beds           = get_post_meta( get_the_ID(), $homey_prefix.'beds', true );
 $baths          = get_post_meta( get_the_ID(), $homey_prefix.'baths', true );
 $night_price    = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
-$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true ); 
 $listing_author = homey_get_author();
 $enable_host = homey_option('enable_host');
 $compare_favorite = homey_option('compare_favorite');
@@ -62,17 +61,7 @@ $homey_permalink = homey_listing_permalink();
                 ?>
                 <!--</a>-->
 
-                <?php 
-                if(!empty($price_no))
-                {?>
-                    <div class="item-media-price">
-                        <span class="item-price">
-                            <h3>On Request</h3>
-                        </span>
-                    </div>
-                       
-                <?php }
-               else if(!empty($listing_price)) { ?>
+                <?php if(!empty($listing_price)) { ?>
                 <div class="item-media-price">
                     <span class="item-price sa-listing-item-price">
                         <?php 
@@ -106,7 +95,7 @@ $homey_permalink = homey_listing_permalink();
                             $city_tax_html = '<a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_city' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_city' ).'</a>';
                         }
                         // echo '<address class="item-address">'.esc_attr($address).'</address>';
-                        echo '<address class="item-address sa-item-address"><a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_country' ).'</a> '.$address_tax_separator.$city_tax_html.'</address>';
+                        echo '<address class="item-address"><a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_country' ).'</a> '.$address_tax_separator.$city_tax_html.'</address>';
                         
                     }
                     ?>

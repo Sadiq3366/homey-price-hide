@@ -8,7 +8,6 @@ $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', t
 $start_hour = get_post_meta($listing_id, $homey_prefix.'start_hour', true);
 $end_hour = get_post_meta($listing_id, $homey_prefix.'end_hour', true);
 $offsite_payment = homey_option('off-site-payment');
-$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 
 $key = '';
 $userID      =   $current_user->ID;
@@ -50,9 +49,6 @@ for ($halfhour = $start_hour; $halfhour <= $end_hour; $halfhour = $halfhour+30*6
     $start_hours_list .= '<option '.selected($pre_start_hour, date('H:i',$halfhour), false).' value="'.date('H:i',$halfhour).'">'.date(homey_time_format(),$halfhour).'</option>';
     $end_hours_list .= '<option '.selected($pre_end_hour, date('H:i',$halfhour), false).' value="'.date('H:i',$halfhour).'">'.date(homey_time_format(),$halfhour).'</option>';
 }
-
-$no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
-
 ?>
 <div id="homey_remove_on_mobile" class="sidebar-booking-module hidden-sm hidden-xs">
 	<div class="block">
@@ -60,12 +56,7 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($Price_no)){?>
-                        <span class="item-price">
-                            On Request
-					    </span>
-					<?php}
-				else if(!empty($listing_price)) { ?>
+					if(!empty($listing_price)) { ?>
 
 					<span class="item-price">
 					<?php 	
@@ -89,7 +80,7 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 			} else { ?>
 				<div id="single-listing-date-range" class="search-date-range">
 					<div class="search-date-range-arrive search-date-hourly-arrive">
-						<input id="hourly_check_inn" name="arrive" value="<?php echo esc_attr($prefilled['arrive']); ?>" readonly type="text" class="form-control check_in_date" autocomplete="off" placeholder="<?php echo esc_attr(homey_option('srh_arrive_label')); ?>">
+						<input name="arrive" value="<?php echo esc_attr($prefilled['arrive']); ?>" readonly type="text" class="form-control check_in_date" autocomplete="off" placeholder="<?php echo esc_attr(homey_option('srh_arrive_label')); ?>">
 					</div>
 					
 					<div id="single-booking-search-calendar" class="search-calendar search-calendar-single clearfix single-listing-booking-calendar-js hourly-js-desktop clearfix" style="display: none;">
@@ -137,14 +128,7 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 				
 				<?php if($instant_booking && $offsite_payment == 0) { ?>
 					<button id="instance_hourly_reservation" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Instant Booking', 'homey'); ?></button>
-				<?php } else { ?>
-
-                    <?php if(!is_user_logged_in() && $no_login_needed_for_booking == 'yes'){ ?>
-                        <div class="new_reser_request_user_email ">
-                            <input id="new_reser_request_user_email" name="new_reser_request_user_email" required="required" value="<?php echo esc_attr($prefilled['new_reser_request_user_email']); ?>" type="email" class="form-control new_reser_request_user_email" placeholder="<?php echo esc_html__('Your email', 'homey'); ?>">
-                        </div>
-                    <?php } ?>
-
+				<?php } else { ?> 
 					<button id="request_hourly_reservation" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Request to Book', 'homey'); ?></button>
 					<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div>
 				<?php } ?>

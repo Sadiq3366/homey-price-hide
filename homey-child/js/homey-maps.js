@@ -316,13 +316,13 @@
 
                 var prop_title = prop.data ? prop.data.post_title : prop.title;
 
-                var price_pins = '<div class="gm-marker-price">'+prop.price+'</div>';
-                if (props.price_no == 'no') {
-                    price_pins = '<div class="gm-marker-price">On Request</div>';
-                }
+                // var price_pins = '<div class="gm-marker-price">'+prop.price+'</div>';
+                // if (props.price_no == 'no') {
+                //     price_pins = '<div class="gm-marker-price">On Request</div>';
+                // }
 
                 if( markerPricePins == 'yes' ) {
-                    var pricePin = '<div data-id="'+prop.id+'" class="gm-marker gm-marker-color-'+prop.term_id+'">'+price_pins+'</div>';
+                    var pricePin = '<div data-id="'+prop.id+'" class="gm-marker gm-marker-color-'+prop.term_id+'"><div class="gm-marker-price">'+prop.price+'</div></div>';
 
                     var marker = new RichMarker({
                         map: map,
@@ -377,10 +377,10 @@
                     listing_type = '<li class="item-type">'+prop.listing_type+'</li>';
                 }
 
-                var price_span = '<span class="item-price">'+prop.price+'</span>';
-                if (prop.price_no == 'no') {
-                    price_span = '<span class="item-price">On Request</span>';
-                }
+                // var price_span = '<span class="item-price">'+prop.price+'</span>';
+                // if (prop.price_no == 'no') {
+                //     price_span = '<span class="item-price">On Request</span>';
+                // }
                 var infoboxContent = '<div id="google-maps-info-window">'+
                     '<div class="item-wrap item-grid-view">'+
                     '<div class="media property-item">'+
@@ -388,7 +388,7 @@
                     '<div class="item-media item-media-thumb">'+
                     '<a href="'+prop.url+'" target="_blank" class="hover-effect">'+prop.thumbnail+'</a>'+
                     '<div class="item-media-price">'+
-                    price_span+
+                    '<span class="item-price">'+prop.price+'</span>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
