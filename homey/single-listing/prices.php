@@ -1,6 +1,6 @@
 <?php
 global $post, $homey_local, $homey_prefix, $hide_labels;
-$listing_id=$post->ID;
+
 $night_price = homey_get_listing_data('night_price');
 $weekends_price = homey_get_listing_data('weekends_price');
 $weekends_days = homey_get_listing_data('weekends_days');
@@ -20,14 +20,7 @@ $booking_type = homey_booking_type();
 $sn_min_no_of_label = "sn_min_no_of_days";
 $sn_max_no_of_label = "sn_max_no_of_days";
 
-if($booking_type == "per_day_date"){
-    $sn_min_no_of_label = homey_option("ad_min_day_dates_booking");
-    $sn_max_no_of_label = homey_option("ad_max_day_dates_booking");
-
-    $min_stay_value = homey_get_listing_data('min_book_day_dates');
-    $max_stay_value = homey_get_listing_data('max_book_day_dates');
-
-}elseif($booking_type == "per_day"){
+if($booking_type == "per_day"){
     $sn_min_no_of_label = homey_option("ad_min_days_booking");
     $sn_max_no_of_label = homey_option("ad_max_days_booking");
 
@@ -83,18 +76,6 @@ if($weekends_days == 'sat_sun') {
 } elseif($weekends_days == 'fri_sat_sun') {
     $weekendDays = esc_html__('Fri, Sat & Sun', 'homey');
 }
-
-?>
-<?php 
-
-$price_no=get_post_meta($listing_id,'homey_yes_no',true);
-if(!empty($price_no))
-{
-    echo '';
-}
-else
-{
-
 ?>
 <div id="price-section" class="price-section">
     <div class="block">
@@ -201,4 +182,3 @@ else
         </div><!-- block-section -->
     </div><!-- block -->
 </div>
-<?php }?>

@@ -51,7 +51,7 @@ $make_featured = homey_option('make_featured');
 <section id="body-area">
 
     <div class="dashboard-page-title">
-        <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+        <h1><?php the_title(); ?></h1>
     </div><!-- .dashboard-page-title -->
 
     <?php get_template_part('template-parts/dashboard/side-menu'); ?>
@@ -100,11 +100,7 @@ $make_featured = homey_option('make_featured');
                                                 <p><?php echo esc_attr($update_featured_des); ?></p>
 
                                                 <?php if(!empty($upgrade_link)) {?>
-                                                    <?php if( homey_is_woocommerce() ) { ?>
-                                                        <a data-listid="<?php echo intval($_GET['listing_id']); ?>" data-featured="1" class="homey-woocommerce-featured-pay btn btn-secondary btn-slim" href="<?php echo esc_url($upgrade_link); ?>"><?php echo esc_attr($homey_local['upgrade_btn']); ?></a>
-                                                    <?php }else{ ?>
-                                                        <a class="btn btn-slim btn-primary" href="<?php echo esc_url($upgrade_link);?>"><?php echo esc_attr($homey_local['upgrade_btn']); ?></a>
-                                                    <?php }?>
+                                                <p><a class="btn btn-slim btn-primary" href="<?php echo esc_url($upgrade_link);?>"><?php esc_html_e('Upgrade to featured', 'homey'); ?></a></p>
                                                 <?php } ?>
                                             </div>
                                         </div>

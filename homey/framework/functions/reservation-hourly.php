@@ -4,26 +4,9 @@ add_action( 'wp_ajax_homey_add_hourly_reservation', 'homey_add_hourly_reservatio
 if( !function_exists('homey_add_hourly_reservation') ) {
     function homey_add_hourly_reservation() {
         global $current_user;
-
-        $admin_email = get_option( 'new_admin_email' );
-
         $current_user = wp_get_current_user();
         $userID       = $current_user->ID;
         $local = homey_get_localization();
-
-        //check security
-//        $nonce = $_REQUEST['security'];
-//        if ( ! wp_verify_nonce( $nonce, 'reservation-security-nonce' ) ) {
-//
-//            echo json_encode(
-//                array(
-//                    'success' => false,
-//                    'message' => $local['security_check_text']
-//                )
-//            );
-//            wp_die();
-//        }
-
         $allowded_html = array();
         $reservation_meta = array();
 
@@ -42,55 +25,8 @@ if( !function_exists('homey_add_hourly_reservation') ) {
 
         $owner = homey_usermeta($listing_owner_id);
         $owner_email = $owner['email'];
-        $booking_hide_fields = homey_option('booking_hide_fields');
 
-        $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
-
-        if($current_user->ID == 0 && $no_login_needed_for_booking == "yes" && isset($_REQUEST['new_reser_request_user_email'])) {
-            $email = trim($_REQUEST['new_reser_request_user_email']);
-           if(empty($email)){
-               echo json_encode(
-                   array(
-                       'success' => false,
-                       'message' => esc_html__('Enter email address', 'homey')
-                   )
-               );
-               wp_die();
-           }
-
-
-            $user = get_user_by('email', $email);
-
-            if (isset($user->ID)) {
-                add_filter('authenticate', 'for_reservation_nop_auto_login', 3, 10);
-                for_reservation_nop_auto_login($user);
-            } else { //create user from email
-                $user_login = $email;
-                $user_email = $email;
-                $user_pass = wp_generate_password(8, false);
-                $userdata = compact('user_login', 'user_email', 'user_pass');
-                $new_user_id = wp_insert_user($userdata);
-
-                if($new_user_id > 0){
-                    homey_wp_new_user_notification( $new_user_id, $user_pass );
-                }
-
-                update_user_meta($new_user_id, 'viaphp', 1);
-
-                // log in automatically
-                if (!is_user_logged_in()) {
-                    $user = get_user_by('email', $email);
-
-                    add_filter('authenticate', 'for_reservation_nop_auto_login', 3, 10);
-                    for_reservation_nop_auto_login($user);
-                }
-            }
-        }
-
-        $current_user = wp_get_current_user();
-        $userID       = $current_user->ID;
-
-        if ( (empty($guests) || $guests === 0) && $booking_hide_fields['guests'] != 1 ) {
+        if ( empty($guests) || $guests === 0 ) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -100,7 +36,7 @@ if( !function_exists('homey_add_hourly_reservation') ) {
             wp_die();
         }
 
-        if ( $no_login_needed_for_booking == 'no' && ( !is_user_logged_in() || $userID === 0 ) ) {
+        if ( !is_user_logged_in() || $userID === 0 ) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -110,7 +46,7 @@ if( !function_exists('homey_add_hourly_reservation') ) {
             wp_die();
         }
 
-        if($no_login_needed_for_booking == 'no' && $userID == $listing_owner_id) {
+        if($userID == $listing_owner_id) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -130,6 +66,19 @@ if( !function_exists('homey_add_hourly_reservation') ) {
              wp_die();
         }
 */
+
+        //check security
+        $nonce = $_REQUEST['security'];
+        if ( ! wp_verify_nonce( $nonce, 'reservation-security-nonce' ) ) {
+
+            echo json_encode(
+                array(
+                    'success' => false,
+                    'message' => $local['security_check_text']
+                )
+            );
+            wp_die();
+        }
 
         $check_availability = check_hourly_booking_availability($check_in_date, $check_in_hour, $check_out_hour, $start_hour, $end_hour, $listing_id, $guests);
         $is_available = $check_availability['success'];
@@ -203,40 +152,22 @@ if( !function_exists('homey_add_hourly_reservation') ) {
 
             $pending_dates_array = homey_get_booking_pending_hours($listing_id);
             update_post_meta($listing_id, 'reservation_pending_hours', $pending_dates_array);
-            $message_link = homey_thread_link_after_reservation($reservation_id);
-            
+
             echo json_encode(
                 array(
                     'success' => true,
                     'message' => $local['request_sent']
                 )
-            );    
-            
-            if(isset($current_user->user_email)){
-                $reservation_page = homey_get_template_link_dash('template/dashboard-reservations2.php');
-                $reservation_detail_link = add_query_arg( 'reservation_detail', $reservation_id, $reservation_page );
-                $email_args = array( 
-                    'guest_message' => $guest_message,
-                    'message_link' => $message_link,
-                    'reservation_detail_url' => $reservation_detail_link 
-                );
+            );
 
-                homey_email_composer( $current_user->user_email, 'new_reservation_sent', $email_args );
-            }
-
-             $email_args = array(
-                'reservation_detail_url' => reservation_detail_link($reservation_id),
-                'guest_message' => $guest_message,
-                'message_link' => $message_link 
-            );  
-
-            if(!empty(trim($guest_message))){
-                do_action('homey_create_messages_thread', $guest_message, $reservation_id);
-            }
-
+            $email_args = array('reservation_detail_url' => reservation_detail_link($reservation_id) );
             homey_email_composer( $owner_email, 'new_reservation', $email_args );
-            homey_email_composer( $admin_email, 'admin_booked_reservation', $email_args );
 
+            if(isset($current_user->user_email)){
+                homey_email_composer( $current_user->user_email, 'new_reservation', $email_args );
+            }
+
+            do_action('homey_create_messages_thread', $guest_message, $reservation_id);
             wp_die();
 
         } else { // end $check_availability
@@ -1400,9 +1331,7 @@ if( !function_exists('homey_calculate_hourly_reservation_cost') ) {
         $invoice_id = isset($_GET['invoice_id']) ? $_GET['invoice_id'] : '';
         $reservation_detail_id = isset($_GET['reservation_detail']) ? $_GET['reservation_detail'] : '';
         $is_host = false;
-        $homey_invoice_buyer = get_post_meta($reservation_id, 'listing_renter', true);
-
-        if( (!empty($invoice_id) || !empty($reservation_detail_id) ) && (homey_is_host() && $homey_invoice_buyer != get_current_user_id() )) {
+        if( (!empty($invoice_id) || !empty($reservation_detail_id) ) && homey_is_host()) {
             $is_host = true;
         }
 
@@ -1419,14 +1348,14 @@ if( !function_exists('homey_calculate_hourly_reservation_cost') ) {
             $expenses_total_price = $extra_expenses['expenses_total_price'];
             $total_price = $total_price + $expenses_total_price;
             $upfront_payment += $expenses_total_price;
-//            $balance = $balance + $expenses_total_price; //just to exclude from payment to local
+            $balance = $balance + $expenses_total_price;
         }
 
         if(!empty($extra_discount)) {
             $discount_total_price = $extra_discount['discount_total_price'];
             $total_price = $total_price - $discount_total_price;
             $upfront_payment -= $discount_total_price;
-            //$balance = $balance - $discount_total_price;//just to exclude from payment to local
+            $balance = $balance - $discount_total_price;
         }
 
         $start_div = '<div class="payment-list">';
@@ -1504,14 +1433,12 @@ if( !function_exists('homey_calculate_hourly_reservation_cost') ) {
             if($is_host) {
                 $upfront_payment = $upfront_payment - $services_fee;
             }
-            $output .= '<li class="payment-due">'.$local['cs_payment_due'].' <span>'.homey_formatted_price($upfront_payment > 0 ? $upfront_payment : 0).'</span></li>';
+            $output .= '<li class="payment-due">'.$local['cs_payment_due'].' <span>'.homey_formatted_price($upfront_payment).'</span></li>';
             $output .= '<input type="hidden" name="is_valid_upfront_payment" id="is_valid_upfront_payment" value="'.$upfront_payment.'">';
-        }else{
-            $output .= '<li class="payment-due">'.$local['cs_payment_due'].' <span>'.homey_formatted_price(0).'</span></li>';
         }
 
-        if(!empty($balance) && $balance > 0) {
-            $output .= '<li><i class="fa fa-info-circle"></i> '.$local['cs_pay_rest_1'].' '.homey_formatted_price($balance > 0 ? $balance : 0).' '.$local['cs_pay_rest_2'].'</li>';
+        if(!empty($balance) && $balance != 0) {
+            $output .= '<li><i class="fa fa-info-circle"></i> '.$local['cs_pay_rest_1'].' '.homey_formatted_price($balance).' '.$local['cs_pay_rest_2'].'</li>';
         }
 
         $output .= '</ul>';
@@ -1891,28 +1818,25 @@ if( !function_exists('homey_hourly_stripe_payment') ) {
         $current_user = wp_get_current_user();
         $userID = $current_user->ID;
         $user_email = $current_user->user_email;
-        $reservation_payment_type = homey_option('reservation_payment');
 
         $reservation_meta = get_post_meta($reservation_id, 'reservation_meta', true);
-        $extra_options = get_post_meta($reservation_id, 'extra_options', true);
-        $guest_message = wp_kses ( $reservation_meta['guest_message'], $allowded_html );
+
+
         $listing_id     = intval($reservation_meta['listing_id']);
         $check_in_hour  = wp_kses ( $reservation_meta['check_in_hour'], $allowded_html );
         $check_out_hour = wp_kses ( $reservation_meta['check_out_hour'], $allowded_html );
         $guests         = intval($reservation_meta['guests']);
-        $guest_message  = ! empty ( trim( $guest_message ) ) ? $guest_message : $_GET['guest_message'];
 
         $upfront_payment = floatval( $reservation_meta['upfront'] );
 
-        $minimum_currency_amount = get_minimum_currency();
-        if($upfront_payment < $minimum_currency_amount){
+        if($upfront_payment < .5){
             echo $minimum_amount_error = esc_html__( "You can't pay using Stripe because minimum amount limit is 0.5",'homey');
             return $minimum_amount_error;
         }
 
-        $description = esc_html__( 'Reservation ID','homey').' '.$reservation_id;
-
         require_once( HOMEY_PLUGIN_PATH . '/classes/class-stripe.php' );
+
+        $description = esc_html__( 'Reservation ID','homey').' '.$reservation_id;
 
         $stripe_payments = new Homey_Stripe();
 
@@ -1922,20 +1846,12 @@ if( !function_exists('homey_hourly_stripe_payment') ) {
             'reservation_id_for_stripe' =>  $reservation_id,
             'is_hourly'           =>  1,
             'is_instance_booking' =>  0,
-            'extra_options'       =>  ($extra_options == '') ? 0 : 1,
+            'extra_options'       =>  0,
             'payment_type'        =>  'reservation_fee',
-            'guest_message'       =>  $guest_message,
             'message'             =>  esc_html__( 'Reservation Payment','homey')
         );
 
-        if($upfront_payment > 0){
-            $stripe_payments->homey_stripe_form($upfront_payment, $metadata, $description);
-        }else{
-            $message_text = esc_html__('Your amount in your wallet is: ', 'homey');
-            $upfront_payment_with_symbol = homey_option("currency_symbol").' '.$upfront_payment;
-            echo '<h3>'.$message_text.' '.$upfront_payment_with_symbol.'</h3>';
-        }
-
+        $stripe_payments->homey_stripe_form($upfront_payment, $metadata, $description);
         print'
         </div>';
 
@@ -2011,7 +1927,7 @@ if( !function_exists('homey_hourly_stripe_payment_old') ) {
 *  Stripe Form instance
 -------------------------------------------------------------------------------------------------------------*/
 if( !function_exists('homey_hourly_stripe_payment_instance') ) {
-    function homey_hourly_stripe_payment_instance($listing_id, $check_in, $check_in_hour, $check_out_hour, $start_hour, $end_hour, $guests, $guest_message='') {
+    function homey_hourly_stripe_payment_instance($listing_id, $check_in, $check_in_hour, $check_out_hour, $start_hour, $end_hour, $guests) {
 
         $allowded_html = array();
         $current_user = wp_get_current_user();
@@ -2020,7 +1936,7 @@ if( !function_exists('homey_hourly_stripe_payment_instance') ) {
 
         $listing_id     = intval($listing_id);
         $check_in_date  = wp_kses ($check_in, $allowded_html);
-        $renter_message = $guest_message;
+        $renter_message = '';
         $guests         = intval($guests);
 
         $check_availability = check_hourly_booking_availability($check_in_date, $check_in_hour, $check_out_hour, $start_hour, $end_hour, $listing_id, $guests);
@@ -2078,6 +1994,7 @@ if( !function_exists('homey_hourly_stripe_payment_instance') ) {
             'extra_options'       =>  $extra_prices,
             'is_hourly'           =>  1,
             'is_instance_booking' =>  1,
+            'extra_options'       =>  0,
             'payment_type'        =>  'reservation_fee',
             'guest_message'       =>  $renter_message,
             'reservation_id_for_stripe' =>  0,
@@ -2416,16 +2333,16 @@ if( !function_exists('homey_hourly_instance_booking_paypal_payment') ) {
 
         //check security
         $nonce = $_REQUEST['security'];
-//        if ( ! wp_verify_nonce( $nonce, 'checkout-security-nonce' ) ) {
-//
-//            echo json_encode(
-//                array(
-//                    'success' => false,
-//                    'message' => $local['security_check_text']
-//                )
-//            );
-//            wp_die();
-//        }
+        if ( ! wp_verify_nonce( $nonce, 'checkout-security-nonce' ) ) {
+
+            echo json_encode(
+                array(
+                    'success' => false,
+                    'message' => $local['security_check_text']
+                )
+            );
+            wp_die();
+        }
 
         $currency = homey_option('payment_currency');
 
@@ -2578,7 +2495,7 @@ add_action( 'wp_ajax_homey_membership_paypal_payment', 'wp_ajax_homey_membership
 if( !function_exists('wp_ajax_homey_membership_paypal_payment') ) {
     function wp_ajax_homey_membership_paypal_payment() {
         global $current_user;
-
+        return 'we will in sha Allah';
         $allowded_html = array();
         $blogInfo = esc_url( home_url('/') );
         wp_get_current_user();
@@ -2756,10 +2673,7 @@ if(!function_exists('homey_instance_hourly_booking')) {
         $allowded_html = array();
         $instace_page_link = homey_get_template_link_2('template/template-instance-booking.php');
 
-        $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
-
-
-        if ( $no_login_needed_for_booking == 'no' && ( !is_user_logged_in() || $userID === 0 ) ) {
+        if ( !is_user_logged_in() || $userID === 0 ) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -2798,10 +2712,9 @@ if(!function_exists('homey_instance_hourly_booking')) {
         $start_hour    =  wp_kses ( $_POST['start_hour'], $allowded_html );
         $end_hour    =  wp_kses ( $_POST['end_hour'], $allowded_html );
         $guests   =  intval($_POST['guests']);
-        $guest_message   =  wp_kses ( $_POST['guest_message'], $allowded_html );
         $extra_options  = $_POST['extra_options'];
 
-        if($no_login_needed_for_booking == 'no' && $userID == $listing_owner_id) {
+        if($userID == $listing_owner_id) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -2822,8 +2735,8 @@ if(!function_exists('homey_instance_hourly_booking')) {
             wp_die();
         }
 */
-        $booking_hide_fields = homey_option('booking_hide_fields');
-        if ( (empty($guests) || $guests === 0) && $booking_hide_fields['guests'] != 1 ) {
+
+        if ( empty($guests) || $guests === 0 ) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -2838,7 +2751,6 @@ if(!function_exists('homey_instance_hourly_booking')) {
             'start_hour' => $start_hour,
             'end_hour' => $end_hour,
             'guest' => $guests,
-            'guest_message' => $guest_message,
             'extra_options' => $extra_options,
             'listing_id' => $listing_id,
         ), $instace_page_link );
@@ -2846,7 +2758,7 @@ if(!function_exists('homey_instance_hourly_booking')) {
         echo json_encode(
             array(
                 'success' => true,
-                'message' => __('Submitting, Please wait...', 'homey'),
+                'message' => '',
                 'instance_url' =>  $instance_page
             )
         );
@@ -3242,7 +3154,7 @@ if(!function_exists('homey_decline_hourly_reservation')) {
         $renter = homey_usermeta($listing_renter);
         $renter_email = $renter['email'];
 
-        if( $listing_owner != $userID && !homey_is_admin()) {
+        if( $listing_owner != $userID ) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -3269,8 +3181,6 @@ if(!function_exists('homey_decline_hourly_reservation')) {
 
         $email_args = array('reservation_detail_url' => reservation_detail_link($reservation_id) );
         homey_email_composer( $renter_email, 'declined_reservation', $email_args );
-//        $admin_email = get_option( 'admin_email' );
-//        homey_email_composer( $admin_email, 'declined_reservation', $email_args );
         wp_die();
     }
 }
@@ -3341,8 +3251,6 @@ if(!function_exists('homey_cancelled_hourly_reservation')) {
         $email_args = array('reservation_detail_url' => reservation_detail_link($reservation_id) );
 
         homey_email_composer( $to_email, 'cancelled_reservation', $email_args );
-//        $admin_email = get_option( 'admin_email' );
-//        homey_email_composer( $admin_email, 'cancelled_reservation', $email_args );
         wp_die();
     }
 }
@@ -3350,7 +3258,6 @@ if(!function_exists('homey_cancelled_hourly_reservation')) {
 if(!function_exists('homey_hourly_booking_with_no_upfront')) {
     function homey_hourly_booking_with_no_upfront($reservation_id) {
         $listing_id = get_post_meta($reservation_id, 'reservation_listing_id', true );
-        $admin_email = get_option( 'new_admin_email' );
 
         //Book days
         $booked_days_array = homey_make_hours_booked($listing_id, $reservation_id);
@@ -3373,23 +3280,9 @@ if(!function_exists('homey_hourly_booking_with_no_upfront')) {
         $owner = homey_usermeta($listing_owner);
         $owner_email = $owner['email'];
 
-        $message_link = homey_thread_link_after_reservation($reservation_id);
-        $reservation_page = homey_get_template_link_dash('template/dashboard-reservations2.php');
-        $reservation_detail_link = add_query_arg( 'reservation_detail', $reservation_id, $reservation_page );
-
-        $email_args = array( 
-                    'guest_message' => $guest_message,
-                    'message_link' => $message_link,
-                    'reservation_detail_url' => $reservation_detail_link 
-                );
+        $email_args = array('reservation_detail_url' => reservation_detail_link($reservation_id) );
         homey_email_composer( $renter_email, 'booked_reservation', $email_args );
-        
-         $email_args = array( 
-                    'guest_message' => $guest_message,
-                    'message_link' => $message_link,
-                    'reservation_detail_url' => reservation_detail_link($reservation_id) 
-                );
-        homey_email_composer( $admin_email, 'admin_booked_reservation', $email_args );
+        homey_email_composer( $owner_email, 'admin_booked_reservation', $email_args );
 
         return true;
     }

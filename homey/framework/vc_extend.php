@@ -285,7 +285,6 @@ if (class_exists('Vc_Manager')) {
 				"type" => "dropdown",
 				"value" => array(
 					esc_html__('All/Any', 'homey') => '', 
-					esc_html__('Per Day', 'homey') => 'per_day_date', 
 					esc_html__('Per Night', 'homey') => 'per_day', 
 					esc_html__('Per Week', 'homey') => 'per_week',
 					esc_html__('Per Month', 'homey') => 'per_month',
@@ -463,7 +462,6 @@ if (class_exists('Vc_Manager')) {
 				"type" => "dropdown",
 				"value" => array(
 					esc_html__('All/Any', 'homey') => '', 
-					esc_html__('Per Day', 'homey') => 'per_day_date', 
 					esc_html__('Per Night', 'homey') => 'per_day', 
 					esc_html__('Per Week', 'homey') => 'per_week',
 					esc_html__('Per Month', 'homey') => 'per_month',

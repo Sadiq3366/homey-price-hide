@@ -23,12 +23,6 @@ if(!empty($search_term)) {
         $args['meta_query'] = array(
             'relation' => 'OR',
             array(
-                'key'     => 'display_name',
-                'value'   => $search_term,
-                'compare' => 'LIKE'
-            ),
-
-            array(
                 'key'     => 'first_name',
                 'value'   => $search_term,
                 'compare' => 'LIKE'

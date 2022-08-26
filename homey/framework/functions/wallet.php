@@ -57,20 +57,17 @@ if(!function_exists('homey_add_earning')) {
 
         $listing_id     = intval($reservation_meta['listing_id']);
         $check_in_date  = wp_kses ( $reservation_meta['check_in_date'], $allowded_html );
-        $check_out_date = '';
+        $check_out_date = wp_kses ( $reservation_meta['check_out_date'], $allowded_html );
         $guests         = intval($reservation_meta['guests']);
 
         $booking_type = homey_booking_type_by_id($listing_id);
         
         if($is_hourly != 'yes') {
-            $check_out_date = wp_kses ( @$reservation_meta['check_out_date'], $allowded_html );
 
             if( $booking_type == 'per_week' ) {
                 $prices_array = homey_get_weekly_prices($check_in_date, $check_out_date, $listing_id, $guests, $extra_options);
             } else if( $booking_type == 'per_month' ) {
                 $prices_array = homey_get_monthly_prices($check_in_date, $check_out_date, $listing_id, $guests, $extra_options);
-            } else if( $booking_type == 'per_day_date' ) {
-                $prices_array = homey_get_day_date_prices($check_in_date, $check_out_date, $listing_id, $guests, $extra_options);
             } else {
                 $prices_array = homey_get_prices($check_in_date, $check_out_date, $listing_id, $guests, $extra_options);
             }
@@ -108,111 +105,6 @@ if(!function_exists('homey_add_earning')) {
 
 
         //deduct services fee and security deposit from total
-        $sf_and_sd = (float) $services_fee + (float) $security_deposit;
-
-        //chargeable amount for host fee
-        $chargeable_amount = $total_price - $sf_and_sd;
-
-        //Host fee
-        $host_fee = ($host_fee_percent / 100) * $chargeable_amount;
-
-        /*
-        * Calculate net earning.
-        * Net earning will be on upfront payment
-        */
-        $net_earnings = (float) $upfront_payment - (float) $services_fee; //deduct services fee from $upfront
-        $net_earnings = $net_earnings - $host_fee; //deduct host fee from upfront_payment
-        $net_earnings = $net_earnings - $security_deposit; //deduct security deposit
-
-        $table_name = $wpdb->prefix . 'homey_earnings';
-
-        $is_added = $wpdb->query(
-            "SELECT * FROM $table_name WHERE user_id = $listing_host AND  guest_id = $listing_guest AND listing_id = $listing_id AND reservation_id = $reservation_id"
-        );
-
-        if($is_added < 1){
-            $order_id = $wpdb->query( $wpdb->prepare(
-                "INSERT INTO $table_name
-            ( user_id, guest_id, listing_id, reservation_id, services_fee, host_fee, upfront_payment, payment_due, net_earnings, total_amount, security_deposit, chargeable_amount, host_fee_percent )
-            VALUES ( %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s )",
-                $listing_host,
-                $listing_guest,
-                $listing_id,
-                $reservation_id,
-                $services_fee,
-                $host_fee,
-                $upfront_payment,
-                $payment_due,
-                $net_earnings,
-                $total_price,
-                $security_deposit,
-                $chargeable_amount,
-                $host_fee_percent
-            ) );
-
-            if($order_id) {
-                $all_fees = $services_fee + $security_deposit + $host_fee;
-                $total_net_earnings = $total_price - $all_fees;
-                homey_add_host_earnings($listing_host, $net_earnings, $total_net_earnings);
-                homey_add_guest_security($listing_guest, $security_deposit);
-            }
-        }
-    }
-}
-
-if(!function_exists('homey_add_exp_earning')) {
-    function homey_add_exp_earning($reservation_id) {
-        global $wpdb;
-        $allowded_html = array();
-
-        $reservation_payment = homey_option('reservation_payment');
-        if($reservation_payment != 'percent' && $reservation_payment != 'full') {
-            return;
-        }
-
-        //host fee in % set by admin
-        $host_fee_percent = homey_get_host_fee_percent();
-
-        if(empty($reservation_id)) {
-            return;
-        }
-
-        $reservation_meta = get_post_meta($reservation_id, 'reservation_meta', true);
-        $extra_options = get_post_meta($reservation_id, 'extra_options', true);
-
-        $experience_host = get_post_meta($reservation_id, 'experience_owner', true);
-        $experience_guest = get_post_meta($reservation_id, 'experience_renter', true);
-
-        $experience_id     = intval($reservation_meta['experience_id']);
-        $check_in_date  = wp_kses ( $reservation_meta['check_in_date'], $allowded_html );
-        $check_out_date = '';
-        $guests         = intval($reservation_meta['guests']);
-        $prices_array = homey_get_exp_prices($check_in_date, $experience_id, $guests, $extra_options);
-
-        $total_price = $prices_array['total_price'];
-        $services_fee = $prices_array['services_fee'];
-        $security_deposit = $prices_array['security_deposit'];
-        $upfront_payment = $prices_array['upfront_payment'];
-        $payment_due = $prices_array['balance'];
-
-        $extra_expenses = homey_get_extra_expenses($reservation_id);
-        $extra_discount = homey_get_extra_discount($reservation_id);
-
-        if(!empty($extra_expenses)) {
-            $expenses_total_price = $extra_expenses['expenses_total_price'];
-            $total_price = $total_price + $expenses_total_price;
-        }
-
-        if(!empty($extra_discount)) {
-            $discount_total_price = $extra_discount['discount_total_price'];
-            $total_price = $total_price - $discount_total_price;
-        }
-
-        if(homey_option('reservation_payment') == 'full') {
-            $upfront_payment = $total_price;
-        }
-
-        //deduct services fee and security deposit from total
         $sf_and_sd = $services_fee + $security_deposit;
 
         //chargeable amount for host fee
@@ -230,37 +122,30 @@ if(!function_exists('homey_add_exp_earning')) {
         $net_earnings = $net_earnings - $security_deposit; //deduct security deposit
 
         $table_name = $wpdb->prefix . 'homey_earnings';
+        $order_id = $wpdb->query( $wpdb->prepare(
+            "INSERT INTO $table_name
+            ( user_id, guest_id, listing_id, reservation_id, services_fee, host_fee, upfront_payment, payment_due, net_earnings, total_amount, security_deposit, chargeable_amount, host_fee_percent )
+            VALUES ( %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s )", 
+            $listing_host,
+            $listing_guest,
+            $listing_id, 
+            $reservation_id,
+            $services_fee,
+            $host_fee,
+            $upfront_payment,
+            $payment_due,
+            $net_earnings,
+            $total_price,
+            $security_deposit,
+            $chargeable_amount,
+            $host_fee_percent
+        ) );
 
-        $is_added = $wpdb->query(
-            "SELECT * FROM $table_name WHERE user_id = $experience_host AND  guest_id = $experience_guest AND experience_id = $experience_id AND reservation_id = $reservation_id"
-        );
-
-        if($is_added < 1){
-            $order_id = $wpdb->query( $wpdb->prepare(
-                "INSERT INTO $table_name
-            ( user_id, guest_id, experience_id, reservation_id, services_fee, host_fee, upfront_payment, payment_due, net_earnings, total_amount, security_deposit, chargeable_amount, host_fee_percent )
-            VALUES ( %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s )",
-                $experience_host,
-                $experience_guest,
-                $experience_id,
-                $reservation_id,
-                $services_fee,
-                $host_fee,
-                $upfront_payment,
-                $payment_due,
-                $net_earnings,
-                $total_price,
-                $security_deposit,
-                $chargeable_amount,
-                $host_fee_percent
-            ) );
-
-            if($order_id) {
-                $all_fees = $services_fee + $security_deposit + $host_fee;
-                $total_net_earnings = $total_price - $all_fees;
-                homey_add_host_earnings($experience_host, $net_earnings, $total_net_earnings);
-                homey_add_guest_security($experience_guest, $security_deposit);
-            }
+        if($order_id) {
+            $all_fees = $services_fee + $security_deposit + $host_fee;
+            $total_net_earnings = $total_price - $all_fees;
+            homey_add_host_earnings($listing_host, $net_earnings, $total_net_earnings); 
+            homey_add_guest_security($listing_guest, $security_deposit); 
         }
     }
 }
@@ -275,19 +160,6 @@ if(!function_exists('homey_add_host_earnings')) {
 
         update_user_meta($listing_host, 'homey_host_available_earnings', $available_earnings);
         update_user_meta($listing_host, 'homey_host_total_earnings', $total_earnings);
-    }
-}
-
-if(!function_exists('homey_add_exp_host_earnings')) {
-    function homey_add_exp_host_earnings($experience_host, $net_earnings, $total_net_earnings) {
-        $current_available_earnings = homey_get_host_available_earnings($experience_host);
-        $current_total_earnings = homey_get_host_total_earnings($experience_host);
-
-        $available_earnings = $current_available_earnings + $net_earnings;
-        $total_earnings = $current_total_earnings + $total_net_earnings;
-
-        update_user_meta($experience_host, 'homey_host_available_earnings', $available_earnings);
-        update_user_meta($experience_host, 'homey_host_total_earnings', $total_earnings);
     }
 }
 
@@ -638,12 +510,7 @@ if(!function_exists('homey_add_payout')) {
 
         $minimum_payout_amount = homey_get_minimum_payout_amount();
         $homey_is_host_payout = homey_is_host_payout($userID);
-        if(homey_is_host()){
-            $available_balance = homey_get_host_available_earnings($userID);
-        }else{
-            $available_balance = homey_get_get_security_deposit($userID);
-        }
-
+        $available_balance = homey_get_host_available_earnings($userID);
         $payout_amount = sanitize_text_field($_POST['payout_amount']);
         $host = homey_get_author_by_id('36', '36', 'img-responsive img-circle', $userID);
         
@@ -849,7 +716,7 @@ if( !function_exists('homey_make_host_adjustments') ) {
             wp_die();
         }
 
-        $date_processed = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+        $date_processed = date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ));
         $payout_status = 3;
 
         $table_name = $wpdb->prefix . 'homey_payouts';
@@ -965,7 +832,7 @@ if( !function_exists('homey_make_guest_adjustments') ) {
             wp_die();
         }
 
-        $date_processed = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+        $date_processed = date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ));
         $payout_status = 3;
 
         $table_name = $wpdb->prefix . 'homey_payouts';
@@ -1099,9 +966,6 @@ if(!function_exists('homey_update_payout_status')) {
                 homey_email_composer( $host_email, 'payout_request_cancelled', $args );
 
             } elseif($payout_status == 3) { // Completed
-                if(homey_is_renter($payout->user_id)){
-                    homey_adjust_guest_security_balance($payout->user_id, $payout->total_amount);
-                }
 
                 $args = array(
                     'host_name' => $host_name,
@@ -1419,8 +1283,6 @@ if( !function_exists('homey_calculate_cost_for_wallet') ) {
             return homey_calculate_cost_for_wallet_weekly($reservation_id);
         } else if( $booking_type == 'per_month' ) {
             return homey_calculate_cost_for_wallet_monthly($reservation_id);
-        } else if( $booking_type == 'per_day_date' ) {
-            return homey_calculate_cost_for_wallet_day_date($reservation_id);
         } else {
             return homey_calculate_cost_for_wallet_nightly($reservation_id);
         }
@@ -1672,103 +1534,6 @@ if( !function_exists('homey_calculate_cost_for_wallet_nightly') ) {
             $night_label = homey_option('glc_day_nights_label');
         } else {
             $night_label = homey_option('glc_day_night_label');
-        }
-
-        if($additional_guests > 1) {
-            $add_guest_label = $local['cs_add_guests'];
-        } else {
-            $add_guest_label = $local['cs_add_guest'];
-        }
-
-        $output = '';
-            
-        if($booking_has_custom_pricing == 1 && $booking_has_weekend == 1) { 
-            $output .= '<li>'.$no_of_days.' '.$night_label.' ('.$local['with_custom_period_and_weekend_label'].') <span>'.$nights_total_price.'</span></li>';
-            
-        } elseif($booking_has_weekend == 1) {
-            $output .= '<li>'.$no_of_days.' '.$night_label.' ('.$with_weekend_label.') <span>'.$nights_total_price.'</span></li>';
-
-        } elseif($booking_has_custom_pricing == 1) { 
-            $output .= '<li>'.$no_of_days.' '.$night_label.' ('.$local['with_custom_period_label'].') <span>'.$nights_total_price.'</span></li>';
-
-        } else {
-            $output .= '<li>'.$price_per_night.' x '.$no_of_days.' '.$night_label.' <span>'.$nights_total_price.'</span></li>';
-        }
-
-        if(!empty($additional_guests)) {
-            $output .= '<li>'.$additional_guests.' '.$add_guest_label.' <span>'.homey_formatted_price($additional_guests_total_price).'</span></li>';
-        }
-        
-        if(!empty($reservation_meta['cleaning_fee']) && $reservation_meta['cleaning_fee'] != 0) {
-            $output .= '<li>'.$local['cs_cleaning_fee'].' <span>'.$cleaning_fee.'</span></li>';
-        }
-
-        if(!empty($reservation_meta['city_fee']) && $reservation_meta['city_fee'] != 0) {
-            $output .= '<li>'.$local['cs_city_fee'].' <span>'.$city_fee.'</span></li>';
-        }
-
-        if(!empty($security_deposit) && $security_deposit != 0) {
-            $output .= '<li>'.$local['cs_sec_deposit'].' <span>'.homey_formatted_price($security_deposit).'</span></li>';
-        }
-        
-        if(!homey_is_host()) {
-            if(!empty($services_fee) && $services_fee != 0 ) {
-                $output .= '<li>'.$local['cs_services_fee'].' <span>'.homey_formatted_price($services_fee).'</span></li>';
-            }
-        }
-
-        if(!empty($taxes) && $taxes != 0 ) {
-            $output .= '<li>'.$local['cs_taxes'].' '.$taxes_percent.'% <span>'.homey_formatted_price($taxes).'</span></li>';
-        }            
-
-        return $output;
-    } 
-}
-
-if( !function_exists('homey_calculate_cost_for_wallet_day_date') ) {
-    function homey_calculate_cost_for_wallet_day_date($reservation_id) {
-        $prefix = 'homey_';
-        $local = homey_get_localization();
-        $allowded_html = array();
-        $output = '';
-
-        if(empty($reservation_id)) {
-            return;
-        }
-        $reservation_meta = get_post_meta($reservation_id, 'reservation_meta', true);
-
-        $listing_id     = intval($reservation_meta['listing_id']);
-        $check_in_date  = wp_kses ( $reservation_meta['check_in_date'], $allowded_html );
-        $check_out_date = wp_kses ( $reservation_meta['check_out_date'], $allowded_html );
-        $guests         = intval($reservation_meta['guests']);
-        
-        $price_per_night = homey_formatted_price($reservation_meta['price_per_day_date'], true);
-        $no_of_days = $reservation_meta['no_of_days'];
-
-        $nights_total_price = homey_formatted_price($reservation_meta['days_total_price'], false);
-
-        $cleaning_fee = homey_formatted_price($reservation_meta['cleaning_fee']);
-        $services_fee = $reservation_meta['services_fee'];
-        $taxes = $reservation_meta['taxes'];
-        $taxes_percent = $reservation_meta['taxes_percent'];
-        $city_fee = homey_formatted_price($reservation_meta['city_fee']);
-        $security_deposit = $reservation_meta['security_deposit'];
-        $additional_guests = $reservation_meta['additional_guests'];
-        $additional_guests_price = $reservation_meta['additional_guests_price'];
-        $additional_guests_total_price = $reservation_meta['additional_guests_total_price'];
-
-        $upfront_payment = $reservation_meta['upfront'];
-        $balance = $reservation_meta['balance'];
-        $total_price = $reservation_meta['total'];
-
-        $booking_has_weekend = $reservation_meta['booking_has_weekend'];
-        $booking_has_custom_pricing = $reservation_meta['booking_has_custom_pricing'];
-        $with_weekend_label = $local['with_weekend_label'];
-
-        if($no_of_days > 1) {
-            $night_label = homey_option('glc_day_dates_label');
-        } else {
-            $night_label = homey_option('glc_day_date_label');
         }
 
         if($additional_guests > 1) {

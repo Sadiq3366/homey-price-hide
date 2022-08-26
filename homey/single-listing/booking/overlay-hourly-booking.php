@@ -65,18 +65,11 @@ for ($halfhour = $start_hour; $halfhour <= $end_hour; $halfhour = $halfhour+30*6
     $start_hours_list .= '<option '.selected($pre_start_hour, date('H:i',$halfhour)).' value="'.date('H:i',$halfhour).'">'.date(homey_time_format(),$halfhour).'</option>';
     $end_hours_list .= '<option '.selected($pre_end_hour, date('H:i',$halfhour)).' value="'.date('H:i',$halfhour).'">'.date(homey_time_format(),$halfhour).'</option>';
 }
-
-$no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
-
 ?>
 <div id="overlay-booking-module" class="overlay-booking-module overlay-hourly-booking-module overlay-contentscale">
 	<div class="overlay-search-title"><?php echo esc_html__('Request to book', 'homey'); ?></div>
-	<button type="button" class="overlay-booking-module-close btn-blank"><i class="fa fa-times" aria-hidden="true"></i></button>
-
-    <input type="hidden" name="listing_id" id="listing_id" value="<?php echo intval($listing_id); ?>">
-    <input type="hidden" name="reservation-security" id="reservation-security" value="<?php echo wp_create_nonce('reservation-security-nonce'); ?>"/>
-
-    <div class="sidebar-booking-module">
+	<button type="button" class="overlay-booking-module-close btn-blank"><i class="fa fa-times" aria-hidden="true"></i></button> 
+	<div class="sidebar-booking-module">
 		<div class="block">
 			<div class="sidebar-booking-module-body">
 				<div class="homey_notification search-wrap search-banner">
@@ -131,12 +124,7 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 					
 					<?php if($instant_booking && $offsite_payment == 0) { ?>
 						<button id="instance_hourly_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Instant Booking', 'homey'); ?></button>
-					<?php } else { ?>
-                        <?php if(!is_user_logged_in() && $no_login_needed_for_booking == 'yes'){ ?>
-                            <div class="new_reser_request_user_email ">
-                                <input id="new_reser_request_user_email" name="new_reser_request_user_email" required="required" value="<?php echo esc_attr($prefilled['new_reser_request_user_email']); ?>" type="email" class="form-control new_reser_request_user_email" placeholder="<?php echo esc_html__('Your email', 'homey'); ?>">
-                            </div>
-                        <?php } ?>
+					<?php } else { ?> 
 						<button id="request_hourly_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Request to Book', 'homey'); ?></button>
 						<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div>
 					<?php } ?>
@@ -174,13 +162,7 @@ $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 	    } elseif($what_to_show == 'contact_form') { ?>
 	        <button type="button" data-toggle="modal" data-target="#modal-contact-host" class="trigger-overlay btn btn-primary"><?php echo esc_html__('Request Information', 'homey'); ?></button>
 	    <?php    
-	    }elseif($what_to_show == 'contact_form_to_guest') {
-            if(is_user_logged_in()){ ?>
-                    <button id="trigger-overlay-booking-form" class="trigger-overlay btn btn-primary" type="button"><?php echo esc_attr($btn_name); ?></button>
-            <?php }else{ ?>
-                    <button type="button" data-toggle="modal" data-target="#modal-contact-host" class="trigger-overlay btn btn-primary"><?php echo esc_html__('Request Information', 'homey'); ?></button>
-            <?php }
-        }
+	    }
 	}
 	?>
 </div>

@@ -12,10 +12,49 @@
     <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 
     <?php wp_head(); ?>
+
+      <!-- CSS code to add slider into listings added by aqeel -->
+    <style type="text/css">
+        .module-wrap .header-slider .slick-next,
+.module-wrap .header-slider .slick-prev
+{
+    width: 33px;
+    font-size: 30px;
+    text-align: center;
+    height: 40px;
+    padding: 0px 10px;
+    font-weight: bold;
+    top: 105px;
+    color: white;
+    margin: 0 30px;
+}
+
+.header-slider:hover .slick-prev,
+    .header-slider:hover .slick-next,
+    .top-gallery-section:hover .slick-prev,
+    .top-gallery-section:hover .slick-next {
+      border: 1px solid #f15e75;
+      background-color: #f15e75;
+            top: 95px;
+    }
+.module-wrap .header-slider .slick-prev
+{
+    left: 0px;
+}
+
+* {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+   user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
+</style>
 </head>
 
 
-<body <?php body_class('splash-page splash-page-image'); ?>>
+<body <?php body_class('splash-page splash-page-image'); ?> <?php if(!homey_is_admin()){ echo 'oncontextmenu="return false"';} ?>>
 <?php
 global $homey_local, $homey_prefix;
 $homey_local = homey_get_localization();

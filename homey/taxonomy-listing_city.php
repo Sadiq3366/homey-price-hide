@@ -6,13 +6,8 @@
  * Date: 08/01/16
  * Time: 4:26 PM
  */
+get_header();
 
-	
+get_template_part("template-parts/common-taxonomy");
 
-		get_header();
-
-          get_template_part("template-parts/common-taxonomy");
-
-          get_footer();
-
-  
+get_footer();

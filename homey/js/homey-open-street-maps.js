@@ -1,6 +1,6 @@
 (function($){
     "use strict";
-    
+
     if ( typeof HOMEY_map_vars !== "undefined" ) {
 
         var homeyMap;
@@ -157,30 +157,6 @@
             });
         }
 
-        var homey_map_zoomin_2 = function(hMap) {
-            $('.leaflet-control-zoom-in').on('click', function() {
-                var current= parseInt( hMap.getZoom(),10);
-                console.log(current);
-                current++;
-                if(current > 20){
-                    current = 20;
-                }
-                hMap.setZoom(current);
-            });
-        }
-
-        var homey_map_zoomout_2 = function(hMap) {
-            $('.leaflet-control-zoom-out').on('click', function() {
-                var current= parseInt( hMap.getZoom(),10);
-                console.log(current);
-                current--;
-                if(current < 0){
-                    current = 0;
-                }
-                hMap.setZoom(current);
-            });
-        }
-
         var homey_map_next = function(hMap) {
             current_marker++;
             if ( current_marker > markers.length ){
@@ -277,6 +253,7 @@
                 if ( map_properties[i].lat && map_properties[i].long ) {
 
                     var mapData = map_properties[i];
+
                     var mapCenter = L.latLng( mapData.lat, mapData.long );
 
                     var markerOptions = {
@@ -289,14 +266,8 @@
                     }
 
 
-                    var price_pins = '<div class="gm-marker-price">'+map_properties[i].price+'</div>';
-                    if (map_properties[i].price_no == 'no') {
-                        price_pins = '<div class="gm-marker-price">On Request</div>';
-                    }
-
                     if( markerPricePins == 'yes' ) {
-                        var pricePin = '<div  id="infobox_popup_'+map_properties[i].id+'"  data-id="'+map_properties[i].id+'" class="gm-marker gm-marker-color-'+map_properties[i].term_id+'">'+price_pins+'</div>';
-
+                        var pricePin = '<div  id="infobox_popup_'+map_properties[i].id+'"  data-id="'+map_properties[i].id+'" class="gm-marker gm-marker-color-'+map_properties[i].term_id+'"><div class="gm-marker-price">'+map_properties[i].price+'</div></div>';
 
                         var myIcon = L.divIcon({
                             className:'someclass',
@@ -360,13 +331,6 @@
                         listing_type = '<li class="item-type">'+map_properties[i].listing_type+'</li>';
                     }
 
-
-                    var price_span = '<span class="item-price">'+map_properties[i].price+'</span>';
-                    if (map_properties[i].price_no == 'no') {
-                        price_span = '<span class="item-price">On Request</span>';
-                    }
-
-                    
                     var infoboxContent = '<div id="google-maps-info-window" class="homey-open-street-map">'+
                         '<div class="item-wrap item-grid-view">'+
                         '<div class="media property-item">'+
@@ -374,7 +338,7 @@
                         '<div class="item-media item-media-thumb">'+
                         '<a href="'+map_properties[i].url+'" class="hover-effect">'+map_properties[i].thumbnail+'</a>'+
                         '<div class="item-media-price">'+
-                         price_span + 
+                        '<span class="item-price">'+map_properties[i].price+'</span>'+
                         '</div>'+
                         '</div>'+
                         '</div>'+
@@ -575,13 +539,11 @@
                 if( document.getElementById('listing-mapzoomin') ) {
                     homey_map_zoomin(homeyMap);
                 }
-
                 if( document.getElementById('listing-mapzoomout') ) {
                     homey_map_zoomout(homeyMap);
                 }
 
-                homey_map_zoomin_2(homeyMap);
-                homey_map_zoomout_2(homeyMap);
+
 
             } else {
                 console.log("No map element found");
@@ -626,7 +588,7 @@
                 var mapOptions = {
                     dragging: mapDragging,
                     center: mapCenter,
-                    zoom: defaultZoom,
+                    zoom: 10,
                     tap: true
                 };
 
@@ -636,6 +598,7 @@
                 homeyMap.scrollWheelZoom.disable();
 
                 homeyMap.addLayer( homeyMapTileLayer() );
+
 
                 var allMarkers;
 
@@ -696,7 +659,6 @@
                                     }
 
                                     $('#homey-map-loading').hide();
-                                    homeyMap.setZoom(defaultZoom);
 
                                 } else {
                                     reloadMarkers();
@@ -726,12 +688,9 @@
                     homey_map_zoomout(homeyMap);
                 }
 
-                homey_map_zoomin_2(homeyMap);
-                homey_map_zoomout_2(homeyMap);
-
                 var intervalVar = setInterval(function(){
                     if(typeof $("#homey-gmap-prev") != "undefined"){
-                        //loadMapData();
+                        loadMapData();
                     }
                     clearInterval(intervalVar);
                 }, 1500);
@@ -953,8 +912,6 @@
                     var current_page = $(this).data('homeypagi');
                     var current_form = $(this).parents('.half-map-wrap');
                     homey_make_search_call(current_form, current_page, _lat, _long, element, markerTarget, showMarkerLabels, defaultZoom, optimizedMapLoading, isHalfMap);
-                    $(".half-map-left-wrap, .half-map-right-wrap").animate({ scrollTop: 0 }, "slow");
-
                 });
                 return false;
             } // enf half_map_ajax_pagi
@@ -964,8 +921,8 @@
                     {
                         value: default_radius,
                         min: 0,
-                        max: 500,
-                        step: 10,
+                        max: 100,
+                        step: 1,
                         slide: function (event, ui) {
                             $("#radius-range-text").html(ui.value);
                             $("#radius-range-value").val(ui.value);
@@ -996,11 +953,12 @@
         *-----------------------------------------------------------------------------------------*/
         if( $("input.input-search").length > 0 ) {
             jQuery('input.input-search').autocomplete( {
+
                 source: function ( request, response ) {
                     jQuery.get( 'https://nominatim.openstreetmap.org/search', {
                         format: 'json',
                         q: request.term,//was q
-                        addressdetails:'1',
+                        //addressdetails:'1',
                     }, function( result ) {
 
                         if ( !result.length ) {
@@ -1045,7 +1003,6 @@
 
                             return return_obj
                         } ) );
-                        jQuery("#ui-id-2").show();
                     }, 'json' );
                 },
                 select: function ( event, ui ) {
@@ -1061,7 +1018,7 @@
 
                     $('input[name="search_country"]').attr('data-value', ui.item.country);
                     $('input[name="search_country"]').val(ui.item.country);
-                    jQuery("#ui-id-2").hide();
+
                 }
             });
         } // Auto complete
@@ -1127,7 +1084,6 @@
                 document.getElementById('lng').value = mapMarker.getLatLng().lng;
             });
 
-            homeyMap.invalidateSize();
         } // End homey_init_submit_map
         homey_init_submit_map();
 
@@ -1142,17 +1098,34 @@
             document.getElementById('lng').value = long;
         }
 
+        var homey_find_address_osm = function() {
+            $('#find').on('click', function(e) {
+                event.preventDefault();
+                var address = $('#listing_address').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
+
+                if(!address) {
+                    return;
+                }
+
+                $.get( 'https://nominatim.openstreetmap.org/search', {
+                    format: 'json',
+                    q: address,
+                    limit: 1,
+                }, function( result ) {
+                    if ( result.length !== 1 ) {
+                        return;
+                    }
+                    homey_osm_marker_position(result[0].lat, result[0].lon);
+
+                }, 'json' );
+
+            })
+        }
+        homey_find_address_osm();
+
         var homey_submit_autocomplete = function() {
-            var address = "";
-            if(typeof $('input[name="listing_address"]').val() != 'undefined'){
-                address = $('input[name="listing_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-            }
 
-            if(typeof $('input[name="experience_address"]').val() != 'undefined'){
-                address = $('input[name="experience_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-            }
-
-            jQuery('#listing_address, #experience_address').autocomplete( {
+            jQuery('#listing_address').autocomplete( {
                 source: function ( request, response ) {
                     jQuery.get( 'https://nominatim.openstreetmap.org/search', {
                         format: 'json',
@@ -1233,69 +1206,6 @@
             });
             return false;
         }
-
-        var homey_find_address_osm = function() {
-            $('#find').on('click', function(e) {
-                e.preventDefault();
-
-                var address = "";
-                if(typeof $('input[name="listing_address"]').val() != 'undefined'){
-                    address = $('input[name="listing_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-                }
-                if(typeof $('input[name="experience_address"]').val() != 'undefined'){
-                    address = $('input[name="experience_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-                }
-
-
-                if(!address) {
-                    return;
-                }
-
-                $.get( 'https://nominatim.openstreetmap.org/search', {
-                    format: 'json',
-                    q: address,
-                    limit: 1,
-                }, function( result ) {
-                    if ( result.length !== 1 ) {
-                        return;
-                    }
-                    homey_osm_marker_position(result[0].lat, result[0].lon);
-
-                }, 'json' );
-
-            })
-        }
-
-        homey_find_address_osm();
-
-        $(".homey_find_address_osm").click(function (){
-
-            var address = "";
-            if(typeof $('input[name="listing_address"]').val() != 'undefined'){
-                address = $('input[name="listing_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-            }
-
-            if(typeof $('input[name="experience_address"]').val() != 'undefined'){
-                address = $('input[name="experience_address"]').val().replace( /\n/g, ',' ).replace( /,,/g, ',' );
-            }
-
-            if(!address) {
-                return;
-            }
-
-            $.get( 'https://nominatim.openstreetmap.org/search', {
-                format: 'json',
-                q: address,
-                limit: 1,
-            }, function( result ) {
-                if ( result.length !== 1 ) {
-                    return;
-                }
-                homey_osm_marker_position(result[0].lat, result[0].lon);
-
-            }, 'json' );
-        });
-
     }// typeof HOMEY_map_vars
 
 })(jQuery); // end function

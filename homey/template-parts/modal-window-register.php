@@ -2,25 +2,13 @@
 global $homey_local;
 $terms_conditions = homey_option('login_terms_condition');
 $register_image = homey_option('register_image', false, 'url' );
-$register_text = esc_html__(homey_option('register_text'), 'homey');
+$register_text = homey_option('register_text');
 $facebook_login = homey_option('facebook_login');
 $google_login = homey_option('google_login');
 $show_roles = homey_option('show_roles');
 $enable_password = homey_option('enable_password');
 $enable_forms_gdpr = homey_option('enable_forms_gdpr');
-
-//I agree with your <a href="http://your-website.com/privacy-policy">Privacy Policy</a>
-
-$forms_gdpr_text = explode('<a ', homey_option('forms_gdpr_text'));
-$forms_gdpr_text_string = esc_html__($forms_gdpr_text[0], 'homey');
-
-$forms_gdpr_link = '';
-if(isset($forms_gdpr_text[1])){
-    $forms_gdpr_link = explode('</a>', $forms_gdpr_text[1]);
-    $forms_gdpr_link = '<a '.$forms_gdpr_link[0].'</a>';
-}
-
-
+$forms_gdpr_text = homey_option('forms_gdpr_text');
 
 ?>
 <div class="modal fade custom-modal-login" id="modal-register" tabindex="-1" role="dialog">
@@ -77,8 +65,8 @@ if(isset($forms_gdpr_text[1])){
                             <?php if($show_roles) { ?>
                             <select name="role" class="selectpicker" title="<?php echo esc_attr__('Select', 'homey'); ?>">
                                 <option value=""><?php echo esc_attr__('Select', 'homey'); ?></option>
-                                <option value="homey_renter"><?php echo esc_attr__(homey_option('renter_role'), 'homey'); ?></option>
-                                <option value="homey_host"><?php echo esc_attr__(homey_option('host_role'), 'homey'); ?></option>
+                                <option value="homey_renter"><?php echo homey_option('renter_role'); ?></option>
+                                <option value="homey_host"><?php echo homey_option('host_role'); ?></option>
                             </select>
                             <?php } ?>
 
@@ -90,7 +78,7 @@ if(isset($forms_gdpr_text[1])){
 
                             <div class="checkbox">
                                 <label>
-                                    <input required name="term_condition" type="checkbox"> <?php echo sprintf( wp_kses(__( 'I agree with your <a href="%s">Terms & Conditions</a>', 'homey' ), homey_allowed_html()), get_permalink($terms_conditions) ); ?>
+                                    <input name="term_condition" type="checkbox"> <?php echo sprintf( wp_kses(__( 'I agree with your <a href="%s">Terms & Conditions</a>', 'homey' ), homey_allowed_html()), get_permalink($terms_conditions) ); ?>
                                 </label>
                             </div>
 
@@ -98,8 +86,7 @@ if(isset($forms_gdpr_text[1])){
                             <div class="checkbox">
                                 <label>
                                     <input name="privacy_policy" type="checkbox">
-                                    <?php
-                                    echo wp_kses($forms_gdpr_text_string, homey_allowed_html()). $forms_gdpr_link; ?>
+                                    <?php echo wp_kses($forms_gdpr_text, homey_allowed_html()); ?>
                                 </label>
                             </div>
                             <?php } ?>

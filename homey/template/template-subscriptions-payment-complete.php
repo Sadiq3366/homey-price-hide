@@ -18,7 +18,7 @@ $username     =   $current_user->user_login;
 $submission_currency = homey_option('payment_currency');
 $paymentMethod = 'Stripe';
 
-$date = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+$date = date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ));
 
 $stripe_secret_key = homey_option('stripe_secret_key');
 
@@ -150,7 +150,7 @@ if(isset($event->type)){
                     }
 
                     //get total number of allowed listings for selected plan
-                    $totalAllowed = get_post_meta($postID, 'hm_settings_listings_included', true);
+                    $totalAllowedListings = get_post_meta($postID, 'hm_settings_listings_included', true);
 
                     //save subscription to homey DB
                     $subscriptionInfo = array(
@@ -328,7 +328,7 @@ if ($postID > -1) {
     $billing_period = get_post_meta($postID, 'hm_settings_bill_period', true);
     $billing_frequency = get_post_meta($postID, 'hm_settings_billing_frequency', true);
     $listings_included = get_post_meta($postID, 'hm_settings_listings_included', true);
-    $unlimited_ = get_post_meta($postID, 'hm_settings_unlimited_', true);
+    $unlimited_listings = get_post_meta($postID, 'hm_settings_unlimited_listings', true);
     $featured_listings = get_post_meta($postID, 'hm_settings_featured_listings', true);
     $stripe_package_id = get_post_meta($postID, 'hm_settings_stripe_package_id', true);
     $visibility = get_post_meta($postID, 'hm_settings_visibility', true);
@@ -348,7 +348,7 @@ if ($postID > -1) {
                     <div class="page-title">
                         <div class="block-top-title">
                             <?php get_template_part('template-parts/breadcrumb'); ?>
-                            <h2><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h2>
+                            <h2><?php the_title(); ?></h2>
                         </div><!-- block-top-title -->
                     </div><!-- page-title -->
                 </div><!-- col-xs-12 col-sm-12 col-md-12 col-lg-12 -->
@@ -360,7 +360,7 @@ if ($postID > -1) {
             if (isset($_REQUEST['limit-exceeded'])) { ?>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
-                        <h3 class="error"><?php echo esc_html__("You have to subscribe from following plans to 'Add New Listings'.", 'homey')?></h3>
+                        <h3 class="error">You have to subscribe from following plans to 'Add New Listings'.</h3>
                     </div>
                 </div>
             <?php } ?>

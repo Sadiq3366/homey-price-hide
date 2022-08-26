@@ -4,15 +4,7 @@
  */
 get_header();
 global $homey_local, $homey_prefix;
-
-
-if(isset($_COOKIE['homey_compare_listings'])){
-    $ids = explode(',', $_COOKIE['homey_compare_listings']);
-}
-
-if(!isset($_COOKIE['homey_compare_listings'])){
-    $ids = isset($_GET['ids']) ? explode(',', $_GET['ids']) : '';
-}
+$ids = explode(',', $_COOKIE['homey_compare_listings']);
 
 $basic_info_escaped = $list_night_price = $listing_title = $list_bedrooms = $list_guests = $list_beds = $list_baths = $list_type = $list_size = '';
 $counter   =  0;
@@ -26,7 +18,7 @@ $hide_labels = homey_option('show_hide_labels');
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="page-title">
                     <div class="block-top-title">
-                        <h1 class="listing-title"><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+                        <h1 class="listing-title"><?php the_title(); ?></h1>
                     </div><!-- block-top-title -->
                 </div><!-- page-title -->
             </div><!-- col-xs-12 col-sm-12 col-md-12 col-lg-12 -->

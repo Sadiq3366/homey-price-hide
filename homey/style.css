@@ -5,7 +5,7 @@ Author: Favethemes
 Author URI: http://favethemes.com/
 Description: Homey is a powerful booking platform that lets you run a residential or commercial
 rental business online with no hassle
-Version: 2.1.1
+Version: 1.6.6
 Tags: right-sidebar, left-sidebar, custom-colors, custom-menu, featured-images, post-formats, theme-options, translation-ready
 License: This theme or plugin is comprised in two parts (1) the PHP code and integrated HTML are licensed under the General Public License (GPL). You will find a copy of the GPL in the same directory as this
 text file. (2) All other parts, but not limited to the CSS code, images, and design are licensed according to the license purchased from Envato.
@@ -83,7 +83,15 @@ div#homey-halfmap {
     position: absolute;
 }
 
-
+.board-panel-menu>li .msg-alert {
+    top: -32px;
+    left: 110px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e43012;
+    position: relative;
+}
 .booking-property-img img {
 	width: 160px;
 }
@@ -433,10 +441,9 @@ div#homey-halfmap, div#homey_sticky_map, div#banner-map {
 .half-map-left-wrap .item-card-view .item-wrap {
     max-width: 380px;
 }
-.elementor-element .banner-caption-side-search {
-    height: auto;
+.sa-custom-search-field {
+	min-width: 220px !important;
 }
-.new_reser_request_user_email {
-    width: 100%;
-    margin-bottom: 10px;
+.sa-map-custom-search-field {
+	min-width: 180px !important;
 }

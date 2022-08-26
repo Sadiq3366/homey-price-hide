@@ -24,11 +24,11 @@ $date_requested = $data->date_requested;
 $date_processed = $data->date_processed;
 
 $date_requested_unix = strtotime($date_requested);
-$request_date = homey_translate_word_by_word(homey_return_formatted_date($date_requested_unix));
+$request_date = homey_return_formatted_date($date_requested_unix);
 $request_time = homey_get_formatted_time($date_requested_unix);
 
 $date_processed_unix = strtotime($date_processed);
-$processed_date = homey_translate_word_by_word(homey_return_formatted_date($date_processed_unix));
+$processed_date = homey_return_formatted_date($date_processed_unix);
 $processed_time = homey_get_formatted_time($date_processed_unix);
 
 $price_prefix = '';
@@ -103,7 +103,7 @@ if( $payout_access || homey_is_admin() ) {
                                                 <li>
                                                     <strong><?php esc_html_e('Date Requested', 'homey'); ?>:</strong>
                                                      <span>
-                                                        <?php echo homey_format_date_simple(esc_attr($date_requested)); ?><br/>
+                                                        <?php echo esc_attr($request_date); ?><br/>
                                                         <?php echo esc_html__('at', 'homey'); ?>
                                                         <?php echo esc_attr($request_time); ?>
                                                      </span>
@@ -115,7 +115,7 @@ if( $payout_access || homey_is_admin() ) {
                                                         if($date_processed == '0000-00-00 00:00:00') {
                                                             echo '-';
                                                         } else {
-                                                            echo homey_format_date_simple(esc_attr($date_processed)).'<br/>';
+                                                            echo esc_attr($processed_date).'<br/>';
                                                             echo esc_html__('at', 'homey');
                                                             echo ' '.esc_attr($processed_time);
                                                         }
@@ -175,20 +175,20 @@ if( $payout_access || homey_is_admin() ) {
                                         <ul class="list-unstyled list-lined">
                                             <li>
                                                 <strong><?php esc_html_e('Beneficiary Name', 'homey'); ?></strong> 
-                                                <?php echo esc_attr(@$ben->ben_first_name).' '.esc_attr(@$ben->ben_last_name); ?>
+                                                <?php echo esc_attr($ben->ben_first_name).' '.esc_attr($ben->ben_last_name); ?>
                                             </li>
 
-                                            <?php if(!empty(@$ben->ben_company_name)) { ?>
+                                            <?php if(!empty($ben->ben_company_name)) { ?>
                                             <li>
                                                 <strong><?php esc_html_e('Company Name', 'homey'); ?></strong> 
-                                                <?php echo esc_attr(@$ben->ben_company_name); ?>
+                                                <?php echo esc_attr($ben->ben_company_name); ?>
                                             </li>
                                             <?php } ?>
 
-                                            <?php if(!empty(@$ben->ben_tax_number)) { ?>
+                                            <?php if(!empty($ben->ben_tax_number)) { ?>
                                             <li>
                                                 <strong><?php esc_html_e('Tax Identification Number', 'homey'); ?></strong> 
-                                                <?php echo esc_attr(@$ben->ben_tax_number); ?>
+                                                <?php echo esc_attr($ben->ben_tax_number); ?>
                                             </li>
                                             <?php } ?>
                                         </ul>
@@ -196,7 +196,7 @@ if( $payout_access || homey_is_admin() ) {
                                         <ul class="list-unstyled list-lined">
                                             <li>
                                                 <strong><?php esc_html_e('Address', 'homey'); ?></strong> 
-                                                <?php echo esc_attr(@$ben->ben_street_address).', '.@$ben->ben_city.', '.@$ben->ben_state.', '.@$ben->ben_zip_code; ?>
+                                                <?php echo esc_attr($ben->ben_street_address).', '.$ben->ben_city.', '.$ben->ben_state.', '.$ben->ben_zip_code; ?>
                                             </li>
                                         </ul>
 

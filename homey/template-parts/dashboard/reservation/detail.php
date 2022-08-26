@@ -6,13 +6,13 @@ $userID =   $current_user->ID;
 
 $messages_page = homey_get_template_link_2('template/dashboard-messages.php');
 $booking_hide_fields = homey_option('booking_hide_fields');
-$booking_detail_hide_fields = homey_option('booking_detail_hide_fields');
 
 $reservationID = isset($_GET['reservation_detail']) ? $_GET['reservation_detail'] : '';
 $reservation_status = $notification = $status_label = $notification = '';
 $upfront_payment = $check_in = $check_out = $guests = $pets = $renter_msg = '';
 $payment_link = '';
 if(!empty($reservationID)) {
+
     if(homey_is_renter()) {
         $back_to_list = homey_get_template_link('template/dashboard-reservations.php');
     } else {
@@ -64,10 +64,6 @@ if(!empty($reservationID)) {
     $renter_id = get_post_meta($reservationID, 'listing_renter', true);
     $renter_info = homey_get_author_by_id('60', '60', 'reserve-detail-avatar img-circle', $renter_id);
 
-    $renter_name_while_booking  = get_user_meta($renter_id, 'first_name', true);
-    $renter_name_while_booking .= ' '.get_user_meta($renter_id, 'last_name', true);
-    $renter_phone = get_user_meta($renter_id, 'phone', true);
-
     $owner_id = get_post_meta($reservationID, 'listing_owner', true);
     $owner_info = homey_get_author_by_id('60', '60', 'reserve-detail-avatar img-circle', $owner_id);
 
@@ -87,11 +83,13 @@ if(!empty($reservationID)) {
             'message' => 'new',
         ), $messages_page );
     }
+    
 
     $guests_label = homey_option('cmn_guest_label');
     if($guests > 1) {
         $guests_label = homey_option('cmn_guests_label');
     }
+
 }
 
 if( !homey_give_access($reservationID) ) {
@@ -111,9 +109,7 @@ if( !homey_give_access($reservationID) ) {
                         <div class="block">
                             <div class="block-head">
                                 <div class="block-left">
-                                    <h2 class="title"><?php echo esc_attr($homey_local['reservation_label']); ?>
-                                        <?php $wc_order_id = get_wc_order_id(get_the_ID()); $wc_order_id_txt = $wc_order_id > 0 ? ', wc#'.$wc_order_id.' ' : ' '; ?>
-                                        <?php echo '#'.$reservationID.$wc_order_id_txt.' '.homey_get_reservation_label($reservation_status, $reservationID); ?></h2>
+                                    <h2 class="title"><?php echo esc_attr($homey_local['reservation_label']); ?> <?php echo '#'.$reservationID.' '.homey_get_reservation_label($reservation_status, $reservationID); ?></h2>
                                 </div><!-- block-left -->
                                 <div class="block-right">
                                     <div class="custom-actions">
@@ -129,8 +125,8 @@ if( !homey_give_access($reservationID) ) {
 
                                         <a href="<?php echo esc_url($messages_page_link); ?>" class="btn-action" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo esc_attr($homey_local['msg_send_btn']); ?>"><i class="fa fa-envelope-open-o"></i></a>
 
-                                        <?php if(is_invoice_paid_for_reservation($reservationID) == 0 && $reservation_status != 'booked' && $reservation_status != 'cancelled' && $reservation_status != 'declined' && !homey_listing_guest($reservationID)) { ?>
-                                            <a href="#" class="mark-as-paid btn-action" data-id="<?php echo esc_attr($reservationID); ?>" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo esc_html__('Mark as Paid', 'homey'); ?>"><i class="fa fa-money"></i></a>
+                                        <?php if($reservation_status != 'booked' && $reservation_status != 'cancelled' && $reservation_status != 'declined' && !homey_listing_guest($reservationID)) { ?>
+                                        <a href="#" class="mark-as-paid btn-action" data-id="<?php echo esc_attr($reservationID); ?>" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo esc_html__('Mark as Paid', 'homey'); ?>"><i class="fa fa-money"></i></a>
                                         <?php } ?>
 
                                         <?php if(!homey_listing_guest($reservationID)) { ?>
@@ -169,9 +165,9 @@ if( !homey_give_access($reservationID) ) {
                             }
 
                             if($res_meta['no_of_days'] > 1) {
-                                $night_label = ($booking_type == 'per_day_date') ? homey_option('glc_day_dates_label') : homey_option('glc_day_nights_label');
+                                $night_label = homey_option('glc_day_nights_label');
                             } else {
-                                $night_label = ($booking_type == 'per_day_date') ? homey_option('glc_day_date_label') : homey_option('glc_day_night_label');
+                                $night_label = homey_option('glc_day_night_label');
                             }
 
                             $no_of_weeks = isset($res_meta['total_weeks_count']) ? $res_meta['total_weeks_count'] : 0;
@@ -196,25 +192,22 @@ if( !homey_give_access($reservationID) ) {
                                     <div class="block-left">
                                         <ul class="detail-list">
                                             <li><strong><?php echo esc_attr($homey_local['date_label']); ?>:</strong></li>
-                                            <li><?php echo translate_month_names(esc_attr( get_the_date( get_option( 'date_format' ), $reservationID )));?>
+                                            <li><?php echo esc_attr( get_the_date( get_option( 'date_format' ), $reservationID ));?>
                                             <br>
                                             <?php echo esc_attr( get_the_date( homey_time_format(), $reservationID ));?> </li>
                                         </ul>
                                     </div><!-- block-left -->
                                     <div class="block-right">
                                         <?php if(!empty($renter_info['photo'])) {
-                                            echo '<a href="'.esc_url($renter_info['link']).'" target="_blank">'.$renter_info['photo'].'</a>';
+                                            echo '<a href="'.esc_url(get_site_url(null, "dashboard/?dpage=users&user-id=".$renter_id)).'" target="_blank">'.$renter_info['photo'].'</a>';
                                         }?>
                                         <ul class="detail-list">
-                                            <li><strong><?php esc_html_e('From', 'homey'); ?>:</strong>
-                                                <a href="<?php echo esc_url($renter_info['link']); ?>" target="_blank">
-                                                    <?php echo esc_html__(esc_attr($renter_info['name']), 'homey'); ?>
+                                            <li><strong><?php esc_html_e('From', 'homey'); ?>:</strong> 
+                                                <a href="<?php echo esc_url(get_site_url(null, "dashboard/?dpage=users&user-id=".$renter_id)); ?>" target="_blank">
+                                                    <?php echo esc_attr($renter_info['name']); ?>
                                                 </a>
                                             </li>
-                                            <?php if($booking_detail_hide_fields['renter_information_on_detail'] == 0){ ?>
-                                                <li><strong><?php esc_html_e('Renter Detail', 'homey'); ?>:&nbsp;</strong><?php echo esc_attr($renter_name_while_booking).' <a title="'.esc_html__('Click to call', 'homey').'" href="tel:'.$renter_phone.'">'. $renter_phone; ?></a></li>
-                                            <?php } ?>
-                                            <li><strong><?php esc_html_e('Listing Name', 'homey'); ?>:&nbsp;</strong><?php echo get_the_title($listing_id); ?></li>
+                                            <li><?php echo get_the_title($listing_id); ?></li>
                                         </ul>
                                     </div><!-- block-right -->
                                 </div><!-- block-body -->
@@ -228,11 +221,11 @@ if( !homey_give_access($reservationID) ) {
                                     <div class="block-right">
                                         <ul class="detail-list detail-list-2-cols">
                                             <li>
-                                                <?php echo esc_html__(esc_attr($homey_local['check_In']), 'homey'); ?>:
+                                                <?php echo esc_attr($homey_local['check_In']); ?>: 
                                                 <strong><?php echo homey_format_date_simple($check_in); ?></strong>
                                             </li>
                                             <li>
-                                                <?php echo esc_html__(esc_attr($homey_local['check_Out']), 'homey'); ?>:
+                                                <?php echo esc_attr($homey_local['check_Out']); ?>: 
                                                 <strong><?php echo homey_format_date_simple($check_out); ?></strong>
                                             </li>
 
@@ -240,7 +233,7 @@ if( !homey_give_access($reservationID) ) {
                                             if( $booking_type == 'per_week' ) { ?>
 
                                                 <li>
-                                                <?php echo esc_html__(esc_attr($week_label), 'homey'); ?>:
+                                                <?php echo esc_attr($week_label); ?>: 
                                                 <strong><?php echo esc_attr($no_of_weeks); ?>
                                                     
                                                     <?php 
@@ -254,7 +247,7 @@ if( !homey_give_access($reservationID) ) {
                                             <?php } else if( $booking_type == 'per_month' ) { ?>
 
                                                 <li>
-                                                <?php echo esc_html__(esc_attr($month_label), 'homey'); ?>:
+                                                <?php echo esc_attr($month_label); ?>: 
                                                 <strong><?php echo esc_attr($no_of_months); ?>
                                                     
                                                     <?php 
@@ -265,28 +258,23 @@ if( !homey_give_access($reservationID) ) {
                                                 </strong>
                                             </li>
 
-                                            <?php } else if( $booking_type == 'per_day_date' ) { ?>
+                                            <?php } else { ?>
                                             <li>
-                                                <?php echo esc_html__(esc_attr($night_label), 'homey'); ?>:
-                                                <strong><?php echo esc_attr($res_meta['no_of_days']); ?></strong>
-                                            </li>
-                                        <?php } else { ?>
-                                            <li>
-                                                <?php echo esc_html__(esc_attr($night_label), 'homey'); ?>:
+                                                <?php echo esc_attr($night_label); ?>: 
                                                 <strong><?php echo esc_attr($res_meta['no_of_days']); ?></strong>
                                             </li>
                                             <?php } ?>
 
                                             <?php if($booking_hide_fields['guests'] != 1) {?>
                                             <li>
-                                                <?php echo esc_html__(esc_attr($guests_label), 'homey'); ?>:
+                                                <?php echo esc_attr($guests_label); ?>: 
                                                 <strong><?php echo esc_attr($guests); ?></strong>
                                             </li>
                                             <?php } ?>
                                             
                                             <?php if(!empty($res_meta['additional_guests'])) { ?>
                                             <li>
-                                                <?php echo esc_html__(esc_attr($homey_local['addinal_guest_text']), 'homey'); ?>:
+                                                <?php echo esc_attr($homey_local['addinal_guest_text']); ?>: 
                                                 <strong><?php echo esc_attr($res_meta['additional_guests']); ?></strong>
                                             </li>
                                             <?php } ?>
@@ -312,21 +300,15 @@ if( !homey_give_access($reservationID) ) {
                             <div class="block-section">
                                 <div class="block-body">
                                     <div class="block-left">
-                                        <h2 class="title"><?php echo esc_html__(esc_attr($homey_local['payment_label']), 'homey'); ?></h2>
+                                        <h2 class="title"><?php echo esc_attr($homey_local['payment_label']); ?></h2>
                                     </div><!-- block-left -->
                                     <div class="block-right">
-                                        <?php
-                                        if($booking_type == 'per_day_date'){
-                                            echo homey_calculate_reservation_cost_day_date($reservationID);
-                                        }else{
-                                            echo homey_calculate_reservation_cost($reservationID);
-                                        }
-                                         ?>
+                                        <?php echo homey_calculate_reservation_cost($reservationID); ?>
                                     </div><!-- block-right -->
                                 </div><!-- block-body -->
                             </div><!-- block-section -->
                         </div><!-- .block -->
-                        <div class="payment-buttons">
+                        <div class="payment-buttons visible-sm visible-xs">
                             <?php homey_reservation_action($reservation_status, $upfront_payment, $payment_link, $reservationID, 'btn-half-width'); ?>
                         </div>
                     </div><!-- .dashboard-area -->
@@ -335,7 +317,7 @@ if( !homey_give_access($reservationID) ) {
         </div><!-- .container-fluid -->
     </div><!-- .dashboard-content-area -->    
     <aside class="dashboard-sidebar">
-        <?php get_template_part('template-parts/dashboard/reservation/payment-sidebar', '', array("booking_type", $booking_type)); ?>
+        <?php get_template_part('template-parts/dashboard/reservation/payment-sidebar'); ?>
 
         <?php homey_reservation_action($reservation_status, $upfront_payment, $payment_link, $reservationID, 'btn-full-width'); ?>
 

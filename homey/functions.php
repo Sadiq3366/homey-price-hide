@@ -8,7 +8,7 @@
  * @since Homey 1.0.0
  * @author Waqas Riaz
  */
- //before visual composer line 147
+
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 global $wp_version;
 
@@ -23,7 +23,7 @@ use Carbon\Carbon;
 */
 define( 'HOMEY_THEME_NAME', 'Homey' );
 define( 'HOMEY_THEME_SLUG', 'homey' );
-define( 'HOMEY_THEME_VERSION', '2.1.1' );
+define( 'HOMEY_THEME_VERSION', '1.6.6' );
 define( 'HOMEY_CSS_DIR_URI', get_template_directory_uri() . '/css/' );
 define( 'HOMEY_JS_DIR_URI', get_template_directory_uri() . '/js/' );
 /**
@@ -42,8 +42,6 @@ if ( ! function_exists( 'homey_setup' ) ) {
 
 		//Add support for post thumbnails.
 		add_theme_support( 'post-thumbnails' );
-
-		add_image_size( 'homey-experience-thumb', 450, 300, true );
 
 		add_image_size( 'homey-listing-thumb', 450, 300, true );
 		add_image_size( 'homey-gallery-thumb', 250, 250, true );
@@ -200,17 +198,12 @@ require_once( get_template_directory() . '/framework/functions/helper.php' );
 require_once( get_template_directory() . '/framework/functions/wallet.php' );
 require_once( get_template_directory() . '/framework/functions/profile.php' );
 require_once( get_template_directory() . '/framework/functions/price.php' );
-require_once( get_template_directory() . '/framework/functions/experiences.php' );
 require_once( get_template_directory() . '/framework/functions/listings.php' );
-require_once( get_template_directory() . '/framework/functions/coupons.php' );
 require_once( get_template_directory() . '/framework/functions/reservation.php' );
-require_once( get_template_directory() . '/framework/functions/experiences-reservation.php' );
 require_once( get_template_directory() . '/framework/functions/reservation-hourly.php' );
 require_once( get_template_directory() . '/framework/functions/calendar.php' );
 require_once( get_template_directory() . '/framework/functions/calendar-hourly.php' );
-require_once( get_template_directory() . '/framework/functions/calendar-daily-date.php' );
 require_once( get_template_directory() . '/framework/functions/review.php' );
-require_once( get_template_directory() . '/framework/functions/review-exp.php' );
 require_once( get_template_directory() . '/framework/functions/search.php' );
 require_once( get_template_directory() . '/framework/functions/messages.php' );
 require_once( get_template_directory() . '/framework/functions/cron.php' );
@@ -249,10 +242,7 @@ require_once( get_template_directory() . '/framework/homey-hooks.php' );
 if ( class_exists( 'ReduxFramework' ) ) {
 	require_once( get_template_directory() . '/inc/styling-options.php' );
 }
-
-if( class_exists('Homey') ) {
-	require_once( get_template_directory() . '/framework/functions/demo-importer.php' );
-}
+require_once( get_template_directory() . '/framework/functions/demo-importer.php' );
 
 
 /**
@@ -583,7 +573,7 @@ function extending_listing_search_where( $where ) {
     global $pagenow, $wpdb;
 
     // I want the filter only when performing a search on edit page of Custom Post Type named "listing".
-    if ( is_admin() && 'edit.php' === $pagenow && 'listing' === @$_GET['post_type'] && ! empty( @$_GET['s'] ) ) {
+    if ( is_admin() && 'edit.php' === $pagenow && 'listing' === @$_GET['post_type'] && ! empty( $_GET['s'] ) ) {
         $post_status = isset($_GET['post_status']) ? $_GET['post_status'] : 'any';
         $where = preg_replace(
             "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
@@ -598,9 +588,7 @@ function extend_listing_orderby( $orderby_statement ) {
 
     // I want the filter only when performing a search on edit page of Custom Post Type named "listing".
     if ( is_admin() && 'edit.php' === $pagenow && 'listing' === @$_GET['post_type'] ) {
-        if(!isset($_REQUEST['orderby'])){
-            $orderby_statement = $wpdb->posts.".ID DESC";
-        }
+        $orderby_statement = $wpdb->posts.".ID DESC";
     }
     return $orderby_statement;
 }
@@ -620,25 +608,6 @@ function update_homey_membership_plan($post_ID, $post_after, $post_before){
 add_action( 'post_updated', 'update_homey_membership_plan', 10, 3 );
 
 function homey_listing_image_dimension($file)
-{
-
-    $img = getimagesize($file['tmp_name']);
-    $dimensions = explode('x', homey_option('upload_image_min_dimensions'));
-    $width = isset($dimensions[0]) ? (int)$dimensions[0] : 1200;
-    $heigth = isset($dimensions[1]) ? (int)$dimensions[1] : 640;
-
-    $minimum = array('width' => $width, 'height' => $heigth);
-    $width = $img[0];
-    $height = $img[1];
-
-    if ($width < $minimum['width'] || $height < $minimum['height']){
-         return -1;
-    }
-
-    return 1;
-}
-
-function homey_experience_image_dimension($file)
 {
 
     $img = getimagesize($file['tmp_name']);
@@ -775,17 +744,12 @@ if ( !function_exists( 'homey_booking_notification' ) ) {
         $tabel2 = $wpdb->prefix . 'postmeta';
 
         $new_bookings = $wpdb->get_results(
-			"
-			SELECT *, count(*) as new_bookings 
+            "
+			SELECT count(*) as new_bookings 
 			FROM $tabel as t1
-			INNER JOIN $tabel2 as t2 ON t2.post_id = t1.ID 
-			INNER JOIN $tabel2 as t3 ON t3.post_id = t1.ID 
-			WHERE 
-			      t1.post_type = 'homey_reservation' 
-			      AND t1.ID = t2.post_id  
-			      AND (t2.meta_key = 'listing_owner' AND t2.meta_value = '$userID')
-			      AND (t3.meta_key = 'reservation_status' AND t3.meta_value = 'under_review')
-		  "
+			INNER JOIN $tabel2 as t2
+			WHERE t1.post_author = $userID AND t2.meta_key = 'reservation_status' and t1.ID = t2.post_id AND t2.meta_value = 'under_review'
+			"
         );
 
         if(isset($new_bookings[0]->new_bookings)){
@@ -873,176 +837,246 @@ function translate_month_names( $translated ) {
    return str_ireplace(  array_keys($text),  $text,  $translated );
 }
 
+//----- Ahmad create this function ;)
+if( !function_exists('sa_get_cities_against_country') ) {
 
-// zk. added to add translation in titles of wordpress
+	add_action( 'wp_ajax_nopriv_sa_get_cities_against_country', 'sa_get_cities_against_country' );
+	add_action( 'wp_ajax_sa_get_cities_against_country', 'sa_get_cities_against_country' );
 
-add_action(
-    'admin_head-edit.php',
-    'homey_custom_invoice_translate_title'
-);
+	function sa_get_cities_against_country()
+	{
+		$term = get_term_by( 'slug', $_POST['selected_country'], 'listing_country' );
+		//print_r($term);exit;
+
+		$has_states = homey_get_terms('listing_state');
+		$has_cities = homey_get_terms('listing_city');
+
+		//print_r($has_cities);exit;
+		//print_r(homey_get_listing_city_meta($has_cities->term_id));exit;
+
+		$states = null;
+		$cities = null;
+		$s = null;
 
 
+		foreach( $has_states as $state )
+		{
+			//print_r(homey_get_listing_state_meta($ht->term_id));
+			if( homey_get_listing_state_meta($state->term_id)['parent_country'] === $term->slug )
+			{
+				$s = $state;
+				foreach( $has_cities as $city )
+				{
+					//print_r(homey_get_listing_city_meta($city->term_id));
+					if( homey_get_listing_city_meta($city->term_id)['parent_state'] === $s->slug )
+					{
+						$cities[] = $city;
+					}
+				}
+				$states[] = $state;
+			}
+		}
 
-function homey_custom_invoice_translate_title( $columns ) {  
-	 add_filter(
-        'the_title',
-        'homey_custom_invoice_translate_title_do',
-        100,
-        2
-    );
+		$option_html = '<option value="" selected="selected">'.esc_html__('No City Found', 'homey').'</option>';
+		$success = false;
 
+		if( ! empty( $cities ) )
+		{		
+			// sort ASC order
+			usort($cities, function($first, $second){
+				return strtolower($first->slug) > strtolower($second->slug);
+			});
+			//
 
-}  
+			$success = true;
+			$option_html = '';
 
-function homey_custom_invoice_translate_title_do($title, $id=''){
-	$title_words_array = explode(' ', $title);
+			foreach ( $cities as $city ) 
+			{
+				$term_meta= get_option( "_homey_property_area_$city->term_id");
+				$parent_state = sanitize_title($term_meta['parent_state']);
+
+				$option_html .= '<option data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($city->slug) . '" selected="selected">' . $city->name . '</option>';
+			}
+
+		} 
+		
+		$result = [
+			'success' => $success,
+			'data' => $option_html
+		];
+
+		//echo $option_html;
+		echo json_encode($result);
+		wp_die();
+
+	}
+}
+
+function sa_upload_dir_name( $dirs ) {
+    $dirs['subdir'] = '/listings';
+    $dirs['path'] = $dirs['basedir'] . '/listings';
+    $dirs['url'] = $dirs['baseurl'] . '/listings';
+
+    return $dirs;
+}
+
+// //----------------------------
+// //-----Change url to open country/city information page like search result
+// //----------------------------
+
+// add_filter( 'term_link', 'sa_alter_the_query_country', 10, 3 );
+ 
+// function sa_alter_the_query_country( $request, $term, $taxonomy ) {
+
+// 	if( isset( $taxonomy ) && $taxonomy == 'listing_country' )
+// 	{
+// 		// exit the function if taxonomy slug is not in URL
+// 		if ( strpos($request, 'listing_country') === FALSE ) return $request;
+			
+// 		$url = str_replace('/' . $taxonomy, '', $request);
+// 		$url = str_replace('/' . $term->slug, '', $url);
+		
+// 		$url =  $url . 'search-results/?country=' . $term->slug;
+// 		return $url;
+// 	}
+
+//     return $request;
+// }
+
+// add_filter( 'term_link', 'sa_alter_the_query_city', 10, 3 );
+ 
+// function sa_alter_the_query_city( $request, $term, $taxonomy ) {
 	
-	$title_new = '';
-	foreach($title_words_array as $word){
-		$title_new .= esc_html__($word, 'homey').' ';
-	}
+// 	if( isset( $taxonomy ) && $taxonomy == 'listing_city' )
+// 	{
+// 		// exit the function if taxonomy slug is not in URL
+// 		if ( strpos($request, 'city') === FALSE ) return $request;
+		
+// 		$url = str_replace('/' . 'city', '', $request);
+// 		$url = str_replace('/' . $term->slug, '', $url);
+		
+// 		$url =  $url . 'search-results/?city=' . $term->slug;
+// 		return $url;
+// 	}
+
+//     return $request;
+// }
+// //----------------------------
+// //-----END
+// //----------------------------
+
+
+//----------------------------
+//-----remove taxonomy name from url
+//----------------------------
+
+/**
+ * Get ther without khowing it's taxonomy. Not very nice, though.
+ * 
+ * @uses type $wpdb
+ * @uses get_term()
+ * @param int|object $term
+ * @param string $output
+ * @param string $filter
+ */
+function sa_custom_get_term_by_slug($term, $output = OBJECT, $filter = 'raw') {
+    global $wpdb;
+    $null = null;
+
+    if ( empty($term) ) {
+        $error = new WP_Error('invalid_term', __('Empty Term'));
+        return $error;
+    }
+
+    $_tax = $wpdb->get_row( $wpdb->prepare( "SELECT t.* FROM $wpdb->terms AS t WHERE t.slug = %s LIMIT 1", $term) );
+	
+	if( empty( $_tax ) ) return;
     
-    return $title_new;  
+	$_taz_id = $_tax->term_id;
+
+	$_tax = $wpdb->get_row( $wpdb->prepare( "SELECT t.* FROM $wpdb->term_taxonomy AS t WHERE t.term_id = %s LIMIT 1", $_taz_id) );
+    
+	if( empty( $_tax ) ) return;
+
+	$taxonomy = $_tax->taxonomy;
+
+	return $taxonomy;
 }
 
-if (!function_exists('for_reservation_nop_auto_login')) {
-	function for_reservation_nop_auto_login($user){
-		wp_set_current_user($user->ID, $user->data->user_login);
-		wp_set_auth_cookie($user->ID);
-		do_action('wp_login', $user->data->user_login, $user);
+add_filter('request', 'rudr_change_term_request', 1, 1 );
 
-		// remove filter to work proper with other login.
-		remove_filter('authenticate', 'for_reservation_nop_auto_login', 3, 10);
+function rudr_change_term_request($query){
+	
+	$tax_name = 'listing_country'; // specify you taxonomy name here, it can be also 'category' or 'post_tag'
+	
+	// Request for child terms differs, we should make an additional check
+	
+	if( isset($query['attachment']) ) :
+		$include_children = true;
+		$name = $query['attachment'];
+	elseif( isset($query['name']) ):
+		$include_children = false;
+		$name = $query['name'];
+	endif;
+
+	if( isset($name) )
+	{
+		$tax_name = sa_custom_get_term_by_slug( $name );
+		$term = get_term_by('slug', $name, $tax_name); // get the current term to make sure it exists
 	}
-}
-// / zk. added to add translation in titles of wordpress
+	
+	if (isset($name) && $term && !is_wp_error($term)): // check it here
+		
+		if( $include_children ) {
+			unset($query['attachment']);
+			$parent = $term->parent;
+			while( $parent ) {
+				$parent_term = get_term( $parent, $tax_name);
+				$name = $parent_term->slug . '/' . $name;
+				$parent = $parent_term->parent;
+			}
+		} else {
+			unset($query['name']);
+		}
+		
+		switch( $tax_name ):
+			case 'category':{
+				$query['category_name'] = $name; // for categories
+				break;
+			}
+			case 'post_tag':{
+				$query['tag'] = $name; // for post tags
+				break;
+			}
+			default:{
+				$query[$tax_name] = $name; // for another taxonomies
+				break;
+			}
+		endswitch;
 
-add_action ('redux/options/homey_options/saved', 'homey_save_custom_options_for_cron');
-if( ! function_exists('homey_save_custom_options_for_cron') ) {
-    function homey_save_custom_options_for_cron() {
-        $email_content = homey_option('email_footer_content');
-        $email_head_bg_color = homey_option('email_head_bg_color');;
-        $email_foot_bg_color = homey_option('email_foot_bg_color');;
-        $email_head_logo = homey_option('email_head_logo', false, 'url');
-
-        update_option('homey_email_footer_content', $email_content);
-        update_option('homey_email_head_logo', $email_head_logo);
-        update_option('homey_email_head_bg_color', $email_head_bg_color);
-        update_option('homey_email_foot_bg_color', $email_foot_bg_color);
-    }
-}
-
-
-if ( !function_exists( 'is_invoice_paid_for_reservation' ) ) {
-    function is_invoice_paid_for_reservation($reserveration_id, $return_invoice_id=false){
-        global $wpdb;
-        $tbl = $wpdb->prefix.'postmeta';
-        $prepare_guery = $wpdb->prepare( "SELECT post_id FROM $tbl where meta_key ='homey_invoice_item_id' and meta_value = '%s'", $reserveration_id );
-
-        $get_values = $wpdb->get_col( $prepare_guery );
-
-        if(isset($get_values[0])){
-            if($return_invoice_id != false){
-                return $get_values[0];
-            }
-            return get_post_meta($get_values[0], 'invoice_payment_status', true);
-        }
-
-        return 0;
-    }
+	endif;
+	
+	return $query;
+	
 }
 
+add_filter( 'term_link', 'rudr_term_permalink', 10, 3 );
 
-if ( !function_exists( 'dd' ) ) {
-    function dd($data, $exit=1){
-        echo '<pre>';
-        print_r($data);
+function rudr_term_permalink( $url, $term, $taxonomy ){
+	
+	$taxonomy_name = $term->taxonomy; // your taxonomy name here
+	$taxonomy_slug = $taxonomy; // the taxonomy slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
 
-        if($exit){
-            exit;
-        }
+	// exit the function if taxonomy slug is not in URL
+	if ( strpos($url, $taxonomy_slug) === FALSE || $taxonomy != $taxonomy_name ) return $url;
+	
+	$url = str_replace('/' . $taxonomy_slug, '', $url);
 
-    }
+	return $url;
 }
+//----------------------------
+//-----End
+//----------------------------
 
-if(isset($_GET['localtest'])){
-    homey_reservation_declined_callback();
-}
-
-if ( !function_exists( 'manager_author_editor' ) ) {
-    function manager_author_editor () {
-        $users = get_users([ 'role__in' => [ 'homey_host' ], 'role__not_in' => [ 'editor' ], 'blog_id' => get_current_blog_id() ]);
-        foreach ($users as $user) {
-            $user->add_role('editor');
-        }
-    }
-    add_action('admin_init','manager_author_editor');
-}
-
-
-if(!function_exists('homey_default_feature_post_meta_for_listings')) {
-    function homey_default_feature_post_meta_for_listings() {
-        $args = array(
-            'post_type'         =>  'listing',
-            'posts_per_page'    =>  -1
-        );
-
-        $listings_qry = new WP_Query($args);
-        if ($listings_qry->have_posts()){
-            while ($listings_qry->have_posts()): $listings_qry->the_post();
-
-                $post = get_post();
-                $post_meta = get_post_meta($post->ID, 'homey_featured', true);
-
-                if($post_meta < 1 && $post_meta != 0){
-                    update_post_meta($post->ID, 'homey_featured', 0);
-                    echo ' y, '.$post->ID. '<pre>';
-                    print_r($post_meta);
-                }
-
-            endwhile;
-        }
-    }
-}
-
-if(isset($_GET['neutral_featured_listings'])){
-    homey_default_feature_post_meta_for_listings();
-    //exit;
-}
-
-if(!function_exists('homey_clear_orphan_postmeta_records')) {
-    function homey_clear_orphan_postmeta_records() {
-        global $wpdb;
-        $prefix = $wpdb->prefix;
-
-        $delete_query = 'DELETE pm FROM '.$prefix.'postmeta pm LEFT JOIN '.$prefix.'posts wp ON wp.ID = pm.post_id WHERE wp.ID IS NULL';
-        $wpdb->query($delete_query);
-
-    }
-}
-
-if(isset($_GET['clear_orphan_postmeta'])){
-    homey_clear_orphan_postmeta_records();
-}
-
-homey_insert_icalendar_feeds('', '', '');
-
-if(!function_exists('remainingAttendeeSlots')) {
-    function remainingAttendeeSlots($total_no_of_attendee, $check_in_unix, $reservation_booked_array=array(), $reservation_pending_array=array()){
-        return $total_no_of_attendee - (isset($reservation_booked_array[$check_in_unix]) ? $reservation_booked_array[$check_in_unix]['no_of_attendee'] : 0) - (isset($reservation_pending_array[$check_in_unix]) ? $reservation_pending_array[$check_in_unix]['no_of_attendee'] : 0);
-    }
-}
-
-if(!function_exists('add_exp_column')) {
-    function add_exp_column(){
-        global $wpdb;
-        $wpdb->query("ALTER TABLE wp_homey_threads ADD experience_id INT(11) NOT NULL DEFAULT 0");
-        return 1;
-    }
-}
-
-if (isset($_GET['add_column_exp'])){
-    add_exp_column();
-}
-
-
+?>

@@ -39,25 +39,18 @@ if ( ! function_exists( 'homey_get_price' ) ) {
 
         $homey_prefix = 'homey_';
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
-        $day_date_price = get_post_meta( get_the_ID(), $homey_prefix.'day_date_price', true );
         $night_price = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
         $hour_price = get_post_meta( get_the_ID(), $homey_prefix.'hour_price', true );
         $booking_type = get_post_meta( get_the_ID(), $homey_prefix.'booking_type', true ); //per_day, per_hour
 
-        if( $homey_site_mode == 'per_day_date' ){
-            $price = $day_date_price;
-
-        } elseif( $homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month') {
+        if($homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month') {
             $price = $night_price;
 
         } elseif($homey_site_mode == 'per_hour') {
             $price = $hour_price;
 
         } elseif($homey_site_mode == 'both') {
-            if($booking_type == 'per_day_date') {
-                $price = $day_date_price;
-
-            } elseif($booking_type == 'per_day') {
+            if($booking_type == 'per_day') {
                 $price = $night_price;
 
             } elseif ($booking_type == 'per_hour') {
@@ -80,24 +73,18 @@ if ( ! function_exists( 'homey_get_price_by_id' ) ) {
 
         $homey_prefix = 'homey_';
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
-        $day_date_price = get_post_meta( $listing_id, $homey_prefix.'day_date_price', true );
         $night_price = get_post_meta( $listing_id, $homey_prefix.'night_price', true );
         $hour_price = get_post_meta( $listing_id, $homey_prefix.'hour_price', true );
         $booking_type = get_post_meta( $listing_id, $homey_prefix.'booking_type', true ); //per_day, per_hour
 
-        if($homey_site_mode == 'per_day_date'){
-            $price = $day_date_price;
-        } elseif($homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month') {
+        if($homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month') {
             $price = $night_price;
 
         } elseif($homey_site_mode == 'per_hour') {
             $price = $hour_price;
 
         } elseif($homey_site_mode == 'both') {
-            if($booking_type == 'per_day_date') {
-                $price = $day_date_price;
-
-            } elseif($booking_type == 'per_day') {
+            if($booking_type == 'per_day') {
                 $price = $night_price;
 
             } elseif ($booking_type == 'per_hour') {
@@ -119,7 +106,7 @@ if ( ! function_exists( 'homey_get_price_by_id' ) ) {
 /*-----------------------------------------------------------------------------------*/
 if ( ! function_exists( 'homey_get_price_label' ) ) {
 
-    function homey_get_price_label($number = 1) {
+    function homey_get_price_label($number = 1, $total_nights=false) {
 
         $homey_prefix = 'homey_';
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
@@ -130,10 +117,7 @@ if ( ! function_exists( 'homey_get_price_label' ) ) {
         if(!empty($price_postfix)) {
             $price = $price_postfix;
         } else {
-            if($homey_site_mode == 'per_day_date') {
-                $price = $number > 1 ? homey_option('glc_day_dates_label') : homey_option('glc_day_date_label');
-
-            } elseif($homey_site_mode == 'per_day') {
+            if($homey_site_mode == 'per_day') {
                 $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
 
             } elseif($homey_site_mode == 'per_hour') {
@@ -146,10 +130,7 @@ if ( ! function_exists( 'homey_get_price_label' ) ) {
                 $price = $number > 1 ? homey_option('glc_months_label') : homey_option('glc_month_label');
 
             } elseif($homey_site_mode == 'both') {
-                if($booking_type == 'per_day_date') {
-                    $price = $number > 1 ? homey_option('glc_day_dates_label') : homey_option('glc_day_date_label');
-
-                } elseif($booking_type == 'per_day') {
+                if($booking_type == 'per_day') {
                     $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
 
                 } elseif ($booking_type == 'per_hour') {
@@ -169,115 +150,58 @@ if ( ! function_exists( 'homey_get_price_label' ) ) {
                 $price = '';
             }
         }
-        return $price;
-        
-    }
-}
-
-if ( ! function_exists( 'homey_get_availability_label' ) ) {
-
-    function homey_get_availability_label($number = 1) {
-
-        $homey_prefix = 'homey_';
-        $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
-        $booking_type = get_post_meta( get_the_ID(), $homey_prefix.'booking_type', true ); //per_day, per_hour;
-        $price = '';
-
-        if($homey_site_mode == 'per_day_date') {
-            $price = $number > 1 ? homey_option('glc_day_dates_label') : homey_option('glc_day_date_label');
-
-        } elseif($homey_site_mode == 'per_day') {
-            $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
-
-        } elseif($homey_site_mode == 'per_hour') {
-            $price = $number > 1 ? homey_option('glc_hours_label') : homey_option('glc_hour_label');
-
-        } elseif($homey_site_mode == 'per_week') {
-            $price = $number > 1 ? homey_option('glc_weeks_label') : homey_option('glc_week_label');
-
-        } elseif($homey_site_mode == 'per_month') {
-            $price = $number > 1 ? homey_option('glc_months_label') : homey_option('glc_month_label');
-
-        } elseif($homey_site_mode == 'both') {
-            if($booking_type == 'per_day_date') {
-                $price = $number > 1 ? homey_option('glc_day_dates_label') : homey_option('glc_day_date_label');
-
-            } elseif($booking_type == 'per_day') {
-                $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
-
-            } elseif ($booking_type == 'per_hour') {
-                $price = $number > 1 ? homey_option('glc_hours_label') : homey_option('glc_hour_label');
-
-            } elseif ($booking_type == 'per_week') {
-                $price = $number > 1 ? homey_option('glc_weeks_label') : homey_option('glc_week_label');
-
-            } elseif ($booking_type == 'per_month') {
-                $price = $number > 1 ? homey_option('glc_months_label') : homey_option('glc_month_label');
-
-            } else {
-                $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
-
-            }
-        } else {
-            $price = '';
-        }
-        return $price;
+        return ' '.$total_nights.' '.$price;
         
     }
 }
 
 if ( ! function_exists( 'homey_get_price_label_by_id' ) ) {
 
-    function homey_get_price_label_by_id($listing_id) {
+    function homey_get_price_label_by_id($listing_id, $number=false) {
 
         $homey_prefix = 'homey_';
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
         $booking_type = get_post_meta( $listing_id, $homey_prefix.'booking_type', true ); //per_day, per_hour
         $price_postfix = get_post_meta( $listing_id, $homey_prefix.'price_postfix', true );
         $price = '';
-
+       
         if(!empty($price_postfix)) {
             $price = $price_postfix;
         } else {
-            if($homey_site_mode == 'per_day_date') {
-                $price = homey_option('glc_day_date_label');
-
-            } elseif($homey_site_mode == 'per_day') {
-                $price = homey_option('glc_day_night_label');
+            if($homey_site_mode == 'per_day') {
+                $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
 
             } elseif($homey_site_mode == 'per_hour') {
-                $price = homey_option('glc_hour_label');
+                $price = $number > 1 ? homey_option('glc_hours_label') : homey_option('glc_hour_label');
 
             } elseif($homey_site_mode == 'per_week') {
-                $price = homey_option('glc_week_label');
+                $price = $number > 1 ? homey_option('glc_weeks_label') : homey_option('glc_week_label');
 
             } elseif($homey_site_mode == 'per_month') {
-                $price = homey_option('glc_month_label');
+                $price = $number > 1 ? homey_option('glc_months_label') : homey_option('glc_month_label');
 
             } elseif($homey_site_mode == 'both') {
-                if($booking_type == 'per_day_date') {
-                    $price = homey_option('glc_day_date_label');
-
-                } elseif($booking_type == 'per_day') {
-                    $price = homey_option('glc_day_night_label');
+                if($booking_type == 'per_day') {
+                    $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
 
                 } elseif ($booking_type == 'per_hour') {
-                   $price = homey_option('glc_hour_label');
+                    $price = $number > 1 ? homey_option('glc_hours_label') : homey_option('glc_hour_label');
 
                 } elseif ($booking_type == 'per_week') {
-                   $price = homey_option('glc_week_label');
+                    $price = $number > 1 ? homey_option('glc_weeks_label') : homey_option('glc_week_label');
 
                 } elseif ($booking_type == 'per_month') {
-                   $price = homey_option('glc_month_label');
+                    $price = $number > 1 ? homey_option('glc_months_label') : homey_option('glc_month_label');
 
                 } else {
-                    $price = homey_option('glc_day_night_label');
+                    $price = $number > 1 ? homey_option('glc_day_nights_label') : homey_option('glc_day_night_label');
+
                 }
             } else {
                 $price = '';
             }
         }
-        return $price;
+        return ' '.$number.' '.$price;
         
     }
 }
@@ -286,10 +210,7 @@ if ( ! function_exists( 'homey_get_price_label_by_mode' ) ) {
 
     function homey_get_price_label_by_mode($mode) {
 
-        if($mode == 'per_day_date') {
-            $postfix = homey_option('glc_day_date_label');
-
-        } elseif($mode == 'per_day') {
+        if($mode == 'per_day') {
             $postfix = homey_option('glc_day_night_label');
 
         } elseif($mode == 'per_hour') {
@@ -396,9 +317,9 @@ if( !function_exists('homey_formatted_price_for_payout') ) {
             $final_price = number_format ( $listing_price , $price_decimals , $price_decimal_point_separator , $price_thousands_separator );
             
             if(  $listing_currency_pos == 'before' ) {
-                return $listings_currency . $final_price;
+                return $listings_currency .' '. $final_price;
             } else {
-                return $final_price . $listings_currency;
+                return $final_price .' '. $listings_currency;
             }
 
         } else {
@@ -413,7 +334,7 @@ if( !function_exists('homey_formatted_price_for_payout') ) {
 // Get price
 /*-----------------------------------------------------------------------------------*/
 if( !function_exists('homey_formatted_price') ) {
-    function homey_formatted_price ( $listing_price, $decimals = false, $sup = false ) {
+    function homey_formatted_price ( $listing_price, $decimals = false, $sup = false, $before_text=true ) {
 
         if( $listing_price > -1) {
             $currency_maker = currency_maker($decimals, $sup);
@@ -440,10 +361,12 @@ if( !function_exists('homey_formatted_price') ) {
             } else {
                 $final_price = homey_number_shorten($listing_price, $price_decimals);
             }
+
+            $from_prices_text = $before_text != false ?  esc_html__( 'From', 'homey' ).' ' : '';
             if(  $listing_currency_pos == 'before' ) {
-                return $listings_currency . $final_price;
+                return $from_prices_text.$listings_currency .' '. $final_price;
             } else {
-                return $final_price . $listings_currency;
+                return $from_prices_text.$final_price .' '. $listings_currency;
             }
 
         } else {
@@ -471,7 +394,6 @@ if( !function_exists('currency_maker')) {
                 if($currencies) {
 
                     foreach ($currencies as $currency) {
-                        $price_maker_array['code'] = $currency->currency_code;
                         $price_maker_array['currency'] = $currency->currency_symbol;
                         $price_maker_array['decimals']  = $currency->currency_decimal;
                         $price_maker_array['currency_position']  = $currency->currency_position;
@@ -483,7 +405,6 @@ if( !function_exists('currency_maker')) {
 
                         $currency = FCC_Currencies::get_currency_by_code($default_currency);
 
-                        $price_maker_array['code'] = $currency['currency_code'];
                         $price_maker_array['currency'] = $currency['currency_symbol'];
                         $price_maker_array['decimals']  = $currency['currency_decimal'];
                         $price_maker_array['currency_position']  = $currency['currency_position'];
@@ -496,8 +417,7 @@ if( !function_exists('currency_maker')) {
 
             if( $decimals ) { $decimals = 0; } else { $decimals = intval(homey_option( 'decimals' )); }
 
-            $price_maker_array['code'] = homey_get_currency($sup);
-            $price_maker_array['currency'] = homey_get_currency($sup);
+            $price_maker_array['currency'] = homey_get_currency($sup=false);
             $price_maker_array['decimals']  = $decimals;
             $price_maker_array['currency_position']  = homey_option( 'currency_position' );
             $price_maker_array['thousands_separator']  = homey_option( 'thousands_separator' );

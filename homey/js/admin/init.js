@@ -53,8 +53,6 @@
 
         // end of some unwanted spans after wp 5.6
 
-        // document.getElementById('homey_options[custom_logo][url]').removeAttribute('readonly');
-
     });
         
 })(jQuery);

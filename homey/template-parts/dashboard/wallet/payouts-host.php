@@ -42,11 +42,11 @@ $payment_method_setup = add_query_arg( 'dpage', 'payment-method', $dashboard_pro
                     $date_processed = $payout->date_processed;
 
                     $date_requested_unix = strtotime($date_requested);
-                    $request_date = homey_translate_word_by_word(homey_return_formatted_date($date_requested_unix));
+                    $request_date = homey_return_formatted_date($date_requested_unix);
                     $request_time = homey_get_formatted_time($date_requested_unix);
 
                     $date_processed_unix = strtotime($date_processed);
-                    $processed_date = homey_translate_word_by_word(homey_return_formatted_date($date_processed_unix));
+                    $processed_date = homey_return_formatted_date($date_processed_unix);
                     $processed_time = homey_get_formatted_time($date_processed_unix);
 
                     $price_prefix = '';
@@ -77,7 +77,7 @@ $payment_method_setup = add_query_arg( 'dpage', 'payment-method', $dashboard_pro
 
                 <tr>
                     <td data-label="<?php esc_html_e('Date Requested', 'homey')?>">
-                        <?php echo $request_date; ?><br/>
+                        <?php echo esc_attr($request_date); ?><br/>
                         <?php echo esc_html__('at', 'homey'); ?>
                         <?php echo esc_attr($request_time); ?>
                     </td>
@@ -119,7 +119,7 @@ $payment_method_setup = add_query_arg( 'dpage', 'payment-method', $dashboard_pro
                         if($date_processed == '0000-00-00 00:00:00') {
                             echo '-';
                         } else {
-                            echo $processed_date.'<br/>';
+                            echo esc_attr($processed_date).'<br/>';
                             echo esc_html__('at', 'homey'); 
                             echo ' '.esc_attr($processed_time);
                         }

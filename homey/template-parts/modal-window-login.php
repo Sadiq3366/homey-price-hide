@@ -2,7 +2,7 @@
 global $homey_local;
 $nav_register = homey_option('nav_register');
 $login_image = homey_option('login_image', false, 'url' );
-$login_text = esc_html__(homey_option('login_text'), 'homey');
+$login_text = homey_option('login_text');
 $facebook_login = homey_option('facebook_login');
 $google_login = homey_option('google_login');
 ?>
@@ -69,7 +69,7 @@ $google_login = homey_option('google_login');
                             <button type="submit" class="homey_login_button btn btn-primary btn-full-width"><?php echo esc_html__('Log In', 'homey'); ?></button>
                         </form>
                         <?php if($nav_register) { ?>
-                            <p class="text-center"><?php echo esc_html__("Don't have an account?", 'homey'); ?> <a href="#" data-toggle="modal" data-target="#modal-register" data-dismiss="modal"><?php echo esc_html__('Register', 'homey'); ?></a></p>
+                            <p class="text-center"><?php echo esc_html__("Don't you have an account?", 'homey'); ?> <a href="#" data-toggle="modal" data-target="#modal-register" data-dismiss="modal"><?php echo esc_html__('Register', 'homey'); ?></a></p>
                         <?php } ?>
                     </div>
 

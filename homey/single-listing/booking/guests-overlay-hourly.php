@@ -35,7 +35,7 @@ if($booking_hide_fields['guests'] != 1) {
 		</div>
 		<?php } ?>
 		<div class="guest-apply-btn">
-			<button id="apply_guests_hourly" class="btn btn-primary" type="button"><?php echo esc_html__(esc_attr($homey_local['sr_apply_label']),'homey'); ?></button>
+			<button id="apply_guests_hourly" class="btn btn-primary" type="button"><?php echo esc_attr($homey_local['sr_apply_label']); ?></button>
 		</div><!-- guest-apply-btn -->
 	</div><!-- search-guests -->
 </div>

@@ -131,7 +131,9 @@ $total_earnings = homey_get_host_total_earnings($userID);
                                 <a href="#"><?php echo esc_attr($ID); ?></a>
                             </td>
                             <td data-label="<?php esc_html_e('Date', 'homey'); ?>">
-                                <?php echo homey_format_date_simple(esc_attr($date)); ?>
+                                <?php echo esc_attr($date); ?><br/>
+                                <?php echo esc_html__('at', 'homey'); ?>
+                                <?php echo esc_attr($time); ?>
                             </td>
                             <td data-label="<?php esc_html_e('Listing', 'homey'); ?>">
                                 <a href="<?php echo esc_url(get_permalink($listing_id)); ?>"><?php echo get_the_title($listing_id); ?></a>
@@ -211,7 +213,7 @@ $total_earnings = homey_get_host_total_earnings($userID);
 
                         <tr>
                             <td data-label="<?php esc_html_e('Date Requested', 'homey')?>">
-                                <?php echo homey_format_date_simple(esc_attr($date_requested)); ?><br/>
+                                <?php echo esc_attr($request_date); ?><br/>
                                 <?php echo esc_html__('at', 'homey'); ?>
                                 <?php echo esc_attr($request_time); ?>
                             </td>
@@ -236,7 +238,9 @@ $total_earnings = homey_get_host_total_earnings($userID);
                                 if($date_processed == '0000-00-00 00:00:00') {
                                     echo '-';
                                 } else {
-                                    echo homey_format_date_simple($date_processed);
+                                    echo esc_attr($processed_date).'<br/>';
+                                    echo esc_html__('at', 'homey'); 
+                                    echo ' '.esc_attr($processed_time);
                                 }
                                 ?>
                             </td>

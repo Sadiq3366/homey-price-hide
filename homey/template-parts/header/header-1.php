@@ -14,10 +14,10 @@ $splash_page_nav = homey_option('splash_page_nav');
 $menu_sticky = homey_option('menu-sticky');
 
 if(homey_is_dashboard()) { ?>
-<div class="header-dashboard no-cache-<?php echo strtotime("now"); ?>">
+<div class="header-dashboard">
 <?php } ?>
 
-<div class="nav-area header-type-1 <?php homey_transparent(); ?> no-cache-<?php echo strtotime("now"); ?>">
+<div class="nav-area header-type-1 <?php homey_transparent(); ?>">
     <!-- top bar -->
     <?php 
     if(homey_topbar_needed()) {
@@ -26,7 +26,7 @@ if(homey_is_dashboard()) { ?>
     ?>
 
     <!-- desktop nav -->
-    <header id="homey_nav_sticky" class="header-nav hidden-sm hidden-xs no-cache-<?php echo strtotime("now"); ?>" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
+    <header id="homey_nav_sticky" class="header-nav hidden-sm hidden-xs" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
         <div class="<?php homey_header_container(); ?>">
             <div class="header-inner table-block">
                 <div class="header-comp-logo">
@@ -40,7 +40,7 @@ if(homey_is_dashboard()) { ?>
                 </div>
             
                 <?php if( class_exists('Homey_login_register') ): ?>
-                <div class="header-comp-right no-cache-<?php echo strtotime("now"); ?>">
+                <div class="header-comp-right">
                     <?php
                     if(homey_is_login_register()) { 
                         if( is_user_logged_in() ) { 

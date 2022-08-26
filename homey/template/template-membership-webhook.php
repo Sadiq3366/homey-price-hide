@@ -9,7 +9,6 @@ global $homey_local, $homey_prefix, $wpdb;
 require_once(HOMEY_PLUGIN_PATH . '/includes/stripe-php/init.php');
 define('PAYPAL_SANDBOX', true);
 $hm_options = get_option('hm_memberships_options');
-$currency = isset($hm_options['currency'])?$hm_options['currency']:'USD';
 
 //$paypal_client_id = 'AZxYj4mbzgBKtc42DgzUImYDnfVfMnVGD3eY03lSloBSbBhZ1PreAqKgF_eyGaFC14pmrAFIa3w5WUrl';//we will get from db
 //$paypal_client_secret = 'EGaSettT-AqLz7C-DojJEp4GiMmKBaxAtcrMvbOzQnT5mKcfdiJSh8JynAS7NtwcpgBUxx_hNm3lkSeN';//we will get from db
@@ -29,7 +28,7 @@ $user_email = $current_user->user_email;
 $admin_email = get_bloginfo('admin_email');
 $username = $current_user->user_login;
 
-$date = date('Y-m-d G:i:s', current_time('timestamp', 0));
+$date = date('Y-m-d g:i:s', current_time('timestamp', 0));
 
 $payload = @file_get_contents('php://input');
 $postID = -1;
@@ -49,7 +48,7 @@ if ($is_paypal_live != 'disabled'){
 
     $url = $paypal_host . '/v1/oauth2/token';
     $postArgs = 'grant_type=client_credentials';
-    $access_token = homey_getMethodPaypalAccessToken($url, $postArgs, $paypal_client_id, $paypal_client_secret);
+    $access_token = homey_get_paypal_access_token($url, $postArgs, $paypal_client_id, $paypal_client_secret);
 }
 
 $create_listing_link = homey_get_template_link('template/dashboard-submission.php');
@@ -61,14 +60,9 @@ if (!empty($payload)) {
     if (isset($_SERVER['HTTP_STRIPE_SIGNATURE'])) {//if payload is from stripe or not
         //handle here stripe webhook function
         handle_hm_stripe_webhook($payload, $current_user, $date);
-
-        http_response_code(200);
-        exit();
     } else {//check if valid paypal payload or not
         //handle here paypal webhook function
         handle_hm_paypal_webhook($payload, $current_user, $date);
-        http_response_code(200);
-        exit();
     }
 }
 
@@ -103,7 +97,6 @@ function handle_hm_stripe_webhook($payload = null, $current_user, $date)
             $subscription_id = $stripeInvoiceInfo->subscription;
             $purchase_date   = $stripeInvoiceInfo->period_start;
             $expiry_date     = $stripeInvoiceInfo->period_end;
-            $amount_paid     = isset( $stripeInvoiceInfo->amount_paid ) ? $stripeInvoiceInfo->amount_paid : 0 ;
 
             $tbl = $wpdb->prefix.'postmeta';
             $prepare_guery = $wpdb->prepare( "SELECT post_id 
@@ -113,7 +106,6 @@ function handle_hm_stripe_webhook($payload = null, $current_user, $date)
             $posts = $wpdb->get_col( $prepare_guery );
 
             $totalIndex = '';
-
             foreach ($posts as $k => $postId){
                 //$totalAllowedListings = get_post_meta($postId, 'hm_settings_listings_included', true);
 
@@ -121,20 +113,13 @@ function handle_hm_stripe_webhook($payload = null, $current_user, $date)
                 //update_post_meta($postId, 'hm_subscription_detail_total_listings', $totalAllowedListings);
                 update_post_meta($postId, 'hm_subscription_detail_purchase_date', date('d/M/Y h:i:s', $purchase_date));
                 update_post_meta($postId, 'hm_subscription_detail_expiry_date', date('d/M/Y h:i:s', $expiry_date));
-
-                $invoiceID = homey_generate_invoice( 'package','recurring', $postId, date('d/M/Y h:i:s', $purchase_date), $current_user, 0, 0, '', 'stripe', $amount_paid );
-
-                add_post_meta($postId, 'hm_subscription_invoice_ids', $invoiceID);
-
             }
-
 
             //$h1 = $totalIndex.'<h1>'.$event->type.'</h1>';
             //file_put_contents('log_stripe_mem_' . date("j.n.Y") . '.log', $h1.$subscriptionUpdated, FILE_APPEND);
             break;
 
         case 'invoice.payment_failed':
-        case 'customer.subscription.deleted':
 
             $stripeInvoiceInfo = $event->data->object; // contains a \Stripe\PaymentIntent
 
@@ -181,6 +166,11 @@ function handle_hm_paypal_webhook($payload = null, $current_user, $date)
     $event_type = $subscriptionInfo['event_type'];
     $state = $subscriptionInfo['resource']['state'];
 
+    //if (defined('WP_DEBUG') && true === WP_DEBUG) {
+        $h1 = $event_type . date("d-m-Y H:i:s");
+        file_put_contents('log_paypal_mem_' . date("j.n.Y") . '.log', $h1, FILE_APPEND);
+    //}
+
     if( $resource_type == "sale" && $event_type == "PAYMENT.SALE.COMPLETED" && $state == "completed" ) {
         // Get transaction information from URL
         $data["plan_status"]        = $subscriptionInfo['status'];
@@ -189,7 +179,6 @@ function handle_hm_paypal_webhook($payload = null, $current_user, $date)
         $data["payer_name"]         = $subscriptionInfo['subscriber']['name']['given_name'].' '.$subscriptionInfo['subscriber']['name']['surname'];
         $data["email_address"]      = $subscriptionInfo['subscriber']['email_address'];
         $data["payer_id"]           = $subscriptionInfo['subscriber']['payer_id'];
-        $data["amount_paid"]        = $subscriptionInfo['billing_info']['last_payment']['amount']['value'];
         $data["currency_code"]      = $subscriptionInfo['billing_info']['last_payment']['amount']['currency_code'];
         $data["start_time"]         = $subscriptionInfo['start_time'];
         $data["next_billing_time"]  = '';
@@ -211,22 +200,15 @@ function handle_hm_paypal_webhook($payload = null, $current_user, $date)
             update_post_meta($postId, 'hm_subscription_detail_purchase_date', date('d/M/Y h:i:s', $data["start_time"]));
             update_post_meta($postId, 'hm_subscription_detail_expiry_date', date('d/M/Y h:i:s', $data["next_billing_time"]));
             $totalIndex .= ', '. $k;
-
-            $invoiceID = homey_generate_invoice( 'package','recurring', $postId, date('d/M/Y h:i:s', $data["start_time"]), $current_user, 0, 0, '' , 'paypal', $data["amount_paid"] );
-
-            add_post_meta($postId, 'hm_subscription_invoice_ids', $invoiceID);
         }
         clearance_membership_plan();
+        //$h1 = '<h1>'.$subscriptionInfo->event_type.'</h1>';
+        //file_put_contents('log_paypal_mem_' . date("j.n.Y") . '.log', $h1.$subscriptionInfo, FILE_APPEND);
     }
 
-    if( $event_type == "BILLING.SUBSCRIPTION.EXPIRED" || $event_type == "BILLING.SUBSCRIPTION.CANCELLED" || $event_type == "PAYMENT.SALE.REFUNDED" || $event_type == "PAYMENT.SALE.REVERSED" ) {
-
-//        file_put_contents('log_paypal_data_mem_' . date("j.n.Y") . '.log', ' iss k andar'.print_r($subscriptionInfo, true).' * event type * '.$event_type, FILE_APPEND);
-
+    if( $event_type == "BILLING.SUBSCRIPTION.EXPIRED" || $event_type == "PAYMENT.SALE.REFUNDED" || $event_type == "PAYMENT.SALE.REVERSED" ) {
         // Get transaction information from URL
         $subscriptionInfo           = $subscriptionInfo['resource'];
-//        file_put_contents('log_paypal_data_res_' . date("j.n.Y") . '.log', ' iss k andar'.print_r($subscriptionInfo, true).' * event type * '.$event_type, FILE_APPEND);
-
         $data["plan_status"]        = $subscriptionInfo['status'];
         $data["txn_id"]             = $subscription_id = $subscriptionInfo['id'];
         $data["start_time"]         = $subscriptionInfo['start_time'];
@@ -241,15 +223,17 @@ function handle_hm_paypal_webhook($payload = null, $current_user, $date)
         $posts = $wpdb->get_col( $prepare_guery );
 
         $totalIndex = '';
-        if($posts){
-            foreach ($posts as $k => $postId){
-                update_post_meta($postId, 'hm_subscription_detail_status', $data["plan_status"]);
-                update_post_meta($postId, 'hm_subscription_detail_purchase_date', date('d-m-Y h:i:s', $data["start_time"]));
-                update_post_meta($postId, 'hm_subscription_detail_expiry_date', date('d-m-Y h:i:s', $data["next_billing_time"]));
-                $totalIndex .= ', '. $k;
-            }
-            clearance_membership_plan();
+        foreach ($posts as $k => $postId){
+
+//            add_post_meta($postId, 'hm_subscription_detail_order_number', $subscription_id);
+            update_post_meta($postId, 'hm_subscription_detail_status', "expired");
+            update_post_meta($postId, 'hm_subscription_detail_purchase_date', date('d/M/Y h:i:s', $data["start_time"]));
+            update_post_meta($postId, 'hm_subscription_detail_expiry_date', date('d/M/Y h:i:s', $data["next_billing_time"]));
+            $totalIndex .= ', '. $k;
         }
+        clearance_membership_plan();
+        //$h1 = '<h1>'.$subscriptionInfo->event_type.'</h1>';
+        //file_put_contents('log_paypal_mem_' . date("j.n.Y") . '.log', $h1.$subscriptionInfo, FILE_APPEND);
     }
 
     http_response_code(200);
@@ -270,7 +254,7 @@ function save_membership_subscription_post($paymentMethod = null, $data)
 
     if ($paymentMethod == 'paypal') {
         $order_number = $data['txn_id'];
-        if(homey_is_paypal_id_used($data['txn_id']) == 0) {
+        if(homey_is_paypal_id_used($data['txn_id']) == 0){
             $order_number = $paypalSubscription_ID = $data['plan_id'];//$stripeSubscriptionInfo['id'];
             $purchase_date = $data['start_time'];//$stripeSubscriptionInfo['current_period_start'];
             $expiry_date = $data['next_billing_time'];//$stripeSubscriptionInfo['current_period_end'];
@@ -288,7 +272,6 @@ function save_membership_subscription_post($paymentMethod = null, $data)
                 'post_author' => $current_user->ID,
                 'post_type' => "hm_subscriptions"
             );
-
             //inserting post wp_insert_post() will return ID of inserted post
             $subscription_ID = wp_insert_post($subscriptionInfo);
 
@@ -304,11 +287,6 @@ function save_membership_subscription_post($paymentMethod = null, $data)
             add_post_meta($subscription_ID, 'hm_subscription_detail_remaining_listings', $totalAllowedListings);
             add_post_meta($subscription_ID, 'hm_subscription_detail_purchase_date', $data['start_time']);
             add_post_meta($subscription_ID, 'hm_subscription_detail_expiry_date', $data['next_billing_time']);
-            add_post_meta($subscription_ID, 'hm_subscription_detail_amount_paid', $data['amount_paid']);
-
-            $invoiceID = homey_generate_invoice( 'package','recurring', $subscription_ID, date('d/M/Y h:i:s', $data["start_time"]), $current_user->ID, 0, 0, '' , $paymentMethod, $data["amount_paid"] );
-            add_post_meta($subscription_ID, 'hm_subscription_invoice_ids', $invoiceID);
-
         }
 
         //end of save subscription
@@ -336,8 +314,6 @@ if (isset($_REQUEST['is_homey_membership'])) {
             if ($isAlreadySubscribed > 0) {
                 $order_number = get_post_meta($isAlreadySubscribed, 'hm_subscription_detail_order_number', true);
             }
-
-            $amount_paid     = isset( $stripeSessionInfo->amount_total ) ? $stripeSessionInfo->amount_total / 100 : 0 ;
 
             $stripeCustomerInfo = $stripe->customers->retrieve($stripeSessionInfo->customer);
 
@@ -382,9 +358,6 @@ if (isset($_REQUEST['is_homey_membership'])) {
                     add_post_meta($subID, 'hm_subscription_detail_remaining_listings', $totalAllowedListings);
                     add_post_meta($subID, 'hm_subscription_detail_purchase_date', date('d/M/Y h:i:s', $purchase_date));
                     add_post_meta($subID, 'hm_subscription_detail_expiry_date', date('d/M/Y h:i:s', $expiry_date));
-
-                    $invoiceID = homey_generate_invoice( 'package','recurring', $subID, date('d/M/Y h:i:s', $purchase_date), get_current_user_id(), 0, 0, '' , 'stripe', $amount_paid );
-                    add_post_meta($subID, 'hm_subscription_invoice_ids', $invoiceID);
                     //end of save subscription
                 }
             }
@@ -396,8 +369,6 @@ if (isset($_REQUEST['is_homey_membership'])) {
     elseif ((isset($_REQUEST['is_homey_membership']) && $paymentMethod == 'paypal')) {
         $trxn_info = array();
         if (isset($_GET['subscriptionID'])) {
-
-
             $is_paypal_live = $hm_options['paypal_status'];
             $host = 'https://api.sandbox.paypal.com';
             // Check if paypal live
@@ -408,10 +379,6 @@ if (isset($_REQUEST['is_homey_membership'])) {
             $url = $host."/v1/billing/subscriptions/".$_GET['subscriptionID'];
             $subscriptionInfo = homey_execute_curl_request($url, null, $access_token, false);
 
-//            echo '<pre>';
-//            print_r($subscriptionInfo);
-//            exit;
-
             // Get transaction information from URL
             $data["plan_status"]        = $subscriptionInfo['status'];
             $data["plan_id"]            = $subscriptionInfo['plan_id'];
@@ -419,10 +386,8 @@ if (isset($_REQUEST['is_homey_membership'])) {
             $data["payer_name"]         = $subscriptionInfo['subscriber']['name']['given_name'].' '.$subscriptionInfo['subscriber']['name']['surname'];
             $data["email_address"]      = $subscriptionInfo['subscriber']['email_address'];
             $data["payer_id"]           = $subscriptionInfo['subscriber']['payer_id'];
-            $data["amount_paid"]        = $subscriptionInfo['billing_info']['last_payment']['amount']['value'];
             $data["currency_code"]      = $subscriptionInfo['billing_info']['last_payment']['amount']['currency_code'];
             $data["start_time"]         = $subscriptionInfo['start_time'];
-            $data["next_billing_time"]  = '';
 
             if(isset($subscriptionInfo['billing_info']['next_billing_time'])){
                 $data["next_billing_time"]  = $subscriptionInfo['billing_info']['next_billing_time'];
@@ -478,7 +443,7 @@ if (isset($_REQUEST['is_homey_membership'])) {
             if (isset($_REQUEST['limit-exceeded'])) { ?>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
-                        <h3 class="error"><?php echo esc_html__("You have used all of your allowed listings, please subscribe from following plans.", 'homey')?></h3>
+                        <h3 class="error">You have to subscribe from following plans to 'Add New Listings'.</h3>
                     </div>
                 </div>
             <?php } ?>
@@ -491,39 +456,48 @@ if (isset($_REQUEST['is_homey_membership'])) {
                             <div class="block">
                                 <div class="block-title">
                                     <div class="block-left">
-                                        <h2 class="title"><?php esc_html_e('Thank you for your payment!', 'homey'); ?></h2>
+                                        <h2 class="title">Thank you for your payment!</h2>
                                     </div><!-- block-left -->
                                 </div>
                                 <div class="block-body">
-                                    <?php $message_w = sprintf( __('The order <strong>#%s</strong> has been completed (Payment
-                                    method: %s ) and a confirmation email has been sent to <strong>%s</strong>', 'homey'), $order_number, $paymentMethod, $current_user->user_email ); 
-                                    echo $message_w;
-                                    ?>
+                                    The order <strong>#<?php echo $order_number; ?></strong> has been completed (Payment
+                                    method: <?php echo $paymentMethod; ?>) and a confirmation email has been sent to
+                                    <strong><?php echo $current_user->user_email ?></strong>
                                 </div><!-- block-body -->
                             </div><!-- block -->
                             <div class="block">
                                 <div class="block-title">
                                     <div class="block-left">
-                                        <h2 class="title"><?php esc_html_e('Order Summary', 'homey'); ?></h2>
+                                        <h2 class="title">Order Summary</h2>
                                     </div><!-- block-left -->
                                 </div>
                                 <div class="block-body">
                                     <ul class="list-unstyled mebership-list-info">
-                                        <li>
-                                            <i class="fa fa-check" aria-hidden="true"></i> <?php esc_html_e('Time Period', 'homey'); ?>: <strong><?php echo $billing_frequency.' '.esc_html__(esc_attr(ucfirst($billing_period)), 'homey'); ?></strong>
+                                        <li><i class="fa fa-check" aria-hidden="true"></i> Package
+                                            <strong><?php echo isset($membershipInfo->post_title) ? $membershipInfo->post_title : '-'; ?></strong>
                                         </li>
-                                        <li>
-                                            <i class="fa fa-check" aria-hidden="true"></i> <?php esc_html_e('Listings', 'homey'); ?>: <strong><?php echo $unlimited_listings == 'on' ? esc_html_e('Unlimited Listings', 'homey') : $listings_included; ?></strong>
+                                        <li><i class="fa fa-check" aria-hidden="true"></i> Price
+                                            <strong>$<?php echo $package_price; ?></strong></li>
+                                        <li><i class="fa fa-check" aria-hidden="true"></i> Time Period:
+                                            <strong><?php echo $billing_frequency . ' ' . $billing_period; ?></strong>
                                         </li>
-                                        <li>
-                                            <i class="fa fa-check" aria-hidden="true"></i> <?php esc_html_e('Featured Listings', 'homey'); ?>: <strong><?php echo $featured_listings < 1 ? 0 : $featured_listings; ?></strong>
-                                        </li>
+                                        <li><i class="fa fa-check" aria-hidden="true"></i> Listings:
+                                            <strong><?php echo $listings_included; ?></strong></li>
+                                        <li><i class="fa fa-check" aria-hidden="true"></i> Featured Listings:
+                                            <strong><?php echo !empty($featured_listings) ? $featured_listings: 0; ?></strong></li>
+                                        <!--                                    <li><i class="fa fa-check" aria-hidden="true"></i> Taxes <strong>-->
+                                        <?php //echo $taxes;
+                                        ?><!--%</strong></li>-->
+                                        <li class="total-price">Total Price
+                                            <strong>$<?php echo $package_total_price; ?></strong></li>
                                     </ul>
                                 </div><!-- block-body -->
                             </div><!-- block -->
                         </div><!-- membership-package-wrap -->
                         <div class="membership-nav-wrap">
-                            <button class="btn btn-primary btn-block" onclick="window.location.href='<?php echo $create_listing_link; ?>'"><?php echo esc_html_e('Create a Listing', 'homey');?></button>
+                            <button class="btn btn-primary btn-block" onclick="window.location.href='<?php echo $create_listing_link; ?>'">Create a
+                                Listing
+                            </button>
                         </div>
                     </div><!-- col-xs-12 col-sm-12 col-md-8 col-lg-8 -->
                 </div><!-- .row -->
@@ -539,7 +513,7 @@ if (isset($_REQUEST['is_homey_membership'])) {
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <?php if(isset($_GET['listing-limit-completed'])){ ?>
-                            <h3 class="error"><?php echo esc_html__("You have used all of your allowed listings, please subscribe from following plans.", 'homey')?></h3>
+                            <p class="error text-danger">You have used all of your allowed listings, please subscribe from following plans</p>
                         <?php } ?>
                         <div class="membership-package-wrap">
                             <div class="row no-margin">
@@ -554,7 +528,7 @@ if (isset($_REQUEST['is_homey_membership'])) {
                                 );
                                 //do the query
                                 $plans_query = new WP_Query($args);
-                                $users_subscriptions = homey_get_user_subscription(1, null, 'active');
+                                $users_subscriptions = homey_get_user_subscription(10, null, 'active');
 
                                 if ($plans_query->have_posts()) {
                                     while ($plans_query->have_posts()) {

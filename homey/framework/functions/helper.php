@@ -1,6 +1,6 @@
 <?php
 /*-----------------------------------------------------------------------------------*/
-// Allowed HTML tags 
+// Allowed HTML tags
 /*-----------------------------------------------------------------------------------*/
 if( !function_exists('homey_allowed_html')) {
 	function homey_allowed_html() {
@@ -54,50 +54,16 @@ if(!function_exists('homey_time_format')) {
 
 if( !function_exists('homey_get_map_system') ) {
     function homey_get_map_system() {
-        $homey_map_system = homey_option('homey_map_system');
+        $houzez_map_system = homey_option('homey_map_system');
 
-        if($homey_map_system == 'open_street_map' || $homey_map_system == 'mapbox') {
+        if($houzez_map_system == 'open_street_map' || $houzez_map_system == 'mapbox') {
             $map_system = 'open_street_map';
-        } elseif($homey_map_system == 'google' && homey_option('map_api_key') != "") {
+        } elseif($houzez_map_system == 'google' && homey_option('map_api_key') != "") {
             $map_system = 'google';
         } else {
             $map_system = 'open_street_map';
         }
         return $map_system;
-    }
-}
-
-if( !function_exists('homey_metabox_map_type') ) {
-    function homey_metabox_map_type() {
-        $homey_map_system = homey_option('homey_map_system');
-
-        if($homey_map_system == 'open_street_map' || $homey_map_system == 'mapbox') {
-            $map_system = 'osm';
-        } elseif($homey_map_system == 'google') {
-            $map_system = 'map';
-        } else {
-            $map_system = 'osm';
-        }
-        return $map_system;
-    }
-}
-
-if( !function_exists('homey_map_api_key') ) {
-
-    function homey_map_api_key() {
-
-        $homey_map_system = homey_get_map_system();   
-        $mapbox_api_key = homey_option('mapbox_api_key');   
-        $googlemap_api_key = homey_option('map_api_key'); 
-
-        if($homey_map_system == 'google') {
-            $googlemap_api_key = urlencode( $googlemap_api_key );
-            return $googlemap_api_key;
-
-        } elseif($homey_map_system == 'open_street_map') {
-            $mapbox_api_key = urlencode( $mapbox_api_key );
-            return $mapbox_api_key;
-        }
     }
 }
 
@@ -137,7 +103,7 @@ if(!function_exists('homey_posts_count')) {
 
         $count_posts = wp_count_posts($post_type);
 
-        $count_posts = isset($count_posts->publish) ? $count_posts->publish : 0;
+        $count_posts = $count_posts->publish;
         return $count_posts;
     }
 }
@@ -193,7 +159,7 @@ if(!function_exists('homey_format_date_simple')) {
         $homey_date_format = homey_option('homey_date_format');
 
         if(empty($gdate)) {
-            return $gdate;
+            return '';
         }
         $dateVal = strtotime($gdate);
 
@@ -220,9 +186,6 @@ if(!function_exists('homey_format_date_simple')) {
 
         } else {
             $return_date = date("Y-m-d", $dateVal);
-            if (empty(trim($return_date))){
-                $return_date = $dateVal;
-            }
         }
 
         return $return_date;
@@ -302,11 +265,8 @@ if ( ! function_exists( 'homey_booking_type' ) ) {
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
         $booking_type = get_post_meta( get_the_ID(), $homey_prefix.'booking_type', true ); //per_day, per_hour
 
-        if($homey_site_mode == 'per_day_date') {
-            $site_mode = 'per_day_date'; // This is per day
-
-        }elseif($homey_site_mode == 'per_day') {
-            $site_mode = 'per_day'; // This is per night 
+        if($homey_site_mode == 'per_day') {
+            $site_mode = 'per_day';
 
         } elseif($homey_site_mode == 'per_hour') {
             $site_mode = 'per_hour';
@@ -318,11 +278,8 @@ if ( ! function_exists( 'homey_booking_type' ) ) {
             $site_mode = 'per_month';
 
         } elseif($homey_site_mode == 'both') {
-            if($booking_type == 'per_day_date') {
-                $site_mode = 'per_day_date'; // This is per day
-
-            } elseif ($booking_type == 'per_day') {
-                $site_mode = 'per_day'; // This is per night 
+            if($booking_type == 'per_day') {
+                $site_mode = 'per_day';
 
             } elseif ($booking_type == 'per_hour') {
                $site_mode = 'per_hour';
@@ -349,7 +306,7 @@ if ( ! function_exists( 'homey_search_type' ) ) {
         global $post;
         $homey_site_mode = homey_option('homey_site_mode');
 
-        if($homey_site_mode == 'per_day_date' || $homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month' ) {
+        if($homey_site_mode == 'per_day' || $homey_site_mode == 'per_week' || $homey_site_mode == 'per_month' ) {
             $site_mode = 'per_day';
 
         } elseif($homey_site_mode == 'per_hour') {
@@ -389,10 +346,7 @@ if ( ! function_exists( 'homey_booking_type_by_id' ) ) {
         $homey_site_mode = homey_option('homey_site_mode'); // per_hour, per_day, both
         $booking_type = get_post_meta( $listing_id, $homey_prefix.'booking_type', true ); //per_day, per_hour
 
-        if($homey_site_mode == 'per_day_date') {
-            $site_mode = 'per_day_date';
-
-        } elseif($homey_site_mode == 'per_day') {
+        if($homey_site_mode == 'per_day') {
             $site_mode = 'per_day';
 
         } elseif($homey_site_mode == 'per_hour') {
@@ -405,10 +359,7 @@ if ( ! function_exists( 'homey_booking_type_by_id' ) ) {
             $site_mode = 'per_month';
 
         } elseif($homey_site_mode == 'both') {
-            if($booking_type == 'per_day_date') {
-                $site_mode = 'per_day_date';
-
-            } elseif($booking_type == 'per_day') {
+            if($booking_type == 'per_day') {
                 $site_mode = 'per_day';
 
             } elseif ($booking_type == 'per_hour') {
@@ -533,14 +484,8 @@ endif;
 /*-----------------------------------------------------------------------------------*/
 if( !function_exists('homey_req') ) {
     function homey_req( $field ) {
-        global $template;
-        if(basename($template) == 'dashboard-experience-submission.php' || basename($template) == 'dashboard-experience-submitted.php'){
-            $required_fields = homey_option('add_experience_required_fields');
-        }else{
-            $required_fields = homey_option('add_listing_required_fields');
-        }
-
-        if( $required_fields[$field] > 0 ) {
+        $required_fields = homey_option('add_listing_required_fields');
+        if( $required_fields[$field] != 0 ) {
             return '*';
         }
         return '';
@@ -549,14 +494,8 @@ if( !function_exists('homey_req') ) {
 
 if( !function_exists('homey_get_required') ) {
     function homey_get_required( $field ) {
-        global $template;
-        if(basename($template) == 'dashboard-experience-submission.php' || basename($template) == 'dashboard-experience-submitted.php'){
-            $required_fields = homey_option('add_experience_required_fields');
-        }else {
-            $required_fields = homey_option('add_listing_required_fields');
-        }
-
-        if( $required_fields[$field] > 0 ) {
+        $required_fields = homey_option('add_listing_required_fields');
+        if( $required_fields[$field] != 0 ) {
             return 'required';
         }
         return '';
@@ -603,15 +542,11 @@ if(!function_exists('homey_thread_link_after_reservation')) {
         $chcek_reservation_thread = homey_chcek_reservation_thread($reservationID);
 
         $messages_page = homey_get_template_link_2('template/dashboard-messages.php');
-        
-        if( ! empty( $chcek_reservation_thread ) ) {
-            $messages_page_link = add_query_arg( array(
-                'thread_id' => $chcek_reservation_thread
-            ), $messages_page );
-            return $messages_page_link;
-        }
-        return '';
-        
+        $messages_page_link = add_query_arg( array(
+            'thread_id' => $chcek_reservation_thread
+        ), $messages_page );
+
+        return $messages_page_link;
     }
 }
 
@@ -659,40 +594,6 @@ if(!function_exists('homey_give_access')) {
     }
 }
 
-if(!function_exists('homey_exp_give_access')) {
-    function homey_exp_give_access($reservationID) {
-        global $current_user;
-        $current_user = wp_get_current_user();
-        $user_id = $current_user->ID;
-
-        $experience_renter_id = get_post_meta($reservationID, 'experience_renter', true);
-        $experience_owner_id = get_post_meta($reservationID, 'experience_owner', true);
-
-        if( ( $user_id == $experience_owner_id ) || ( $user_id == $experience_renter_id ) || homey_is_admin() ) {
-            return true;
-        }
-
-        return false;
-    }
-}
-
-if(!function_exists('homey_experience_guest')) {
-    function homey_experience_guest($reservationID) {
-        global $current_user;
-        $current_user = wp_get_current_user();
-        $user_id = $current_user->ID;
-
-        $experience_renter_id = get_post_meta($reservationID, 'experience_renter', true);
-        $experience_owner_id = get_post_meta($reservationID, 'experience_owner', true);
-
-        if( ($user_id == $experience_renter_id) || homey_is_renter()) {
-            return true;
-        } 
-
-        return false;
-    }
-}
-
 if(!function_exists('homey_listing_guest')) {
     function homey_listing_guest($reservationID) {
         global $current_user;
@@ -704,7 +605,7 @@ if(!function_exists('homey_listing_guest')) {
 
         if( ($user_id == $listing_renter_id) || homey_is_renter()) {
             return true;
-        }
+        } 
 
         return false;
     }
@@ -818,27 +719,17 @@ if(!function_exists('homey_is_dashboard')) {
             'template/dashboard-favorites.php',
             'template/dashboard-listings.php',
             'template/dashboard-messages.php',
-
             'template/dashboard-reservations.php',
             'template/dashboard-reservations2.php',
-
-            'template/dashboard-reservations-experiences.php',
-            'template/dashboard-reservations2-experiences.php',
-
             'template/dashboard-saved-searches.php',
             'template/dashboard-payment.php',
             'template/dashboard-invoices.php',
             'template/dashboard-wallet.php',
-            'template/dashboard-membership-host.php',
-
-            'template/dashboard-experience-submitted.php',
-            'template/dashboard-experiences.php',
-            'template/dashboard-experience-submission.php',
-
-
+            
         ) );
 
         if ( is_page_template( $files ) ) {
+
             return true;
         }
         return false;
@@ -854,24 +745,6 @@ if(!function_exists('homey_is_listing_page')) {
             'template/template-listing-list.php',
             'template/template-listing-sticky-map.php',
             
-        ) );
-
-        if ( is_page_template( $files ) ) {
-
-            return true;
-        }
-        return false;
-    }
-}
-if(!function_exists('homey_is_experiences_page')) {
-    function homey_is_experiences_page() {
-
-        $files = apply_filters( 'homey_is_experience_page_filter', array(
-            'template/template-experience-card.php',
-            'template/template-experience-grid.php',
-            'template/template-experience-list.php',
-            'template/template-experience-sticky-map.php',
-
         ) );
 
         if ( is_page_template( $files ) ) {
@@ -918,22 +791,13 @@ if(!function_exists('homey_is_dashboard_footer')) {
             'template/dashboard-favorites.php',
             'template/dashboard-listings.php',
             'template/dashboard-messages.php',
-
             'template/dashboard-reservations.php',
             'template/dashboard-reservations2.php',
-
-            'template/dashboard-reservations-experiences.php',
-            'template/dashboard-reservations2-experiences.php',
-
             'template/dashboard-saved-searches.php',
             'template/dashboard-payment.php',
             'template/dashboard-invoices.php',
             'template/dashboard-wallet.php',
             'template/template-splash.php',
-            'template/dashboard-membership-host.php',
-            'template/dashboard-experience-submitted.php',
-            'template/dashboard-experiences.php',
-            'template/dashboard-experience-submission.php',
             
         ) );
         if ( is_page_template( $files ) ) {
@@ -980,17 +844,13 @@ if( !function_exists('homey_search_needed') ) {
             'template/dashboard-saved-searches.php',
             'template/dashboard-payment.php',
             'template/dashboard-invoices.php',
-            'template/dashboard-membership-host.php',
             'template/template-half-map.php',
             'template/template-instance-booking.php',
             'template/template-splash.php',
-            'template/dashboard-experience-submitted.php',
-            'template/dashboard-experiences.php',
-            'template/dashboard-experience-submission.php',
         ) )
         ) {
             return false;
-        } elseif( $transparent == 1 && $header_type != 'none' && ($header_style == '1' || $header_style == '4') && $search_position == 'under_nav') {
+        } elseif( $transparent != 0 && $header_type != 'none' && ($header_style == '1' || $header_style == '4') && $search_position == 'under_nav') {
             return false;
         } elseif (is_page_template( array('template/template-search.php')) && $search_result_page == 'half_map') {
             return false;
@@ -1027,13 +887,9 @@ if( !function_exists('homey_banner_needed') ) {
             'template/dashboard-saved-searches.php',
             'template/dashboard-payment.php',
             'template/dashboard-invoices.php',
-            'template/dashboard-membership-host.php',
             'template/template-half-map.php',
             'template/template-instance-booking.php',
             'template/template-splash.php',
-            'template/dashboard-experience-submitted.php',
-            'template/dashboard-experiences.php',
-            'template/dashboard-experience-submission.php',
         ) )
         ) {
             return false;
@@ -1109,7 +965,7 @@ if( !function_exists('homey_topbar_needed') ) {
             return false;
         }
         
-        if( $transparent == 1 && $header_type != 'none') {
+        if( $transparent != 0 && $header_type != 'none') {
             return false;
         }
 
@@ -1221,7 +1077,7 @@ if( !function_exists('homey_get_transparent') ) {
         $transparent = get_post_meta(get_the_ID(), 'homey_header_trans', true);
         $header_type = get_post_meta(get_the_ID(), 'homey_header_type', true);
 
-        if( $transparent == 1 && $header_type != 'none' ) {
+        if( $transparent != 0 && $header_type != 'none' ) {
             $css_class = 'transparent-header';
         }
 
@@ -1242,7 +1098,7 @@ if( !function_exists('homey_is_top_header') ) {
     function homey_is_top_header() {
         $header_type = get_post_meta(get_the_ID(), 'homey_header_type', true);
 
-        if($header_type == 'none' || $header_type == 'parallax' || $header_type == 'elementor' ) {
+        if($header_type == 'none' || $header_type == 'parallax') {
             return false;
         }
         return true;
@@ -1255,7 +1111,7 @@ if( !function_exists('homey_is_transparent_logo') ) {
         $header_type = homey_option('header_type');
         $transparent = get_post_meta(get_the_ID(), 'homey_header_trans', true);
 
-        if( $transparent == 1 && ($header_type == '1' || $header_type == '4') ) {
+        if( $transparent != 0 && ($header_type == '1' || $header_type == '4') ) {
             return true;
         }
 
@@ -1270,7 +1126,7 @@ if( !function_exists('homey_is_transparent') ) {
     function homey_is_transparent() {
         $transparent = get_post_meta(get_the_ID(), 'homey_header_trans', true);
 
-        if( $transparent == 1 ) {
+        if( $transparent != 0 ) {
             return true;
         }
         return false;
@@ -1320,15 +1176,6 @@ if(!function_exists('homey_header_menu_align')) {
 if(!function_exists('reservation_detail_link')) {
     function reservation_detail_link($resv_id) {
         $resversation_page = homey_get_template_link_dash('template/dashboard-reservations.php');
-        $link = add_query_arg( 'reservation_detail', $resv_id, $resversation_page );
-
-        return $link;
-    }
-}
-
-if(!function_exists('exp_reservation_detail_link')) {
-    function exp_reservation_detail_link($resv_id) {
-        $resversation_page = homey_get_template_link_dash('template/dashboard-reservations-experiences.php');
         $link = add_query_arg( 'reservation_detail', $resv_id, $resversation_page );
 
         return $link;
@@ -1477,19 +1324,6 @@ if ( ! function_exists( 'homey_get_listing_tax_id' ) ) {
     }
 }
 
-if ( ! function_exists( 'homey_get_experience_tax_id' ) ) {
-    function homey_get_experience_tax_id($experience_id, $tax_name) {
-        $terms = wp_get_post_terms( $experience_id, $tax_name, array("fields" => "all"));
-        if (!empty($terms)):
-            foreach ($terms as $term):
-                $taxonomy = $term->term_id;
-                return $taxonomy;
-            endforeach;
-        endif;
-        return '';
-    }
-}
-
 
 /*-----------------------------------------------------------------------------------*/
 // Get template link
@@ -1614,6 +1448,36 @@ if(!function_exists('homey_get_taxonomy_title')){
             }
         }
         return $tax_name;
+    }
+}
+
+if(!function_exists('homey_get_taxonomy_slug')){
+    function homey_get_taxonomy_slug( $listing_id, $taxonomy_name ){
+
+        $tax_terms = get_the_terms( $listing_id, $taxonomy_name );
+        $tax_name = '';
+        if( !empty($tax_terms) ){
+            foreach( $tax_terms as $tax_term ){
+                $tax_name = $tax_term->slug;
+                break;
+            }
+        }
+        return $tax_name;
+    }
+}
+
+if(!function_exists('homey_get_taxonomy_meta_link')){
+    function homey_get_taxonomy_meta_link( $listing_id, $taxonomy_name ){
+
+        $tax_terms = get_the_terms( $listing_id, $taxonomy_name );
+        $tax_meta_link = '';
+        if( !empty($tax_terms) ){
+            foreach( $tax_terms as $tax_term ){
+                $tax_meta_link = get_term_link($tax_term);
+                break;
+            }
+        }
+        return $tax_meta_link;
     }
 }
 
@@ -1827,6 +1691,100 @@ if( !function_exists('homey_get_all_countries') ):
     }
 endif;
 
+
+if( !function_exists('homey_get_data_list_terms') ):
+    function homey_get_data_list_terms( $taxonomy_name="", $datalist_id="" ) {
+        $taxonomy  = $taxonomy_name;
+        $args = array(
+            'hide_empty'  => false
+        );
+        $tax_terms      =   get_terms($taxonomy,$args);
+        $select_terms    =   '<datalist id="'.$datalist_id.'">';
+
+        foreach ($tax_terms as $tax_term) {
+            $select_terms.= '<option value="' . ucfirst($tax_term->name).'" >'. ucfirst($tax_term->name).'</option>';
+        }
+        $select_terms.= '</datalist>';
+        return $select_terms;
+    }
+endif;
+
+//-----Created by Ahmad Raza
+if( !function_exists('sa_homey_get_data_list_terms_specific') ):
+    add_action( 'wp_ajax_nopriv_sa_homey_get_data_list_terms_specific', 'sa_homey_get_data_list_terms_specific' );
+	add_action( 'wp_ajax_sa_homey_get_data_list_terms_specific', 'sa_homey_get_data_list_terms_specific' );
+
+    function sa_homey_get_data_list_terms_specific( ) {
+
+        $cities_datalist_id = "cities_datalist";
+        $datalist_id        = "states_datalist";
+
+        if( !isset($_POST['selected_country']) && empty($_POST['selected_country']) )
+        {
+            return;
+        }
+
+        $term = get_term_by( 'slug', $_POST['selected_country'], 'listing_country' );
+
+		$has_states = homey_get_terms('listing_state');
+		$has_cities = homey_get_terms('listing_city');
+
+		$states = null;
+		$cities = null;
+		$s = null;
+
+
+		foreach( $has_states as $state )
+		{
+			//print_r(homey_get_listing_state_meta($ht->term_id));
+			if( homey_get_listing_state_meta($state->term_id)['parent_country'] === $term->slug )
+			{
+				$s = $state;
+				foreach( $has_cities as $city )
+				{
+					//print_r(homey_get_listing_city_meta($city->term_id));
+					if( homey_get_listing_city_meta($city->term_id)['parent_state'] === $s->slug )
+					{
+						$cities[] = $city;
+					}
+				}
+				$states[] = $state;
+			}
+		}
+
+
+        //----state datalist
+        $select_terms    =   '<datalist id="'.$datalist_id.'">';
+
+        foreach ($states as $tax_term) {
+            $select_terms.= '<option value="' . ucfirst($tax_term->name).'" >'. ucfirst($tax_term->name).'</option>';
+        }
+        $select_terms.= '</datalist>';
+        //
+
+        //----city datalist
+        $select_terms_city    =   '<datalist id="'.$cities_datalist_id.'">';
+
+        foreach ($cities as $tax_term) {
+            $select_terms_city.= '<option value="' . ucfirst($tax_term->name).'" >'. ucfirst($tax_term->name).'</option>';
+        }
+        $select_terms_city.= '</datalist>';
+        //
+
+        $result = [
+			'success' => true,
+			'data' => [
+                'state' => $select_terms,
+                'city' => $select_terms_city
+            ]
+		];
+
+		echo json_encode($result);
+		wp_die();
+    }
+endif;
+//----END
+
 /**
  *   ----------------------------------------------------------------------
  *   Homey Pagination
@@ -1859,7 +1817,7 @@ if( !function_exists( 'homey_pagination' ) ){
             
             echo ''.( $paged > 1 ) ? '<li><a data-homeypagi="'.$prev.'" rel="Prev" href="'.get_pagenum_link($prev).'"><span aria-hidden="true"><i class="fa fa-angle-left"></i></span></a></li>' : '<li class="disabled"><a aria-label="Previous"><span aria-hidden="true"><i class="fa fa-angle-left"></i></span></a></li>';
 
-            for ( $i = 1; $i <= $pages; $i++ ) {
+            for ( $i = 1; $i < $pages; $i++ ) {
                 if ( 1 != $pages &&( !( $i >= $paged+$range+1 || $i <= $paged-$range-1 ) || $pages <= $showitems ) )
                 {
                     if ( $paged == $i ){
@@ -1880,7 +1838,7 @@ if( !function_exists( 'homey_pagination' ) ){
 }
 
 if( !function_exists( 'homey_pagination_halfmap' ) ){
-    function homey_pagination_halfmap($pages = '', $paged = '', $range = 2 ) {
+    function homey_pagination_halfmap($pages = '', $paged, $range = 2 ) {
 
         if(empty($paged))$paged = 1;
 
@@ -1952,38 +1910,6 @@ if(!function_exists('homey_get_taxonomies_with_id_value')){
     }
 }
 
-if(!function_exists('homey_get_taxonomies_checkbox')){
-    function homey_get_taxonomies_checkbox($taxonomy, $parent_taxonomy, $taxonomy_id, $prefix = " " ){
-
-        if (!empty($parent_taxonomy)) {
-            foreach ($parent_taxonomy as $term) {
-                if ($taxonomy_id != $term->term_id) {
-                   echo '<label class="control control--checkbox">
-                        <input type="checkbox" name="nothing-provided-' . $term->term_id . '" value="' . $term->term_id . '">
-                        <span class="contro-text">' . esc_html__($prefix . $term->name, "homey") . '</span>
-                        <span class="control__indicator"></span>
-                    </label>';
-                } else {
-                    echo '<label class="control control--checkbox">
-                        <input type="checkbox" checked="checked" name="nothing-provided-' . $term->term_id . '" value="' . $term->term_id . '">
-                        <span class="contro-text">' . esc_html__($prefix . $term->name, "homey") . '</span>
-                        <span class="control__indicator"></span>
-                    </label>';
-                }
-
-                $get_child_terms = get_terms( $taxonomy, array(
-                    'hide_empty' => false,
-                    'parent' => $term->term_id
-                ));
-
-                if (!empty($get_child_terms)) {
-                    homey_get_taxonomies_checkbox( $taxonomy, $get_child_terms, $taxonomy_id, "- ".$prefix );
-                }
-            }
-        }
-    }
-}
-
 /*-----------------------------------------------------------------------------------*/
 // Listing Edit Form Hierarchichal Taxonomy Options
 /*-----------------------------------------------------------------------------------*/
@@ -1992,45 +1918,6 @@ if(!function_exists('homey_get_taxonomies_for_edit_listing')){
 
         $taxonomy_id = '';
         $taxonomy_terms = get_the_terms( $listing_id, $taxonomy );
-
-        if( !empty($taxonomy_terms) ){
-            foreach( $taxonomy_terms as $term ){
-                $taxonomy_id = $term->term_id;
-                break;
-            }
-        }
-
-
-        $taxonomy_id = intval($taxonomy_id);
-        if( !empty($taxonomy_id)) {
-            echo '<option value="-1">'.esc_html__( 'None', 'homey').'</option>';
-        } else {
-            echo '<option value="-1" selected="selected">'.esc_html__( 'None', 'homey').'</option>';
-        }
-        $parent_taxonomy = get_terms(
-            array(
-                $taxonomy
-            ),
-            array(
-                'orderby'       => 'name',
-                'order'         => 'ASC',
-                'hide_empty'    => false,
-                'parent' => 0
-            )
-        );
-        homey_get_taxonomies_with_id_value( $taxonomy, $parent_taxonomy, $taxonomy_id );
-
-    }
-}
-
-/*-----------------------------------------------------------------------------------*/
-// Experience Edit Form Hierarchichal Taxonomy Options
-/*-----------------------------------------------------------------------------------*/
-if(!function_exists('homey_get_taxonomies_for_edit_experience')){
-    function homey_get_taxonomies_for_edit_experience( $experience_id, $taxonomy ){
-
-        $taxonomy_id = '';
-        $taxonomy_terms = get_the_terms( $experience_id, $taxonomy );
 
         if( !empty($taxonomy_terms) ){
             foreach( $taxonomy_terms as $term ){
@@ -2633,7 +2520,7 @@ if ( ! function_exists( 'homey_breadcrumbs' ) ) {
         if ((is_home() || is_front_page())) {
 
             if ($show_on_home == 1) {
-                echo '<li>'. esc_attr( $home_before ) . '<a href="' . esc_url( $home_link ) . '">' . $text['home'] . '</a>'. esc_attr( $home_after ) .'</li>';
+                echo '<li>'. esc_attr( $home_before ) . '<a href="' . esc_url( $home_link ) . '">' . esc_attr( $text['home'] ) . '</a>'. esc_attr( $home_after ) .'</li>';
             }
 
         } else {
@@ -2731,6 +2618,10 @@ if ( ! function_exists( 'homey_breadcrumbs' ) ) {
                 elseif( get_post_type() == 'listing' ){
 
                     $terms = get_the_terms( get_the_ID(), 'listing_type' );
+                    $sa_term_city = homey_get_taxonomy_title(get_the_ID(), 'listing_city');
+                    $sa_term_country = homey_get_taxonomy_title(get_the_ID(), 'listing_country');
+
+                    echo '<li><a href="' . esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )) . '"> <span> ' . esc_attr( $sa_term_country ). '</span></a></li>';
                     if( !empty($terms) ) {
                         foreach ($terms as $term) {
                             $term_link = get_term_link($term);
@@ -2738,13 +2629,14 @@ if ( ! function_exists( 'homey_breadcrumbs' ) ) {
                             if (is_wp_error($term_link)) {
                                 continue;
                             }
-                            echo '<li><a href="' . esc_url($term_link) . '"> <span>' . esc_attr( $term->name ). '</span></a></li>';
+                            //echo '<li><a href="' . esc_url($term_link) . '"> <span>' . esc_attr( $term->name ). '</span></a></li>';
                         }
                     }
 
                     if ($show_current == 1) {
-                        echo esc_attr($delimiter) . $before . get_the_title() . $after;
+                       // echo esc_attr($delimiter) . $before . get_the_title() . $after;
                     }
+                    echo '<li><a href="' . esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_city' )) . '"> <span> ' . esc_attr( $sa_term_city ). '</span></a></li>';
                 }
                 else {
 
@@ -2866,33 +2758,33 @@ if(!function_exists('homey_hirarchical_options')){
                     $parent_city = sanitize_title($term_meta['parent_city']);
 
                     if ($searched_term == $term->slug) {
-                        echo '<option data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                        echo '<option data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
                     } else {
-                        echo '<option  data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
+                        echo '<option data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
                     }
                 } elseif( $taxonomy_name == 'property_city' ) {
                     $term_meta= get_option( "_homey_property_city_$term->term_id");
                     $parent_state = sanitize_title($term_meta['parent_state']);
 
                     if ($searched_term == $term->slug) {
-                        echo '<option  data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                        echo '<option data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
                     } else {
-                        echo '<option  data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
+                        echo '<option data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
                     }
                 }  elseif( $taxonomy_name == 'property_state' ) {
                     $term_meta= get_option( "_homey_property_state_$term->term_id");
                     $parent_country = sanitize_title($term_meta['parent_country']);
 
                     if ($searched_term == $term->slug) {
-                        echo '<option data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentcountry="'.$parent_country.'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                        echo '<option data-parentcountry="'.$parent_country.'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
                     } else {
-                        echo '<option data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" data-parentcountry="'.$parent_country.'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
+                        echo '<option data-parentcountry="'.$parent_country.'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name .'</option>';
                     }
                 } else {
                     if ($searched_term == $term->slug) {
-                        echo '<option data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                        echo '<option value="' . urldecode($term->slug) . '" selected="selected">' . $prefix . $term->name . '</option>';
                     } else {
-                        echo '<option data-tokens="'.$term->description.' '.str_replace('-', ' ', $term->slug).' '. strtoupper($prefix . $term->name) .' '.$prefix . $term->name.'" value="' . urldecode($term->slug) . '">' . $prefix . $term->name . '</option>';
+                        echo '<option value="' . urldecode($term->slug) . '">' . $prefix . $term->name . '</option>';
                     }
                 }
 
@@ -2905,6 +2797,17 @@ if(!function_exists('homey_hirarchical_options')){
                 if (!empty($child_terms)) {
                     homey_hirarchical_options( $taxonomy_name, $child_terms, $searched_term, "- ".$prefix );
                 }
+            }
+        }
+    }
+}
+
+if(!function_exists('homey_data_list_options')){
+    function homey_data_list_options($taxonomy_name, $taxonomy_terms, $searched_term, $prefix = " " ){
+
+        if (!empty($taxonomy_terms) && taxonomy_exists($taxonomy_name)) {
+            foreach ($taxonomy_terms as $term) {
+                echo '<option value="' . urldecode($term->slug) . '">' . urldecode($term->slug) . '</option>';   
             }
         }
     }
@@ -3196,38 +3099,14 @@ if(!function_exists('custom_strtotime')){
 if(!function_exists('hm_validity_check')) {
     function hm_validity_check()
     {
-        $hm_options = get_option('hm_memberships_options');
-        $free_no_listing = $hm_options['free_numOf_listings'];
+        $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
+        if(!homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
+            $subscriptions = homey_get_user_subscription(1);
+            foreach($subscriptions as $subscription){
+                $subscriptionID = $subscription['subscriptionID'];
+                $membershipStatus = get_post_meta($subscriptionID, 'hm_settings_status', true);
 
-        if($free_no_listing < 1 ){
-            $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-            if( !homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-                $subscriptions = homey_get_user_subscription(1);
-
-                if(count($subscriptions) < 1){
-                    $varText = 'new-user';
-                    $message_string = esc_html__( 'Your should select package of your choice to add listing.', 'homey' );
-                    ?>
-                    <script>
-                        document.getElementById("section-body").innerHTML = "<p class='error text-danger'><?php echo $message_string; ?></p>";
-                        document.getElementById("section-body").style.padding = "10% 2%";
-                        document.addEventListener('contextmenu', function(e) {
-                            e.preventDefault();
-                        });
-
-                        setInterval(function(){
-                            window.location.href = '<?php echo $memberships_url.'?'.$varText.'=1'; ?>';
-                        }, 5000);
-                    </script>
-                    <?php
-                    exit;
-                }
-
-                foreach($subscriptions as $subscription){
-                    $subscriptionID = $subscription['subscriptionID'];
-                    $membershipStatus = get_post_meta($subscriptionID, 'hm_subscription_detail_status', true);
-
-                    if($membershipStatus == 'expired'){
+                if($membershipStatus == 'expired'){
                         $msgText = ($membershipStatus == 'expired')?'expired':'exceeded';
                         $varText = ($membershipStatus == 'expired')?'membership-expired':'limit-exceeded';
 
@@ -3246,35 +3125,9 @@ if(!function_exists('hm_validity_check')) {
                         </script>
                         <?php
                         exit;
-                    }
                 }
             }
         }
-
-    }
-}
-
-if(!function_exists('homey_check_membershop_status')) {
-    function homey_check_membershop_status()
-    {
-        $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-        if( ! homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-            $subscriptions = homey_get_user_subscription(1);
-
-            foreach($subscriptions as $subscription){
-                $subscriptionID = $subscription['subscriptionID'];
-                $membershipStatus = get_post_meta($subscriptionID, 'hm_subscription_detail_status', true);
-
-                if($membershipStatus == 'expired'){
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        return false;
     }
 }
 
@@ -3303,7 +3156,7 @@ if(!function_exists('hm_check_subscriptions_status')) {
 }
 
 if(!function_exists('hm_listing_limit_check')) {
-    function hm_listing_limit_check($userID, $listing_status = '')
+    function hm_listing_limit_check($userID)
     {
         $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
         $upgrade_feature_listing_url = homey_get_template_link('template/template-membership-webhook.php');
@@ -3330,12 +3183,9 @@ if(!function_exists('hm_listing_limit_check')) {
             }
 
            $currentListing = homey_hm_user_listing_count($userID);
-            if ('publish' == $listing_status){
-                $currentListing -= 1; //make able user to edit the listing
-            }
 
             if(!homey_is_admin() && $allSubsListingsLimit <= $currentListing && $membership_settings['free_numOf_listings'] <= $currentListing){
-                $message_string = esc_html__( "You consumed all listing limit or you don't have any subscription, now you will redirect to plan selection page.", 'homey' );
+                $message_string = esc_html__( 'You consumed all listing limit, now you will redirect to plan selection page.', 'homey' );
                 $varText = 'listing-limit-completed';
                 ?>
                 <script>
@@ -3613,32 +3463,46 @@ if(!function_exists("clearance_membership_plan")){
 }
 
 if(!function_exists("clearance_membership_plan_cron_job")){
-    function clearance_membership_plan_cron_job($is_hm_wc_package = false){
+    function clearance_membership_plan_cron_job(){
         $already_subscriptions = homey_get_all_user_subscription(-1, null, 'active');
         if(count($already_subscriptions) > 0){//already have package then expire them
             //to expire subscriptions
             foreach($already_subscriptions as $subscription){
-                if($is_hm_wc_package > 0){
-                    $subscriptionID = $subscription['subscriptionID'];
-                        if(strtotime(get_post_meta($subscriptionID, 'hm_subscription_detail_expiry_date', true)) < strtotime('now')){
-                            update_post_meta($subscriptionID, 'hm_subscription_detail_status', 'expired');
-                        }
-                }else{
-                    $subscriptionID = $subscription['subscriptionID'];
-                    update_post_meta($subscriptionID, 'hm_subscription_detail_status', 'expired');
-                }
+                $subscriptionID = $subscription['subscriptionID'];
+                update_post_meta($subscriptionID, 'hm_subscription_detail_status', 'draft');
             }
             
+            /*
+            //to expire listings because of change in package
+            $args = array(
+                'post_type'   => 'listing',
+                'author'      => get_post_meta($subscriptionID, 'hm_subscription_detail_customer_id', true),
+                'post_status' => 'any'
+            );
+
+            $query = new WP_Query( $args );
+            global $post;
+            while( $query->have_posts()){
+                $query->the_post();
+
+                $listing = array(
+                    'ID'          => $post->ID,
+                    'post_type'   => 'listing',
+                    'post_status' => 'expired'
+                );
+
+                wp_update_post( $listing );
+                update_post_meta( $post->ID, 'homey_featured', 0 );
+            }
+            wp_reset_postdata();
+            */
 
             $donwgrade_message  = esc_html__('Account Downgraded,','homey') . "\r\n\r\n";
             $donwgrade_message .= sprintf( esc_html__("Hello, Your subscription on  %s. is expired, to renew visit %s Thank you!",'homey'), get_option('blogname'), get_option('blogname')) . "\r\n\r\n";
 
-            if(isset($user_email)){
-                homey_send_emails($user_email,
-                            sprintf(esc_html__('[%s] Account Downgraded','homey'), get_option('blogname')),
-                            $donwgrade_message);
-            }
-           
+            homey_send_emails($user_email,
+                sprintf(esc_html__('[%s] Account Downgraded','homey'), get_option('blogname')),
+                $donwgrade_message);
         }
     }
 }
@@ -3729,7 +3593,6 @@ if(!function_exists("get_active_membership_plan")){
         $sql = "SELECT ID FROM $wpdb->posts WHERE post_author = $userID AND post_type='hm_subscriptions' ORDER BY post_date DESC LIMIT 1";
 
         $subscriptions = $wpdb->get_results($sql);
-
         $info = ['subscriptionDate' => '', 'subscriptionExpiryDate' => '', 'active_subscription' => '' ];
         if(isset($subscriptions[0]->ID)){
             $planId = get_post_meta($subscriptions[0]->ID, 'hm_subscription_detail_plan_id', true);
@@ -3764,302 +3627,55 @@ if(!function_exists("get_wc_order_id")){
     }
 }
 
-//membership functions
+if(!function_exists('homey_hirarchical_options_with_title')){
+    function homey_hirarchical_options_with_title($taxonomy_name, $taxonomy_terms, $searched_term, $prefix = " " ){
 
-if(!function_exists('hm_experience_validity_check')) {
-    function hm_experience_validity_check()
-    {
-        $hm_options = get_option('hm_memberships_options');
-        $free_no_experience = isset($hm_options['free_numOf_experiences']) ? $hm_options['free_numOf_experiences'] : 0;
+        if (!empty($taxonomy_terms) && taxonomy_exists($taxonomy_name)) {
+            foreach ($taxonomy_terms as $term) {
 
-        if($free_no_experience < 1 ){
-            $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-            if( !homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-                $subscriptions = homey_get_user_subscription(1);
+                if( $taxonomy_name == 'property_area' ) {
+                    $term_meta= get_option( "_homey_property_area_$term->term_id");
+                    $parent_city = sanitize_title($term_meta['parent_city']);
 
-                if(count($subscriptions) < 1){
-                    $varText = 'new-user';
-                    $message_string = esc_html__( 'Your should select package of your choice to add experience.', 'homey' );
-                    ?>
-                    <script>
-                        document.getElementById("section-body").innerHTML = "<p class='error text-danger'><?php echo $message_string; ?></p>";
-                        document.getElementById("section-body").style.padding = "10% 2%";
-                        document.addEventListener('contextmenu', function(e) {
-                            e.preventDefault();
-                        });
+                    if ($searched_term == $term->name) {
+                        echo '<option data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->name) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                    } else {
+                        echo '<option data-parentcity="'.urldecode($parent_city).'" value="' . urldecode($term->name) . '">' . $prefix . $term->name .'</option>';
+                    }
+                } elseif( $taxonomy_name == 'property_city' ) {
+                    $term_meta= get_option( "_homey_property_city_$term->term_id");
+                    $parent_state = sanitize_title($term_meta['parent_state']);
 
-                        setInterval(function(){
-                            window.location.href = '<?php echo $memberships_url.'?'.$varText.'=1'; ?>';
-                        }, 5000);
-                    </script>
-                    <?php
-                    exit;
-                }
+                    if ($searched_term == $term->name) {
+                        echo '<option data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->name) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                    } else {
+                        echo '<option data-parentstate="'.urldecode($parent_state).'" value="' . urldecode($term->name) . '">' . $prefix . $term->name .'</option>';
+                    }
+                }  elseif( $taxonomy_name == 'property_state' ) {
+                    $term_meta= get_option( "_homey_property_state_$term->term_id");
+                    $parent_country = sanitize_title($term_meta['parent_country']);
 
-                foreach($subscriptions as $subscription){
-                    $subscriptionID = $subscription['subscriptionID'];
-                    $membershipStatus = get_post_meta($subscriptionID, 'hm_subscription_detail_status', true);
-
-                    if($membershipStatus == 'expired'){
-                        $msgText = ($membershipStatus == 'expired')?'expired':'exceeded';
-                        $varText = ($membershipStatus == 'expired')?'membership-expired':'limit-exceeded';
-
-                        $message_string = esc_html__( 'Your experience limit is '.$msgText.' you will redirect to plan selection page.', 'homey' );
-                        ?>
-                        <script>
-                            document.getElementById("section-body").innerHTML = "<p class='error text-danger'><?php echo $message_string; ?></p>";
-                            document.getElementById("section-body").style.padding = "10% 2%";
-                            document.addEventListener('contextmenu', function(e) {
-                                e.preventDefault();
-                            });
-
-                            setInterval(function(){
-                                window.location.href = '<?php echo $memberships_url.'?'.$varText.'=1'; ?>';
-                            }, 5000);
-                        </script>
-                        <?php
-                        exit;
+                    if ($searched_term == $term->name) {
+                        echo '<option data-parentcountry="'.$parent_country.'" value="' . urldecode($term->name) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                    } else {
+                        echo '<option data-parentcountry="'.$parent_country.'" value="' . urldecode($term->name) . '">' . $prefix . $term->name .'</option>';
+                    }
+                } else {
+                    if ($searched_term == $term->name) {
+                        echo '<option value="' . urldecode($term->name) . '" selected="selected">' . $prefix . $term->name . '</option>';
+                    } else {
+                        echo '<option value="' . urldecode($term->name) . '">' . $prefix . $term->name . '</option>';
                     }
                 }
-            }
-        }
-
-    }
-}
-
-if(!function_exists('homey_check_membershop_status')) {
-    function homey_check_membershop_status()
-    {
-        $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-        if( ! homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-            $subscriptions = homey_get_user_subscription(1);
-
-            foreach($subscriptions as $subscription){
-                $subscriptionID = $subscription['subscriptionID'];
-                $membershipStatus = get_post_meta($subscriptionID, 'hm_subscription_detail_status', true);
-
-                if($membershipStatus == 'expired'){
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        return false;
-    }
-}
-
-if(!function_exists('hm_check_subscriptions_status')) {
-    function hm_check_subscriptions_status($user_login, $user)
-    {
-        global $wpdb;
-        if(in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-            $subscriptions = homey_get_user_subscription(false, $user->ID);
-            foreach ($subscriptions as $subscription){
-                $expiryDate = get_post_meta($subscription->ID, "hm_subscription_detail_expiry_date", true);
-
-                $now = strtotime(date('d-m-Y H:i:s'));
-                $valid = strtotime($expiryDate);
-
-                if($now > $valid ){
-                    update_post_meta($subscription->ID, "hm_subscription_detail_status", "expired");
-                }
-            }
-
-        }//no worries because plugin is not in action
-        return true;
-    }
-
-    add_action('wp_login', 'hm_check_subscriptions_status', 10, 2);
-}
-
-if(!function_exists('hm_experience_limit_check')) {
-    function hm_experience_limit_check($userID, $experience_status = '')
-    {
-        $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-        $upgrade_feature_experience_url = homey_get_template_link('template/template-membership-webhook.php');
-        $membership_settings = get_option('hm_memberships_options');
-
-        if(in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-            $allSubsExperiencesLimit = 0;
-            $subscriptions = homey_get_user_subscription(1, $userID);
-            foreach ($subscriptions as $k => $subscription){
-
-                $sub_status = get_post_meta($subscription['subscriptionID'], "hm_subscription_detail_status", true);
-                $unlimitedExperiences = get_post_meta($subscription['planID'], 'hm_settings_unlimited_experiences', true);
-                if($unlimitedExperiences == "on"){
-                    return array(
-                        'is_allowed_membership' => 1,
-                        'total_allowed_featured_experience' => 'unlimited',
-                        'current_number_experience' => 'unlimited',
-                        'remaining_number_experience' => 'unlimited'
-
-                    );
-                }
-
-                $allSubsExperiencesLimit += get_post_meta($subscription['planID'], 'hm_settings_experiences_included', true);
-            }
-
-            $currentExperience = homey_hm_user_experience_count($userID);
-            if ('publish' == $experience_status){
-                $currentExperience -= 1; //make able user to edit the experience
-            }
-
-            if(!homey_is_admin() && $allSubsExperiencesLimit <= $currentExperience && $membership_settings['free_numOf_experiences'] <= $currentExperience){
-                $message_string = esc_html__( "You consumed all experience limit or you don't have any subscription, now you will redirect to plan selection page.", 'homey' );
-                $varText = 'experience-limit-completed';
-                ?>
-                <script>
-                    var message_html = '<p style="margin-top: 10%; margin-left:15%" class=" error text-danger"><?php echo $message_string; ?></p>';
-                    document.getElementsByTagName("body")[0].innerHTML = message_html;
-
-                    document.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                    });
-
-                    setInterval(function(){
-                        window.location.href = '<?php echo $memberships_url.'?'.$varText.'=1'; ?>';
-                    }, 5000);
-                </script>
-                <?php
-            }else{
-                return array(
-                    'is_allowed_membership' => 1,
-                    'total_allowed_featured_experience' => $allSubsExperiencesLimit,
-                    'current_number_experience' => $currentExperience,
-                    'remaining_number_experience' => $allSubsExperiencesLimit - $currentExperience,
-
-                );
-            }
-        }//no worries because plugin is not in action
-        return true;
-    }
-}
-
-if(!function_exists('hm_featured_limit_check')) {
-    function hm_featured_limit_check()
-    {
-        global $wpdb;
-        $memberships_url = homey_get_template_link('template/template-membership-webhook.php');
-        $upgrade_feature_experience_url = homey_get_template_link('template/template-membership-webhook.php');
-        if(in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
-            $subscriptionInfo = homey_get_user_subscription();
-            $subscriptionID = @$subscriptionInfo['subscriptionID'];
-            $planID = @$subscriptionInfo['planID'];
-            $featuredListingsLimit = get_post_meta($planID, 'hm_settings_featured_experiences', true);
-            $currentFeaturedListing = homey_featured_experience_count(get_current_user_id());
-
-            if(!homey_is_admin() && $featuredListingsLimit <= $currentFeaturedListing){
-                $message_string = esc_html__( 'You consumed all experience limit, now you will redirect to plan selection page.', 'homey' );
-                $varText = 'feature-limit-completed';
-                ?>
-                <script>
-                    document.getElementById("section-body").innerHTML = "<p class='error text-danger'><?php echo $message_string; ?></p>";
-                    document.getElementById("section-body").style.padding = "10% 2%";
-
-                    document.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                    });
-
-                    setInterval(function(){
-                        window.location.href = '<?php echo $memberships_url.'?'.$varText.'=1'; ?>';
-                    }, 5000);
-                </script>
-                <?php
-                exit;
-            }else{
-                return array(
-                    'is_allowed_membership' => 1,
-                    'total_allowed_featured_experience' => $featuredListingsLimit,
-                    'current_number_experience' => $currentFeaturedListing
-                );
-            }
-        }//no worries because plugin is not in action
-        return true;
-    }
-}
-//membership functions
-
-if(!function_exists('homey_translated_date_labels')) {
-    function homey_translated_date_labels() {
-        $homey_date_format = homey_option('homey_date_format');
-
-        if($homey_date_format == 'yy-mm-dd') {
-            $return_translated_date = esc_html__('YY', 'homey').'-'.esc_html__('MM', 'homey').'-'.esc_html__('DD', 'homey');
-
-        } elseif($homey_date_format == 'yy-dd-mm') {
-            $return_translated_date = esc_html__('YY', 'homey').'-'.esc_html__('DD', 'homey').'-'.esc_html__('MM', 'homey');
-
-        } elseif($homey_date_format == 'mm-yy-dd') {
-            $return_translated_date = esc_html__('MM', 'homey').'-'.esc_html__('YY', 'homey').'-'.esc_html__('DD', 'homey');
-
-        } elseif($homey_date_format == 'dd-yy-mm') {
-            $return_translated_date = esc_html__('DD', 'homey').'-'.esc_html__('YY', 'homey').'-'.esc_html__('MM', 'homey');
-
-        } elseif($homey_date_format == 'mm-dd-yy') {
-            $return_translated_date = esc_html__('MM', 'homey').'-'.esc_html__('DD', 'homey').'-'.esc_html__('YY', 'homey');
-
-        } elseif($homey_date_format == 'dd-mm-yy') {
-            $return_translated_date = esc_html__('DD', 'homey').'-'.esc_html__('MM', 'homey').'-'.esc_html__('YY', 'homey');
-
-        }elseif($homey_date_format == 'dd.mm.yy') {
-            $return_translated_date = esc_html__('DD', 'homey').'-'.esc_html__('MM', 'homey').'-'.esc_html__('YY', 'homey');
-
-        } else {
-            $return_translated_date = esc_html__('YY', 'homey').'-'.esc_html__('MM', 'homey').'-'.esc_html__('DD', 'homey');
-
-        }
-
-        return $return_translated_date;
-    }
-}
-
-if(!function_exists('homey_translate_word_by_word')) {
-    function homey_translate_word_by_word($string='') {
-        $words = explode(' ', $string);
-        $new_string = '';
-
-        if(count($words) > 0) {
-            foreach ($words as $word)
-            {
-                $new_string .= esc_html__( $word, 'homey').' ';
-            }
-
-            return rtrim($new_string);
-        }
-
-        return rtrim( esc_html__( $string, 'homey') );
-    }
-}
 
 
-/*-----------------------------------------------------------------------------------*/
-// get taxonomies with with id value
-/*-----------------------------------------------------------------------------------*/
-if(!function_exists('homey_get_taxonomies_options')){
-    function homey_get_taxonomies_options( $experience_id, $taxonomy ){
-        $terms = get_terms([
-            'taxonomy' => $taxonomy,
-            'hide_empty' => false,
-        ]);
+                $child_terms = get_terms($taxonomy_name, array(
+                    'hide_empty' => false,
+                    'parent' => $term->term_id
+                ));
 
-        $taxonomy_terms = get_the_terms( $experience_id, $taxonomy );
-        $taxonomy_terms_ids = array();
-
-        if (!empty($taxonomy_terms)) {
-            foreach ($taxonomy_terms as $taxonomy_term) {
-                $taxonomy_terms_ids[$taxonomy_term->term_id] = $taxonomy_term->term_id;
-            }
-        }//prep array ids
-
-        if (!empty($terms)) {
-            foreach ($terms as $term) {
-                if(isset($taxonomy_terms_ids[$term->term_id])){
-                    echo '<option value="' . $term->term_id . '" selected="selected">' . $term->name . '</option>';
-                }else{
-                    echo '<option value="' . $term->term_id . '">' . $term->name . '</option>';
+                if (!empty($child_terms)) {
+                    homey_hirarchical_options( $taxonomy_name, $child_terms, $searched_term, "- ".$prefix );
                 }
             }
         }

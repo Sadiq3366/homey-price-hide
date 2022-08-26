@@ -3,8 +3,6 @@
  * The Template for displaying all single posts
  * @since Homey 1.0
  */
-
-
 get_header();
 global $post, $homey_local;
 $sticky_sidebar = homey_option('sticky_sidebar');
@@ -122,5 +120,3 @@ if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_
 <?php
 }
 get_footer();
-
-?>

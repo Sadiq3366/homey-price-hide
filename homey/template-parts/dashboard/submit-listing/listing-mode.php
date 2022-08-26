@@ -10,7 +10,6 @@
             <div class="form-group">
                 <select id="homey_listing_mode" class="selectpicker" data-live-search="false" data-live-search-style="begins" title="">
                     <option value=""><?php esc_html_e('Select', 'homey'); ?></option>
-                    <option value="per_day_date"><?php esc_html_e('Per Day', 'homey'); ?></option>
                     <option value="per_day"><?php esc_html_e('Per Night', 'homey'); ?></option>
                     <option value="per_week"><?php esc_html_e('Per Week', 'homey'); ?></option>
                     <option value="per_month"><?php esc_html_e('Per Month', 'homey'); ?></option>

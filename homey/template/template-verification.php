@@ -54,7 +54,7 @@ endif;
                 
                 <div class="page-wrap">
                     <div class="reset-password">
-                        <h1 class="page-title"><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+                        <h1 class="page-title"><?php the_title(); ?></h1>
                         
                         <?php if ( $resetpass ) : ?>
 			            <form action="#" method="post" autocomplete="off">

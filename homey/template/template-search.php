@@ -2,7 +2,6 @@
 /**
  * Template Name: Search Results
  */
-
 get_header();
 global $post, $wp_query, $paged, $listing_founds, $number_of_listings;
 
@@ -15,11 +14,4 @@ if($search_result_page == 'half_map') {
 }
 
 get_footer(); 
-
-
-
-
-    
-
-
 ?>

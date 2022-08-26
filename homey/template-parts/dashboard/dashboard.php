@@ -59,34 +59,17 @@ if(homey_is_admin()) {
                             ?>
 
                         </div><!-- .block -->
-
-                        <?php if(!homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){ ?>
-                        <div class="block current-membership-plan">
-                            <div class="block-title">
-                                <h2 class="title">Membership Package</h2>
-                            </div>
-                            <div class="block-body">
-                               <?php  $subscription_info = get_active_membership_plan();
-                                echo isset($subscription_info['subscriptionObj']->post_title) ? $subscription_info['subscriptionObj']->post_title : esc_html__('No Package Selected', 'homey'); echo ', ';
-                               $expiry_date_text = 'n-a';
-                                if(isset($subscription_info['subscriptionObj']->post_title)){
-                                   $expiry_date_text =  empty($subscription_info['subscriptionExpiryDate']) ? esc_html__('No Expiry Date', 'homey') : homey_format_date_simple($subscription_info['subscriptionExpiryDate']);
-                                }?>
-                                <strong><?php echo esc_html__('Expiry Date:', 'homey').' '. $expiry_date_text;?></strong>
-                                <a class="btn btn-primary pull-right" href="<?php echo homey_get_template_link('template/template-membership-webhook.php'); ?>"><?php echo __("Change Package", 'homey'); ?></a>
-                            </div>
-                        </div><!-- .block for current membership plan -->
-                        <?php } ?>
+                        
 
                         <div class="block">
                             <div class="block-title">
                                 <div class="block-left">
                                     <h2 class="title">
-                                        <?php
+                                        <?php 
                                         if($is_renter) {
                                             echo esc_attr($homey_local['my_resv']);
                                         } else {
-                                            echo esc_attr($homey_local['upcoming_resv']);
+                                            echo esc_attr($homey_local['upcoming_resv']); 
                                         }
                                         ?>
                                     </h2>
@@ -95,15 +78,15 @@ if(homey_is_admin()) {
                                 <?php if(!empty($reservation_page)) { ?>
                                 <div class="block-right">
                                     <a href="<?php echo esc_url($reservation_page); ?>" class="block-link pull-right">
-                                        <?php echo esc_attr($homey_local['view_all_label']); ?>
+                                        <?php echo esc_attr($homey_local['view_all_label']); ?> 
                                         <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                     </a>
                                 </div>
                                 <?php } ?>
 
                             </div>
-
-                            <?php
+                            
+                            <?php 
                             $args = array(
                                 'post_type'        =>  'homey_reservation',
                                 'posts_per_page'   => 5,
@@ -134,13 +117,13 @@ if(homey_is_admin()) {
                                 if( $meta_count > 1 ) {
                                     $meta_query['relation'] = 'AND';
                                 }
-
+                                
                                 $args['meta_query'] = $meta_query;
                             }
 
                             $res_query = new WP_Query($args);
-
-
+                            
+                            
                             if( $res_query->have_posts() ): ?>
                             <div class="table-block dashboard-reservation-table dashboard-table">
                                 <table class="table table-hover">
@@ -153,9 +136,7 @@ if(homey_is_admin()) {
                                             <th><?php echo esc_attr($homey_local['address']); ?></th>
                                             <th><?php echo esc_attr($homey_local['check_in']); ?></th>
                                             <th><?php echo esc_attr($homey_local['check_out']); ?></th>
-                                            <?php if(homey_option('cgl_guests') != 0){ ?>
                                             <th><?php echo homey_option('glc_guests_label');?></th>
-                                            <?php } ?>
                                             <th><?php echo esc_attr($homey_local['pets_label']);?></th>
                                             <th><?php echo esc_attr($homey_local['subtotal_label']); ?></th>
                                             <th><?php echo esc_attr($homey_local['actions_label']); ?></th>
@@ -163,15 +144,9 @@ if(homey_is_admin()) {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        while ($res_query->have_posts()): $res_query->the_post();
-
-                                            $is_hourly = get_post_meta(get_the_ID(), 'is_hourly', true);
-
-                                            if($is_hourly == 'yes') {
-                                                get_template_part('template-parts/dashboard/reservation/item-hourly');
-                                            } else {
-                                                get_template_part('template-parts/dashboard/reservation/item');
-                                            }
+                                        while ($res_query->have_posts()): $res_query->the_post(); 
+                                            
+                                            get_template_part('template-parts/dashboard/reservation/item');
 
                                         endwhile;
                                         wp_reset_postdata();
@@ -179,11 +154,11 @@ if(homey_is_admin()) {
                                     </tbody>
                                 </table>
                             </div>
-                            <?php else:
+                            <?php else: 
                                     echo '<div class="block-body">';
-                                    echo esc_attr($homey_local['upcoming_reservation_not_found']);
-                                    echo '</div>';
-                            endif;
+                                    echo esc_attr($homey_local['upcoming_reservation_not_found']);  
+                                    echo '</div>'; 
+                            endif;  
                             ?>
                         </div><!-- .block -->
 

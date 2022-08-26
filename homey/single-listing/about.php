@@ -1,21 +1,12 @@
 <?php
 global $post, $homey_prefix, $homey_local, $hide_labels;
 $guests     = homey_get_listing_data('guests');
-
-$allow_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'allow_additional_guests', true );
-$num_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'num_additional_guests', true );
-
-if( $allow_additional_guests == 'yes' && ! empty( $num_additional_guests ) ) {
-    $guests = (int) $guests + (int) $num_additional_guests;
-}
-
-$num_additional_guests = homey_get_field_meta('num_additional_guests');
-
 $bedrooms   = homey_get_listing_data('listing_bedrooms');
 $beds       = homey_get_listing_data('beds');
 $bathrooms      = homey_get_listing_data('baths');
 $room_type  = homey_taxonomy_simple('room_type');
 $listing_type = homey_taxonomy_simple('listing_type');
+$facilities  = wp_get_post_terms(get_the_ID(), 'listing_facility', array("fields" => "all"));
 
 $full_bath = $half_bath = $type_icon = $acco_icon = $bedroom_icon = $bathroom_icon = '';
 if($bathrooms != '' && $bathrooms != '0') {
@@ -30,7 +21,7 @@ if($bathrooms != '' && $bathrooms != '0') {
 
 $slash = '';
 if(!empty($room_type) && !empty($listing_type)) {
-    $slash = '/';
+    $slash = '<br>';
 }
 $icon_type = homey_option('detail_icon_type');
 
@@ -57,9 +48,9 @@ if($icon_type == 'fontawesome_icon') {
             <div class="block-icon">
                 <?php echo ''.$type_icon; ?>
             </div>
-            <div><?php echo esc_attr(homey_option('sn_type_label')); ?></div>
+            <div id="sa-title-mobile"><?php echo esc_attr(homey_option('sn_type_label')); ?></div>
             <div>
-                <strong>
+                <strong id="sa-explanation-mobile">
                 <?php echo esc_attr($room_type).' '.$slash.' '.esc_attr($listing_type); ?>     
                 </strong>
             </div>
@@ -71,8 +62,8 @@ if($icon_type == 'fontawesome_icon') {
             <div class="block-icon">
                 <?php echo ''.$acco_icon; ?>
             </div>
-            <div><?php echo esc_attr(homey_option('sn_accom_label')); ?></div>
-            <div><strong><?php echo esc_attr($guests).' > '.$num_additional_guests; ?> <?php echo esc_attr(homey_option('sn_guests_label')); ?></strong></div>
+            <div id="sa-title-mobile"><?php echo esc_attr(homey_option('sn_accom_label')); ?></div>
+            <div><strong id="sa-explanation-mobile"><?php echo esc_attr($guests); ?> <?php echo esc_attr(homey_option('sn_guests_label')); ?></strong></div>
         </div>
         <?php } ?>
 
@@ -81,8 +72,8 @@ if($icon_type == 'fontawesome_icon') {
             <div class="block-icon">
                 <?php echo ''.$bedroom_icon; ?>
             </div>
-            <div><?php echo esc_attr(homey_option('sn_bedrooms_label')); ?></div>
-            <div><strong><?php echo esc_attr($bedrooms); ?> <?php echo esc_attr(homey_option('sn_bedrooms_label')); ?> / <?php echo esc_attr($beds); ?> <?php echo esc_attr(homey_option('sn_beds_label')); ?></strong></div>
+            <div id="sa-title-mobile"><?php echo esc_attr(homey_option('sn_bedrooms_label')); ?></div>
+            <div><strong id="sa-explanation-mobile"><?php echo esc_attr($bedrooms); ?> <?php echo esc_attr(homey_option('sn_bedrooms_label')); ?> <br> <?php echo esc_attr($beds); ?> <?php echo esc_attr(homey_option('sn_beds_label')); ?></strong></div>
         </div>
         <?php } ?>
 
@@ -91,13 +82,28 @@ if($icon_type == 'fontawesome_icon') {
             <div class="block-icon">
                 <?php echo ''.$bathroom_icon; ?>
             </div>
-            <div><?php echo esc_attr(homey_option('sn_bathrooms_label')); ?></div>
-            <div><strong><?php echo esc_attr($full_bath).' '.esc_attr($half_bath); ?></strong></div>
+            <div id="sa-title-mobile"><?php echo esc_attr(homey_option('sn_bathrooms_label')); ?></div>
+            <div><strong id="sa-explanation-mobile"><?php echo esc_attr($full_bath).' '.esc_attr($half_bath); ?></strong></div>
         </div>
         <?php } ?>
 
     </div><!-- block-bordered -->
     <?php } ?>  
+
+    <!-- Custome -->
+    <?php if (!empty($facilities)) { ?>
+        <div class="block" id="su_features_display_mobile">
+            <div class="block-body">
+                <p><strong><?php echo esc_attr(homey_option('sn_facilities')); ?></strong></p>
+                <ul class="detail-list detail-list-2-cols">
+                    <?php foreach ($facilities as $facility) : ?>
+                        <li><i class="fa fa-angle-right" aria-hidden="true"></i> <?php echo esc_attr($facility->name); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div><!-- block-body -->
+    <?php } ?>
+    <!-- end -->
 
     <?php if($hide_labels['sn_about_listing_title'] != 1) { ?>
     <div class="block">

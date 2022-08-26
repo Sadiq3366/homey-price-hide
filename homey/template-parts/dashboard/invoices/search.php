@@ -4,13 +4,13 @@
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
             <div class="form-group">
                 <label><?php echo esc_attr($homey_local['start_date']); ?></label>
-                <input id="startDate" type="text" class="input_date form-control" placeholder="<?php echo homey_translated_date_labels(); ?>">
+                <input id="startDate" type="text" class="input_date form-control" placeholder="MM/DD/YY">
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
             <div class="form-group">
                 <label><?php echo esc_attr($homey_local['end_date']); ?></label>
-                <input id="endDate" type="text" class="input_date form-control" placeholder="<?php echo homey_translated_date_labels(); ?>">
+                <input id="endDate" type="text" class="input_date form-control" placeholder="MM/DD/YY">
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">

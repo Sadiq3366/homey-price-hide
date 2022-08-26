@@ -83,11 +83,7 @@
         cardButton.addEventListener('click', function(ev) {
             ev.preventDefault();
             ev.stopPropagation();  
-            jQuery('#homey_stripe_submit_btn').show();
-            jQuery("#homey_stripe_submit_btn").prop('disabled', true);
-
-            jQuery("#homey_stripe_submit_btn").children('i').remove();
-            jQuery("#homey_stripe_submit_btn").prepend('<i class="fa-left fa fa-spin fa-spinner"></i>');
+            jQuery('#homey_stripe_message').show();
 
             stripe.handleCardPayment(
               clientSecret, card, {
@@ -108,29 +104,22 @@
 
               }
             ).then(function(result) {
-                if (result.error) {
-                    jQuery("#homey_stripe_submit_btn").children('i').remove();
-                    jQuery("#homey_stripe_submit_btn").prop('disabled', false);
+                if (result.error) { 
                     jQuery('#homey_stripe_message').empty().show().html('<div class="alert alert-danger alert-dismissible" role="alert">'+HOMEY_stripe_vars.payment_failed+'</div>');
                 
                 } else {
                 
                     setTimeout(function(){ 
-                        jQuery('#homey_stripe_message').empty().show().html('<div class="alert alert-success alert-dismissible" role="alert">'+HOMEY_stripe_vars.successful_message+'</div>');
+                        jQuery('#homey_stripe_message').empty().show().html('<div class="alert alert-success alert-dismissible" role="alert">Successfully Paid, Redirecting...</div>');
 
+                        
                         setTimeout(function(){ 
                             
                             if( redirect_type.value == 'back_to_listing_with_featured' ) {
                                 window.location.href = HOMEY_stripe_vars.featured_return_link;
 
                             } else if( redirect_type.value == "reservation_detail_link" ) {
-                                var res_return_link = HOMEY_stripe_vars.reservation_return_link;
-
-                                if(HOMEY_stripe_vars.is_experience_template == 1){
-                                    res_return_link = HOMEY_stripe_vars.reservation_exp_return_link;
-                                }
-
-                                window.location.href = res_return_link;
+                                window.location.href = HOMEY_stripe_vars.reservation_return_link;
                             }
 
                             

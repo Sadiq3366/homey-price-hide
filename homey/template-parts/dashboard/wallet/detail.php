@@ -22,7 +22,7 @@ if(!empty($earning_detail)) {
     $datetime = $earning_detail->time;
 
     $datetime_unix = strtotime($datetime);
-    $date = homey_translate_word_by_word(homey_return_formatted_date($datetime_unix));
+    $date = homey_return_formatted_date($datetime_unix);
     $time = homey_get_formatted_time($datetime_unix);
     $resrv_link = add_query_arg( 'reservation_detail', $reservation_id, $reservation_page_link );
 
@@ -61,7 +61,7 @@ if(!empty($earning_detail)) {
                     <li>
                         <strong><?php esc_html_e('Date', 'homey'); ?>:</strong> 
                         <span>
-                        <?php echo $date; ?>
+                        <?php echo esc_attr($date); ?>
                         <?php echo esc_html__('at', 'homey'); ?>
                         <?php echo esc_attr($time); ?>
                         </span>

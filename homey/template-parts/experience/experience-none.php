@@ -1,1 +1,0 @@
-<div class="item-wrap"><h4 class="not-found"><?php esc_html_e('Sorry no results found', 'homey') ?></h4></div>

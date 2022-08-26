@@ -1,12 +1,12 @@
 <?php
 global $post, $homey_prefix;
-$header_title = esc_html__(get_post_meta( $post->ID, $homey_prefix. 'header_title', true ), 'homey');
-$header_subtitle = esc_html__(get_post_meta( $post->ID, $homey_prefix. 'header_subtitle', true ), 'homey');
-$banner_search = esc_html__(get_post_meta( $post->ID, 'homey_head_search_style', true), 'homey');
+$header_title = get_post_meta( $post->ID, $homey_prefix. 'header_title', true );
+$header_subtitle = get_post_meta( $post->ID, $homey_prefix. 'header_subtitle', true );
+$banner_search = get_post_meta( $post->ID, 'homey_head_search_style', true);
 
 if(homey_is_splash()) {
-	$header_title = esc_html__(homey_option( 'splash_welcome_text' ), 'homey');
-	$header_subtitle = esc_html__(homey_option( 'splash_welcome_sub' ), 'homey');
+	$header_title = homey_option( 'splash_welcome_text' );
+	$header_subtitle = homey_option( 'splash_welcome_sub' );
 }
 
 if(!empty($header_title)) {

@@ -19,8 +19,6 @@ $invoice_additional_info = homey_option( 'invoice_additional_info' );
 $homey_invoice_buyer = get_post_meta( $invoice_id, 'homey_invoice_buyer', true );
 
 $user_info = get_userdata($homey_invoice_buyer);
-$user_phone = get_user_meta( $homey_invoice_buyer, 'phone', true);
-
 $user_email     = isset($user_info->user_email)?$user_info->user_email:'-';
 $first_name     = isset($user_info->first_name)?$user_info->first_name:'-';
 $last_name      = isset($user_info->last_name)?$user_info->last_name:'-';
@@ -57,7 +55,7 @@ if($invoice_data['invoice_billion_for'] == 'reservation') {
 ?>
 <div class="invoice-detail block">
     <?php
-    if(homey_is_admin() || $invoice_data['invoice_resv_owner'] == $logged_in_user
+    if($invoice_data['invoice_resv_owner'] == $logged_in_user
             || $invoice_data['invoice_buyer_id'] == $logged_in_user){ ?>
     <div class="invoice-header clearfix">
         <div class="block-left">
@@ -90,8 +88,7 @@ if($invoice_data['invoice_billion_for'] == 'reservation') {
             <li><strong><?php echo esc_html__('To:', 'homey'); ?></strong></li>
             <li><?php echo esc_attr($fullname); ?></li>
             <li><?php echo esc_html__('Email:', 'homey'); ?> <?php echo esc_attr($user_email);?></li>
-            <li><?php echo esc_html__('Phone:', 'homey'); ?> <?php echo esc_attr($user_phone);?></li>
-        </ul>
+        </ul>  
         <h2 class="title"><?php esc_html_e('Details', 'homey'); ?></h2> 
 
         <?php 
@@ -109,9 +106,8 @@ if($invoice_data['invoice_billion_for'] == 'reservation') {
                 echo '<li>'.$homey_local['billing_for'].' <span>'.$billing_for_text.'</span></li>';
                 echo '<li>'.$homey_local['billing_type'].' <span>'.esc_html( $invoice_data['invoice_billing_type'] ).'</span></li>';
                 echo '<li>'.$homey_local['inv_pay_method'].' <span>'.esc_html($invoice_data['invoice_payment_method']).'</span></li>';
-            $price_is_zero = homey_formatted_price( $invoice_data['invoice_item_price'] );
-            echo '<li class="payment-due gf">'.$homey_local['inv_total'].' <span>'.$price_is_zero != '' ? $price_is_zero : "0".'</span></li>';
-            echo '<input type="hidden" name="is_valid_upfront_payment" id="is_valid_upfront_payment" value="'.$invoice_data['invoice_item_price'].'">';
+                echo '<li class="payment-due gf">'.$homey_local['inv_total'].' <span>'.homey_formatted_price( $invoice_data['invoice_item_price'] ).'</span></li>';
+                echo '<input type="hidden" name="is_valid_upfront_payment" id="is_valid_upfront_payment" value="'.$invoice_data['invoice_item_price'].'">';
 
             echo '</ul></div>';
         }

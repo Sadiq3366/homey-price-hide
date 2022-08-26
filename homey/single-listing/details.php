@@ -1,11 +1,6 @@
 <?php
-$page_id = get_queried_object_id();
-///print_r($page_id);
-//exit();
 global $post, $homey_prefix, $homey_local, $hide_labels;
 $guests     = homey_get_listing_data('guests');
-$num_additional_guests    = homey_get_listing_data('num_additional_guests');
-
 $bedrooms   = homey_get_listing_data('listing_bedrooms');
 $beds       = homey_get_listing_data('beds');
 $baths      = homey_get_listing_data('baths');
@@ -27,7 +22,7 @@ if(!empty($room_type) && !empty($listing_type)) {
         <div class="block-section">
             <div class="block-body">
                 <div class="block-left">
-                   <h3 class="title"><?php echo esc_attr(homey_option('sn_detail_heading')); ?></h3>
+                    <h3 class="title"><?php echo esc_attr(homey_option('sn_detail_heading')); ?></h3>
                 </div><!-- block-left -->
                 <div class="block-right">
                     <ul class="detail-list detail-list-2-cols">
@@ -43,13 +38,6 @@ if(!empty($room_type) && !empty($listing_type)) {
                             <i class="fa fa-angle-right" aria-hidden="true"></i> 
                             <?php echo esc_attr(homey_option('sn_guests_label')); ?>: <strong><?php echo esc_attr($guests); ?></strong>
                         </li> 
-                        <?php } ?>
-
-                        <?php if(!empty($num_additional_guests) && $hide_labels['sn_addinal_guests_label'] != 1) { ?>
-                        <li>
-                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                            <?php echo esc_html__('No of Guests', 'homey'); ?>: <strong><?php echo esc_attr($num_additional_guests); ?></strong>
-                        </li>
                         <?php } ?>
 
                         <?php if(!empty($bedrooms) && $hide_labels['sn_bedrooms_label'] != 1) { ?>
@@ -132,15 +120,4 @@ if(!empty($room_type) && !empty($listing_type)) {
             </div><!-- block-body -->
         </div><!-- block-section -->
     </div><!-- block -->
-	
-	<?php
-    if($page_id==244)
-    {
-    echo do_shortcode('[grw id="2773"]');
-    }
-     if($page_id==246)
-    {
-        echo do_shortcode('[grw id="2772"]');
-    }
-    ?>
 </div>

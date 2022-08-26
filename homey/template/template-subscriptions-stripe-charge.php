@@ -19,7 +19,7 @@ $username     =   $current_user->user_login;
 $submission_currency = homey_option('payment_currency');
 $paymentMethod = 'Stripe';
 
-$date = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+$date = date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ));
 
 $stripe_secret_key = homey_option('stripe_secret_key');
 
@@ -62,8 +62,8 @@ switch ($event->type) {
       $subscriptionID   = $event->data->object->id;
       $eventID          = $event->id;
       $subscriptionInfo = hm_subscription_detail($subscriptionID);
-
-     // file_put_contents('./log_stripe_'.date("j.n.Y").'.txt', ' p title '.$subscriptionInfo->post_title.' <> '.$userID.' < uId > paymenTyp > '.$homey_payment_type.' '.$event, FILE_APPEND);
+      
+      file_put_contents('./log_stripe_'.date("j.n.Y").'.txt', ' p title '.$subscriptionInfo->post_title.' <> '.$userID.' < uId > paymenTyp > '.$homey_payment_type.' '.$event, FILE_APPEND);
       
             if ( isset ($homey_payment_type) && $homey_payment_type == 'subscription_fee'  ) {
                 update_post_meta($subscriptionInfo->ID, 'hm_subscription_detail_status', 'expired');
@@ -92,8 +92,9 @@ switch ($event->type) {
       $subscriptionID   = $event->data->object->items->data[0]->subscription;
       $eventID          = $event->id;
       $subscriptionInfo = homey_get_membership_detail($subscriptionID);
+      $log .= $event.' yeh hai updated ';
 
-//      file_put_contents('./log_stripe_'.date("j.n.Y").'.txt', $log, FILE_APPEND);
+      file_put_contents('./log_stripe_'.date("j.n.Y").'.txt', $log, FILE_APPEND);
       
         add_post_meta($subscriptionInfo->post_id, 'hm_subscription_detail_status', 'expired');
         break;

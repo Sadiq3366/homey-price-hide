@@ -9,13 +9,12 @@ if ( !is_user_logged_in() || homey_is_renter() ) {
 get_header(); 
 
 global $current_user, $post;
-$hide_labels = homey_option('show_hide_labels');
 
 wp_get_current_user();
 $userID         = $current_user->ID;
 $user_login     = $current_user->user_login;
 $edit_link      = homey_get_template_link('template/dashboard-submission.php');
-$listings_page  = homey_get_template_link('template/dashboard-listings.php');
+$listings_page      = homey_get_template_link('template/dashboard-listings.php');
 
 $publish_active = $pending_active = $draft_active = $mine_active = $all_active = $disabled_active = 'btn btn-primary-outlined btn-slim';
 if( isset( $_GET['status'] ) && $_GET['status'] == 'publish' ) {
@@ -49,12 +48,10 @@ $qry_status = isset( $_GET['status'] ) ? $_GET['status'] : 'any';
 $no_of_listing   =  '9';
 $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 $args = array(
-    'post_type'         =>  'listing',
-    'orderby'           => 'modified',
-    'order'             => 'DESC',
+    'post_type'        =>  'listing',
     'paged'             => $paged,
     'posts_per_page'    => $no_of_listing,
-    'post_status'       =>  $qry_status
+    'post_status'      =>  $qry_status
 );
 
 if(homey_is_host() || homey_is_renter()) {
@@ -83,7 +80,6 @@ if( isset ( $_GET['keyword'] ) ) {
 }
 
 $args = homey_listing_sort ( $args );
-//print_r($args);
 $listing_qry = new WP_Query($args);
 
 $post_type = 'listing';
@@ -99,7 +95,7 @@ $total_posts  = array_sum($num_post_arr);
 <section id="body-area">
 
     <div class="dashboard-page-title">
-        <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+        <h1><?php the_title(); ?></h1>
     </div><!-- .dashboard-page-title -->
 
     <?php get_template_part('template-parts/dashboard/side-menu'); ?>
@@ -115,7 +111,9 @@ $total_posts  = array_sum($num_post_arr);
                                     <div class="block-left">
                                         <h2 class="title"><?php echo esc_attr($homey_local['manage_label']); ?></h2>
                                         <div class="mt-10">
-                                            <?php
+                                            <?php 
+                                                
+
                                                 if(homey_is_admin()) {
                                                     echo '<a class="'.esc_attr($all_active).'" href="'.esc_url($all_link).'">'.esc_html__('All', 'homey').' ('.$total_posts.')</a> ';
 
@@ -178,25 +176,12 @@ $total_posts  = array_sum($num_post_arr);
                                             <thead>
                                                 <tr>
                                                     <th><?php echo esc_attr($homey_local['thumb_label']); ?></th>
-                                                    <th><?php echo esc_attr($homey_local['owner_label']); ?></th>
                                                     <th><?php echo esc_attr($homey_local['address']); ?></th>
                                                     <th><?php echo homey_option('sn_type_label'); ?></th>
                                                     <th><?php echo esc_attr($homey_local['price_label']); ?></th>
-                                                    <th><?php echo esc_attr($homey_local['coupens']); ?></th>
-
-                                                <?php if($hide_labels['sn_bedrooms_label'] != 1){?>
                                                     <th><?php echo homey_option('glc_bedrooms_label');?></th>
-                                                <?php } ?>
-
-                                                <?php if($hide_labels['sn_bathrooms_label'] != 1){?>
                                                     <th><?php echo homey_option('glc_baths_label');?></th>
-                                                <?php } ?>
-
-                                                <?php if($hide_labels['sn_guests_label'] != 1){?>
                                                     <th><?php echo homey_option('glc_guests_label');?></th>
-                                                <?php } ?>
-
-
                                                     <th><?php echo homey_option('sn_id_label');?></th>
                                                     <th><?php echo esc_attr($homey_local['status_label']); ?></th>
                                                     <th><?php echo esc_attr($homey_local['actions_label']); ?></th>
@@ -205,8 +190,7 @@ $total_posts  = array_sum($num_post_arr);
                                             <tbody id="module_listings">
                                                 <?php 
                                                 while ($listing_qry->have_posts()): $listing_qry->the_post();
-                                                     get_template_part('template-parts/dashboard/listing-item');
-                                                    
+                                                    get_template_part('template-parts/dashboard/listing-item');
                                                 endwhile;
                                                 ?>
                                             </tbody>

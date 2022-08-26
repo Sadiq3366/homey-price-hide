@@ -12,14 +12,6 @@ function homey_admin_css() {
       ";
     } 
 
-    if($homey_site_mode == 'per_day_date') {
-      $make_css = "
-      .homey_daily {
-        display:none !important;
-      }
-      ";
-    }
-
     if($homey_site_mode == 'per_day') {
       $make_css = "
       .homey_daily {

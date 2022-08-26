@@ -19,7 +19,7 @@ $username     =   $current_user->user_login;
 $submission_currency = homey_option('payment_currency');
 $paymentMethod = 'Stripe';
 
-$date = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+$date = date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ));
 
 $stripe_secret_key = homey_option('stripe_secret_key');
 
@@ -53,14 +53,11 @@ try {
 // Handle the event
 switch ($event->type) {
     case 'payment_intent.succeeded':
-        //file_put_contents('./log_stripe_'.date("j.n.Y").'.txt', ' event type '.$event->type, FILE_APPEND);
 
         $intent = $event->data->object;
 
-        $homey_payment_type = $event->data->object->charges->data[0]->metadata->payment_type;
-
-        $renter_message = $event->data->object->charges->data[0]->metadata->guest_message;
-
+        $homey_payment_type = $event->data->object->charges->data[0]->metadata->payment_type; 
+        
         if ( isset ($homey_payment_type) && $homey_payment_type == 'reservation_fee'  ) {
 
             $userID          = intval($event->data->object->charges->data[0]->metadata->userID); 
@@ -114,7 +111,9 @@ switch ($event->type) {
                 $guests = $event->data->object->charges->data[0]->metadata->guests;
                 $guests = isset($guests) ? $guests : '';
 
+                $renter_message = $event->data->object->charges->data[0]->metadata->guest_message;
                 $renter_user_id = $event->data->object->charges->data[0]->metadata->userID;
+                $renter_message = isset($renter_message) ? $renter_message : '';
 
                 $check_in_date = $event->data->object->charges->data[0]->metadata->check_in_date;
                 $check_in_date = isset($check_in_date) ? $check_in_date : '';

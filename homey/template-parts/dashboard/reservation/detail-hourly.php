@@ -3,7 +3,6 @@ global $current_user, $homey_local, $homey_prefix, $reservationID, $owner_info, 
 $blogInfo = esc_url( home_url('/') );
 wp_get_current_user();
 $userID =   $current_user->ID;
-
 $back_to_list = homey_get_template_link_2('template/dashboard-reservations.php');
 $messages_page = homey_get_template_link_2('template/dashboard-messages.php');
 $booking_hide_fields = homey_option('booking_hide_fields');
@@ -12,9 +11,6 @@ $reservationID = isset($_GET['reservation_detail']) ? $_GET['reservation_detail'
 $reservation_status = $notification = $status_label = $notification = '';
 $upfront_payment = $check_in = $check_out = $guests = $pets = $renter_msg = '';
 $payment_link = '';
-
-$booking_detail_hide_fields = homey_option('booking_detail_hide_fields');
-
 if(!empty($reservationID)) {
 
     $post = get_post($reservationID);    
@@ -48,10 +44,6 @@ if(!empty($reservationID)) {
 
     $renter_id = get_post_meta($reservationID, 'listing_renter', true);
     $renter_info = homey_get_author_by_id('60', '60', 'reserve-detail-avatar img-circle', $renter_id);
-
-    $renter_name_while_booking  = get_user_meta($renter_id, 'first_name', true);
-    $renter_name_while_booking .= ' '.get_user_meta($renter_id, 'last_name', true);
-    $renter_phone = get_user_meta($renter_id, 'phone', true);
 
     $owner_id = get_post_meta($reservationID, 'listing_owner', true);
     $owner_info = homey_get_author_by_id('60', '60', 'reserve-detail-avatar img-circle', $owner_id);
@@ -95,9 +87,7 @@ if( ($post->post_author != $userID) && homey_is_renter() ) {
                         <div class="block">
                             <div class="block-head">
                                 <div class="block-left">
-                                    <h2 class="title"><?php echo esc_attr($homey_local['reservation_label']); ?>
-                                        <?php $wc_order_id = get_wc_order_id(get_the_ID()); $wc_order_id_txt = $wc_order_id > 0 ? ', wc#'.$wc_order_id.' ' : ' '; ?>
-                                        <?php echo '#'.$reservationID.$wc_order_id_txt.' '.homey_get_reservation_label($reservation_status); ?></h2>
+                                    <h2 class="title"><?php echo esc_attr($homey_local['reservation_label']); ?> <?php echo '#'.$reservationID.' '.homey_get_reservation_label($reservation_status); ?></h2>
                                 </div><!-- block-left -->
                                 <div class="block-right">
                                     <div class="custom-actions">
@@ -169,14 +159,11 @@ if( ($post->post_author != $userID) && homey_is_renter() ) {
                                         }?>
                                         <ul class="detail-list">
                                             <li><strong><?php esc_html_e('From', 'homey'); ?>:</strong>
-                                                <a href="<?php echo esc_url($renter_info['link']); ?>" target="_blank">
+                                                <a href="<?php echo esc_url($renter_info['link']); ?>" target="_blank"> 
                                                     <?php echo esc_attr($renter_info['name']); ?>
                                                 </a>
                                             </li>
-                                            <?php if($booking_detail_hide_fields['renter_information_on_detail'] == 0){ ?>
-                                                <li><strong><?php esc_html_e('Renter Detail', 'homey'); ?>:&nbsp;</strong><?php echo esc_attr($renter_name_while_booking).' <a title="'.esc_html__('Click to call', 'homey').'" href="tel:'.$renter_phone.'">'. $renter_phone; ?></a></li>
-                                            <?php } ?>
-                                            <li><strong><?php esc_html_e('Listing Name', 'homey'); ?>:&nbsp;</strong><?php echo get_the_title($listing_id); ?></li>
+                                            <li><?php echo get_the_title($listing_id); ?></li>
                                         </ul>
                                     </div><!-- block-right -->
                                 </div><!-- block-body -->
@@ -252,7 +239,7 @@ if( ($post->post_author != $userID) && homey_is_renter() ) {
                                 </div><!-- block-body -->
                             </div><!-- block-section -->
                         </div><!-- .block -->
-                        <div class="payment-buttons">
+                        <div class="payment-buttons visible-sm visible-xs">
                             <?php homey_reservation_action($reservation_status, $upfront_payment, $payment_link, $reservationID, 'btn-half-width'); ?>
                         </div>
                     </div><!-- .dashboard-area -->

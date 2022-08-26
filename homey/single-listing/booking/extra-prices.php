@@ -13,8 +13,8 @@ if(!empty($extra_prices[0]['name']) || !empty($extra_prices[-1]['name'])) {
 		    foreach($extra_prices as $key => $option) { ?>
 		    	<li>
 					<label class="homey_extra_price control control--checkbox">
-						<input type="checkbox" name="extra_price[]" data-name="<?php echo esc_html__(esc_attr($option['name']), 'homey'); ?>" data-price="<?php echo esc_attr($option['price']); ?>" data-type="<?php echo esc_html__(esc_attr($option['type']), 'homey'); ?>">
-						<span class="control-text"><?php echo esc_html__(esc_attr($option['name']), 'homey'); ?></span>
+						<input type="checkbox" name="extra_price[]" data-name="<?php echo esc_attr($option['name']); ?>" data-price="<?php echo esc_attr($option['price']); ?>" data-type="<?php echo esc_attr($option['type']); ?>">
+						<span class="control-text"><?php echo esc_attr($option['name']); ?></span>
 						<span class="control__indicator"></span>
 					</label>
 					<span><?php echo homey_formatted_price($option['price']); ?></span>

@@ -19,22 +19,12 @@ if ( ! function_exists( 'homey_option' ) ) {
 			}
 		} else {
 			global $homey_options;
-
-            if(!is_object($homey_options) || empty($homey_options)){
-                $homey_options = get_option('homey_options');
-            }
-
 			if ( $fallback == false ) $fallback = '';
 			$output = ( isset($homey_options[$id]) && $homey_options[$id] !== '' ) ? $homey_options[$id] : $fallback;
 			if ( !empty($homey_options[$id]) && $param ) {
 				$output = $homey_options[$id][$param];
 			}
 		}
-
-        // to translate every possible option => zahid.k
-        if(is_string($output)){
-            return esc_html__($output, 'homey');
-        }
-        return $output;
+		return $output;
 	}
 }

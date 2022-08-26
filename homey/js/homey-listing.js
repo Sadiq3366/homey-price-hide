@@ -243,7 +243,6 @@ jQuery(document).ready( function($) {
         $("#cus_night_price").on('keyup', function (){
             $("#cus_night_price").removeClass('error');
         });
-
         $('#cus_btn_save').on('click', function(e) {
             e.preventDefault();
             var $this = $(this);
@@ -253,7 +252,6 @@ jQuery(document).ready( function($) {
             var cus_additional_guest_price = $('#cus_additional_guest_price').val();
             var cus_weekend_price = $('#cus_weekend_price').val();
             var listing_id = $('#listing_id_for_custom').val();
-
             if($.trim(cus_night_price) != ''){
                 $.ajax({
                     type: 'post',
@@ -411,15 +409,7 @@ jQuery(document).ready( function($) {
         });
 
         // Next button click action
-        btnnext.on('click', function(e) {
-            if($(".form-step-gal1").hasClass('active')){
-                if($(".upload-gallery-thumb").length < 1){
-                    $("#homey_gallery_dragDrop").css("border", "3px dashed red");
-                    e.preventDefault();
-                    return false;
-                }
-            }
-
+        btnnext.on('click', function() {
             $("html, body").animate({
                 scrollTop: 0
             }, "slow");
@@ -438,13 +428,6 @@ jQuery(document).ready( function($) {
                         errorBlockGal.hide();
                     }
                 }
-                //zahid.k
-                if(current > 0){
-                    formStep.removeClass('active').css({display:'none'});
-                    formStep.eq(current-1).addClass('active').css({display:'block'});
-                }
-                //zahid.k
-
                 if (form.valid()) {
 
                     formStep.removeClass('active').css({display:'none'});
@@ -457,23 +440,6 @@ jQuery(document).ready( function($) {
                 } else {
                     errorBlock.show();
 
-                    //because radio button not being handled for error class
-                    if($(document).find("input[name='room_type']").hasClass("error")){
-
-                        var errorRoomTypeRadio = $(document).find("input[name='room_type']").parent();
-                        $(errorRoomTypeRadio).css("border-color", "#c31b1b");
-                        $(errorRoomTypeRadio).css("background-color", "#F6C8C8");
-                    }
-                    //end of because radio button not being handled for error class
-
-                    //because select button not being handled for error class
-                    if($(document).find("select[name='listing_type']").hasClass("error")){
-
-                        var errorListingTypeBtn = $(document).find("button[data-id='listing_type']");
-                        $(errorListingTypeBtn).css("border-color", "#c31b1b");
-                        $(errorListingTypeBtn).css("background-color", "#F6C8C8");
-                    }
-                    //end of because radio button not being handled for error class
                 }
             }
             hideButtons(current);
@@ -553,7 +519,7 @@ jQuery(document).ready( function($) {
             }
         }
 
-        $(document).ready(function(){
+        $(window).load(function(){
             if(edit_tab != 'media') {
                 $('.form-step-gal1, #media-tab').css('display', 'none');
             }
@@ -597,38 +563,6 @@ jQuery(document).ready( function($) {
         $('#invoice_status, #invoice_type').on('change', function() {
             homey_invoices_filter();
         });
-
-        /* ------------------------------------------------------------------------ */
-        /*  Exp Print Invoice
-        /* ------------------------------------------------------------------------ */
-        if( $('#invoice-exp-print-button').length > 0 ) {
-
-            $('#invoice-exp-print-button').on('click', function (e) {
-                e.preventDefault();
-                var invoiceID, printWindow;
-                invoiceID = $(this).attr('data-id');
-
-                printWindow = window.open('', 'Print Me', 'width=700 ,height=842');
-                $.ajax({
-                    type: 'POST',
-                    url: ajaxurl,
-                    data: {
-                        'action': 'homey_exp_create_invoice_print',
-                        'invoice_id': invoiceID,
-                    },
-                    success: function (data) {
-                        printWindow.document.write(data);
-                        printWindow.document.close();
-                        printWindow.focus();
-                    },
-                    error: function (xhr, status, error) {
-                        var err = eval("(" + xhr.responseText + ")");
-                        console.log(err.Message);
-                    }
-
-                });
-            });
-        }
 
         $('#startDate, #endDate').on('change', function() {
             var startDate  = $('#startDate').val(),
@@ -748,7 +682,6 @@ jQuery(document).ready( function($) {
 
         keyup_fill("#listing_title", "#title-place");
         keyup_fill("#listing_address", "#address-place");
-        keyup_fill("#day_date_price", "#price-place");
         keyup_fill("#night_price", "#price-place");
         keyup_fill("#price_postfix", "#price-postfix");
         keyup_fill("#hour_price", "#price-place");
@@ -813,68 +746,6 @@ jQuery(document).ready( function($) {
                                 } else {
                                     jQuery('#homey_modal').modal('hide');
                                     alert( data.reason );
-                                }
-                            },
-                            error: function(errorThrown) {
-
-                            }
-                        }); // $.ajax
-                    } // result
-                } // Callback
-            });
-
-            return false;
-
-        });
-
-        /*--------------------------------------------------------------------------
-         *  Make property Featured
-         * -------------------------------------------------------------------------*/
-        $( '.membership-featured-js' ).on('click', function (e) {
-            e.preventDefault();
-
-            var $this = $( this );
-            var listing_id = $this.data('id');
-            var nonce = $this.data('nonce');
-
-            bootbox.confirm({
-                message: "<p><strong>"+are_you_sure_text+"</strong></p>",
-                buttons: {
-                    confirm: {
-                        label: confirm_btn_text,
-                        className: 'btn btn-primary btn-half-width'
-                    },
-                    cancel: {
-                        label: cancel_btn_text,
-                        className: 'btn btn-grey-outlined btn-half-width'
-                    }
-                },
-                callback: function (result) {
-
-                    if(result==true) {
-
-                        $.ajax({
-                            type: 'POST',
-                            dataType: 'json',
-                            url: ajaxurl,
-                            data: {
-                                'action': 'homey_membership_featured_listing',
-                                'listing_id': listing_id,
-                                'security': nonce
-                            },
-                            beforeSend: function( ) {
-                                $this.find('i').removeClass('fa-star-o');
-                                $this.find('i').addClass('fa-spin fa-spinner');
-                            },
-                            success: function(data) {
-                                if ( data.success == true ) {
-                                    window.location.reload();
-                                } else {
-                                    $this.find('i').removeClass('fa-spin fa-spinner');
-                                    $this.find('i').addClass('fa-star-o');
-                                    jQuery('#homey_modal').modal('hide');
-                                    alert( data.reason );
-                                    
                                 }
                             },
                             error: function(errorThrown) {
@@ -1198,7 +1069,7 @@ jQuery(document).ready( function($) {
                             },
                             success: function(data) {
                                 if ( data.success == true ) {
-                                    //window.location.reload();
+                                    window.location.reload();
                                 } else {
                                     jQuery('#homey_modal').modal('hide');
                                 }
@@ -1347,16 +1218,6 @@ jQuery(document).ready( function($) {
          * -------------------------------------------------------------------------*/
         var listing_gallery_images = function() {
 
-            $(document).keypress(function(ev) {
-                if($("#listing_title").length > 0){
-                    if ((ev.which && ev.which === 13) ||
-                        (ev.keyCode && ev.keyCode === 13)) {
-                        ev.preventDefault();
-                        return false;
-                    }
-                }
-            });
-
             $( "#homey_gallery_container" ).sortable({
                 placeholder: "sortable-placeholder"
             });
@@ -1395,8 +1256,7 @@ jQuery(document).ready( function($) {
 
 
             plup_uploader.bind('UploadProgress', function(up, file) {
-                document.getElementById( "upload-progress-images" ).innerHTML = '<span class="alert alert-info">'+plup_uploader.total.uploaded+' Uploaded Of '+ plup_uploader.files.length+'</span>';
-               // document.getElementById( "thumb-holder-" + file.id ).innerHTML = '<span>' + file.percent + "%</span>";
+                document.getElementById( "thumb-holder-" + file.id ).innerHTML = '<span>' + file.percent + "%</span>";
             });
 
             plup_uploader.bind('Error', function( up, err ) {
@@ -1404,7 +1264,6 @@ jQuery(document).ready( function($) {
             });
 
             plup_uploader.bind('FileUploaded', function ( up, file, ajax_response ) {
-
                 var response = $.parseJSON( ajax_response.response );
 
 
@@ -1423,19 +1282,12 @@ jQuery(document).ready( function($) {
                     document.getElementById( "thumb-holder-" + file.id ).innerHTML = gallery_thumbnail;
 
                     lisitng_thumbnail_event();
+
                 } else {
                     var gallery_thumbnail = '<span class="error-message">'+response.reason+'</span>';
 
                     document.getElementById( "thumb-holder-" + file.id ).innerHTML = gallery_thumbnail;
                     console.log ( response );
-                }
-            });
-
-            plup_uploader.bind('FileUploaded', function() {
-                if (plup_uploader.files.length == (plup_uploader.total.uploaded + plup_uploader.total.failed)) {
-                    document.getElementById( "upload-progress-images" ).innerHTML = '<span class="alert alert-success">All '+plup_uploader.files.length+' Images Uploaded.</span>';
-                }else{
-                    document.getElementById( "upload-progress-images" ).innerHTML = '<span class="alert alert-info">'+plup_uploader.total.uploaded+' Uploaded Of '+ plup_uploader.files.length+'</span>';
                 }
             });
 
@@ -2251,7 +2103,7 @@ jQuery(document).ready( function($) {
         }
 
         if(jQuery('.choose_payout_method').length > 0) {
-            jQuery(document).ready(function(){
+            jQuery(window).load(function(){
                 homey_show_payout_method();
             });
         }
@@ -2372,7 +2224,7 @@ jQuery(document).ready( function($) {
             }
         });
 
-        $( document ).ready(function() {
+        $( window ).load(function() {
             var payout_status = $( "#payout_status" ).val();
             if(payout_status == 3) {
                 $('.transfer_fee, .transfer_note').show();

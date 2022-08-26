@@ -14,10 +14,10 @@ if(isset($_GET['search_position'])) {
 }
 
 if(homey_is_dashboard()) { ?>
-<div class="header-dashboard no-cache-<?php echo strtotime("now"); ?>">
+<div class="header-dashboard">
 <?php } ?>
 
-<div class="nav-area header-type-3 no-cache-<?php echo strtotime("now"); ?>">
+<div class="nav-area header-type-3">
     <!-- top bar -->
     <?php 
     if(homey_topbar_needed()) {
@@ -26,7 +26,7 @@ if(homey_is_dashboard()) { ?>
     ?>
 
     <!-- desktop nav -->
-    <header id="homey_nav_sticky" class="header-nav hidden-sm hidden-xs no-cache-<?php echo strtotime("now"); ?>" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
+    <header id="homey_nav_sticky" class="header-nav hidden-sm hidden-xs" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
         <div class="top-inner-header">
             <div class="<?php homey_header_container(); ?>">
                 <div class="header-inner clearfix">
@@ -37,7 +37,7 @@ if(homey_is_dashboard()) { ?>
                         <?php get_template_part('template-parts/header/logo'); ?>
                     </div>
                     <?php if( class_exists('Homey_login_register') ): ?>
-                    <div class="header-comp-right text-right no-cache-<?php echo strtotime("now"); ?>">
+                    <div class="header-comp-right text-right">
                         <?php 
                         if( is_user_logged_in() ) { 
                             get_template_part ('template-parts/header/account');
@@ -50,10 +50,10 @@ if(homey_is_dashboard()) { ?>
                 </div>
             </div>
         </div>
-        <div class="bottom-inner-header no-cache-<?php echo strtotime("now"); ?>">
+        <div class="bottom-inner-header">
             <div class="<?php homey_header_container(); ?>">
                 <div class="header-inner clearfix">
-                    <div class="header-comp-nav text-center no-cache-<?php echo strtotime("now"); ?>">
+                    <div class="header-comp-nav text-center">
                         <?php if(!homey_is_splash() || $splash_page_nav != 0 ) { ?>
                             <?php get_template_part('template-parts/header/main-nav'); ?>
                         <?php } ?>

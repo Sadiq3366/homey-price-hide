@@ -47,7 +47,7 @@ $reviews = homey_get_host_reviews(get_the_author_meta( 'ID' ));
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <dl>
                         <dt><?php echo esc_attr(homey_option('sn_pr_profile_status')); ?></dt>
-                        <?php if(user_can( get_the_author_meta( 'ID' ), 'administrator' )) { ?>
+                        <?php if(homey_is_admin()) { ?>
                             <dd class="text-success"><i class="fa fa-check-circle-o"></i> <?php echo esc_attr(homey_option('sn_pr_verified')); ?></dd>
                         <?php    
                             } else {

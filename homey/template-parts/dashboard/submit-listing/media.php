@@ -49,7 +49,16 @@ if ($layout_order) {
         </div>
     </div>
 
-    <div id="upload-progress-images"></div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label for="sa_folder_name"><?php echo  esc_html__( 'Images Folder Name', 'homey' ); ?></label>
+                <input type="text" class="form-control" name="sa_folder_name" id="sa_folder_name" placeholder="<?php echo esc_html__( 'Enter images folder name', 'homey' ); ?>">
+            </div>
+        </div>
+    </div>
+    
+   <hr class="row-separator"> 
 
     <?php if($hide_fields['video_url'] != 1) { ?>
     <div class="block">

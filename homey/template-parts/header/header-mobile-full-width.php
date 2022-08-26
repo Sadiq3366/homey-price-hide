@@ -1,5 +1,5 @@
-<header class="header-nav header-mobile hidden-md hidden-lg no-cache-<?php echo strtotime("now"); ?>">
-    <div class="header-mobile-wrap no-cache-<?php echo strtotime("now"); ?>">
+<header class="header-nav header-mobile hidden-md hidden-lg">
+    <div class="header-mobile-wrap">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-3">
@@ -25,7 +25,7 @@
         </div><!-- container -->
     </div><!-- header-mobile-wrap -->
     
-    <div class="container-fluid no-cache-<?php echo strtotime("now"); ?>">
+    <div class="container-fluid">
         <div class="row">
             <div class="mobile-nav-wrap">
                 <?php get_template_part ('inc/header/mobile-menu'); ?>

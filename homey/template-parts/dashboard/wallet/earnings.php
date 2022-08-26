@@ -40,7 +40,7 @@ $host_earnings = homey_get_earnings($limit);
                     $datetime = $data->time;
 
                     $datetime_unix = strtotime($datetime);
-                    $date = homey_translate_word_by_word(homey_return_formatted_date($datetime_unix));
+                    $date = homey_return_formatted_date($datetime_unix);
                     $time = homey_get_formatted_time($datetime_unix);
 
                     $resrv_link = add_query_arg( 'reservation_detail', $reservation_id, $reservation_page_link );
@@ -55,7 +55,7 @@ $host_earnings = homey_get_earnings($limit);
                         <a href="<?php echo esc_url($resrv_link); ?>"><?php echo esc_attr($reservation_id); ?></a>
                     </td>
                     <td data-label="<?php esc_html_e('Date', 'homey'); ?>">
-                        <?php echo $date; ?><br/>
+                        <?php echo esc_attr($date); ?><br/>
                         <?php echo esc_html__('at', 'homey'); ?>
                         <?php echo esc_attr($time); ?>
                     </td>

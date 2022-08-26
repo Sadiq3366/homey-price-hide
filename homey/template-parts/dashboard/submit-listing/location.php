@@ -25,7 +25,7 @@ if( $geo_country_limit != 0 ) {
                 <div class="col-sm-8">
                     <div class="form-group">
                         <label for="listing_address"><?php echo esc_attr(homey_option('ad_address')).homey_req('listing_address'); ?></label>
-                        <input type="text" autocomplete="false" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_address')), 'homey'); ?>" name="listing_address" <?php homey_required('listing_address'); ?> class="form-control" id="listing_address" placeholder="<?php echo esc_attr(homey_option('ad_address_placeholder')); ?>">
+                        <input type="text" autocomplete="false" name="listing_address" <?php homey_required('listing_address'); ?> class="form-control" id="listing_address" placeholder="<?php echo esc_attr(homey_option('ad_address_placeholder')); ?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -43,7 +43,8 @@ if( $geo_country_limit != 0 ) {
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label for="city"><?php echo esc_attr(homey_option('ad_city')).homey_req('city'); ?></label>
-                        <input type="text" autocomplete="false" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_city')), 'homey'); ?>" name="locality" id="city" <?php homey_required('city'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_city_placeholder')); ?>">
+                        <input type="text" autocomplete="false" name="locality" id="city" <?php homey_required('city'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_city_placeholder')); ?>" list="cities_datalist">
+                     <?php echo homey_get_data_list_terms("listing_city", "cities_datalist"); ?>
                     </div>
                 </div>
                 <?php } ?>
@@ -52,7 +53,8 @@ if( $geo_country_limit != 0 ) {
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label for="state"><?php echo esc_attr(homey_option('ad_state')).homey_req('state'); ?></label>
-                        <input type="text" autocomplete="false" name="administrative_area_level_1" id="countyState"  class="form-control" id="state" <?php homey_required('state'); ?> placeholder="<?php echo esc_attr(homey_option('ad_state_placeholder')); ?>">
+                        <input type="text" autocomplete="false" name="administrative_area_level_1" id="countyState"  class="form-control" id="state" <?php homey_required('state'); ?> placeholder="<?php echo esc_attr(homey_option('ad_state_placeholder')); ?>" list="states_datalist">
+                     <?php echo homey_get_data_list_terms("listing_state", "states_datalist"); ?>
 
                     </div>
                 </div>
@@ -71,7 +73,8 @@ if( $geo_country_limit != 0 ) {
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="neighborhood"><?php echo esc_attr(homey_option('ad_area')).homey_req('area'); ?></label>
-                        <input class="form-control" autocomplete="false" name="neighborhood" id="area" <?php homey_required('area'); ?> placeholder="<?php echo esc_attr(homey_option('ad_area_placeholder')); ?>">
+                        <input class="form-control" autocomplete="false" name="neighborhood" id="area" <?php homey_required('area'); ?> placeholder="<?php echo esc_attr(homey_option('ad_area_placeholder')); ?>" list="areas_datalist">
+                     <?php echo homey_get_data_list_terms("listing_area", "areas_datalist"); ?>
                     </div>
                 </div>
                 <?php } ?>
@@ -80,7 +83,8 @@ if( $geo_country_limit != 0 ) {
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="country"><?php echo esc_attr(homey_option('ad_country')).homey_req('country'); ?></label>
-                        <input class="form-control" autocomplete="false" name="country" id="homey_country" <?php homey_required('country'); ?> placeholder="<?php echo esc_attr(homey_option('ad_country_placeholder')); ?>">
+                        <input class="form-control" autocomplete="false" name="country" id="homey_country" <?php homey_required('country'); ?> placeholder="<?php echo esc_attr(homey_option('ad_country_placeholder')); ?>" list="countries_datalist">
+                     <?php echo homey_get_data_list_terms("listing_country", "countries_datalist"); ?>
                         <input name="country_short" type="hidden" value="">
                     </div>
                 </div>

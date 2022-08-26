@@ -34,8 +34,7 @@ if( ! isset( $_GET['invoice_id']) ) {
     $invoices_args = array(
         'post_type' => 'homey_invoice',
         'posts_per_page' => '9',
-        'paged' => $paged,
-        'order' => 'DSC'
+        'paged' => $paged
     );
 
     if(homey_is_renter()) {
@@ -45,19 +44,18 @@ if( ! isset( $_GET['invoice_id']) ) {
             'compare' => '='
         );
     } else {
-        if(!homey_is_admin()){
-            $meta_query[] = array(
-                'key' => 'homey_invoice_buyer',
-                'value' => $userID,
-                'compare' => '='
-            );
-            $meta_query[] = array(
-                'key' => 'invoice_resv_owner',
-                'value' => $userID,
-                'compare' => '='
-            );
-            $meta_query['relation'] = 'OR';
-        }
+
+        $meta_query[] = array(
+            'key' => 'homey_invoice_buyer',
+            'value' => $userID,
+            'compare' => '='
+        );
+        $meta_query[] = array(
+            'key' => 'invoice_resv_owner',
+            'value' => $userID,
+            'compare' => '='
+        );
+        $meta_query['relation'] = 'OR';
     }
 
     $invoices_args['meta_query'] = $meta_query;
@@ -70,7 +68,7 @@ if( ! isset( $_GET['invoice_id']) ) {
 <section id="body-area">
 
     <div class="dashboard-page-title">
-        <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+        <h1><?php the_title(); ?></h1>
     </div><!-- .dashboard-page-title -->
 
     <?php get_template_part('template-parts/dashboard/side-menu'); ?>
@@ -82,15 +80,11 @@ if( ! isset( $_GET['invoice_id']) ) {
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="dashboard-area">
 
-                            <?php
+                            <?php 
                             if($is_detail) {
-                                $invoice_meta = homey_exp_get_invoice_meta( $_GET['invoice_id'] );
 
-                                if( isset($invoice_meta['invoice_for_experience']) && $invoice_meta['invoice_for_experience'] > 0 ) {
-                                    get_template_part('template-parts/dashboard/invoices/experiences/detail');
-                                } else {
-                                    get_template_part('template-parts/dashboard/invoices/detail');
-                                }
+                                get_template_part('template-parts/dashboard/invoices/detail');
+
                             } else { ?>
 
                             <div class="block">
@@ -98,7 +92,7 @@ if( ! isset( $_GET['invoice_id']) ) {
                                     <h2 class="title"><?php echo esc_attr($homey_local['manage_label']); ?></h2>
                                 </div>
                                 
-                                <?php
+                                <?php 
                                 get_template_part('template-parts/dashboard/invoices/search'); ?>
 
                                 <div class="table-block dashboard-reservation-table dashboard-table">
@@ -120,14 +114,11 @@ if( ! isset( $_GET['invoice_id']) ) {
                                             if( ! isset( $_GET['invoice_id']) ) {
                                                 if ($invoice_query->have_posts()) :
                                                     while ($invoice_query->have_posts()) : $invoice_query->the_post();
-                                                        $invoice_meta = homey_exp_get_invoice_meta(get_the_ID());
-                                                        if($invoice_meta['invoice_for_experience'] > 0) {
-                                                            get_template_part('template-parts/dashboard/invoices/experiences/item');
-                                                        }else{
-                                                            get_template_part('template-parts/dashboard/invoices/item');
-                                                        }
 
-                                                        $total += $invoice_meta['invoice_item_price'] > 0 ?  $invoice_meta['invoice_item_price'] : 0;
+                                                        $invoice_meta = homey_get_invoice_meta(get_the_ID());
+                                                        get_template_part('template-parts/dashboard/invoices/item');
+
+                                                        $total += $invoice_meta['invoice_item_price'];
 
                                                     endwhile; endif;
                                                 wp_reset_postdata();
@@ -151,13 +142,7 @@ if( ! isset( $_GET['invoice_id']) ) {
 
         <?php if($is_detail) { ?>
         <aside class="dashboard-sidebar">
-            <?php
-            $inv_id_class = "invoice-print-button";
-            if( isset($invoice_meta['invoice_for_experience']) && $invoice_meta['invoice_for_experience'] > 0 ) {
-                $inv_id_class = "invoice-exp-print-button";
-            }
-            ?>
-            <a href="#" id="<?php echo $inv_id_class; ?>" data-id="<?php echo intval($_GET['invoice_id']); ?>" class="btn btn-grey btn-full-width"><?php echo esc_html__('Print', 'homey'); ?></a>
+            <a href="#" id="invoice-print-button" data-id="<?php echo intval($_GET['invoice_id']); ?>" class="btn btn-grey btn-full-width"><?php echo esc_html__('Print', 'homey'); ?></a>
             <a href="<?php echo esc_url($dashboard_invoices); ?>" class="btn btn-secondary btn-full-width"><?php echo esc_html__('Go back', 'homey'); ?></a>
         </aside><!-- .dashboard-sidebar -->   
         <?php } ?>

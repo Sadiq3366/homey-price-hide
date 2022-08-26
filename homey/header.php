@@ -2,7 +2,6 @@
 global $homey_local, $homey_prefix, $template;
 $homey_local = homey_get_localization();
 $homey_prefix = 'homey_';
-
 /**
  * @package Homey
  * @since Homey 1.0
@@ -10,15 +9,24 @@ $homey_prefix = 'homey_';
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
+    <!-- CSS code to add slider into listings added by aqeel -->
+    <style type="text/css">
+* {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+   user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
+</style>
+
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
-    <?php if(basename($template) == "dashboard-reservations.php"
-        || basename($template) == "dashboard-reservations2.php"
-        || basename($template) == "dashboard-reservations-experiences.php"
-        || basename($template) == "dashboard-reservations2-experiences.php"
-    ){ ?>
+    <?php if(basename($template) == "dashboard-reservations.php"){ ?>
         <meta name="robots" content="noindex,nofollow">
     <?php } ?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<meta name='google-site-verification' content='-717pUxwZCcaqw-6766nT5fvGBQFLH969XgcYhfn-3g' />
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
 
@@ -27,26 +35,25 @@ $homey_prefix = 'homey_';
         <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
     <?php } ?>
 	<?php wp_head(); ?>
+   
 </head>
 
 
-<body <?php body_class(); ?>>
+<body data-to-know="121" <?php body_class(); ?> <?php if(!homey_is_admin()){ echo 'oncontextmenu="return false"';} ?> >
+<div id="sa_listing_rewrite_base" data-url="<?php echo homey_get_setting( 'listing_rewrite_base' ); ?>">
 <?php wp_body_open(); ?>
 
-<?php
-
+<?php 
 $header_type = homey_option('header_type');
-
 if( empty($header_type)) {
     $header_type = '1';
 }
-
 if(homey_is_dashboard()) {
     $header_type = '1';
 }
 
 if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'header' ) ) {
-    get_template_part( 'template-parts/header/header', $header_type );
+    get_template_part( 'template-parts/header/header', $header_type ); 
 }
 ?>
 
@@ -102,4 +109,3 @@ if( !homey_is_dashboard() ) {
 $already_signed_up = isset($_GET["already_signed_up"]) ? $_GET["already_signed_up"] : '';
 ?>
 <div id="has_social_account" style="display: none" data-has-social-account="<?php echo esc_attr($already_signed_up);?>"></div>
-

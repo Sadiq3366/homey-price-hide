@@ -217,13 +217,13 @@ if ( !function_exists( 'homey_thread_message_filter' ) ) {
 	function homey_thread_message_filter( $thread_id, $message, $attachments ) {
 
 		global $wpdb, $current_user;
-        $current_user = wp_get_current_user();
-        $created_by =  $current_user->ID;
 
 		if ( is_array( $attachments ) ) {
 			$attachments = serialize( $attachments );
 		}
 
+		wp_get_current_user();
+		$created_by =  $current_user->ID;
 		$table_name = $wpdb->prefix . 'homey_thread_messages';
 
 		$message = stripslashes($message);
@@ -269,16 +269,12 @@ if ( !function_exists( 'homey_thread_message_filter' ) ) {
         $receiver_id  = $homey_thread->receiver_id;
 		$sender_id    = $homey_thread->sender_id;
 
-		if($created_by != $receiver_data){
-			$receiver_data = get_user_by( 'id', $receiver_id );
-			apply_filters( 'homey_message_email_notification', $thread_id, $message, $receiver_data->user_email, $created_by );
-		}
-		
-		if($created_by != $sender_id){
-			$sender_data = get_user_by( 'id', $sender_id );
-			apply_filters( 'homey_message_email_notification', $thread_id, $message, $sender_data->user_email, $created_by );
-		}
-		
+		$receiver_data = get_user_by( 'id', $receiver_id );
+		apply_filters( 'homey_message_email_notification', $thread_id, $message, $receiver_data->user_email, $created_by );
+
+        $sender_data = get_user_by( 'id', $sender_id );
+		apply_filters( 'homey_message_email_notification', $thread_id, $message, $sender_data->user_email, $created_by );
+
 		return $message_id;
 
 	}
@@ -735,28 +731,6 @@ if ( !function_exists( 'homey_delete_message_thread' ) ) {
 			$column = 'sender_delete';
 		} elseif($userID == $receiver_id) {
 			$column = 'receiver_delete';
-		} elseif(homey_is_admin()){
-			$tabel = $wpdb->prefix . 'homey_threads';
-			$wpdb->update(
-				$tabel,
-				array(  "sender_delete" => 1, "receiver_delete" => 1 ),
-				array( 'id' => $thread_id ),
-				array( '%d' ),
-				array( '%d' )
-			);
-
-			echo json_encode(
-			array(
-				'success' => true,
-				'column' => $column,
-// 				'thread_id' => $thread_id,
-// 				'sender_id' => $sender_id,
-// 				'receiver_id' =>$receiver_id,
-				'msg' => ''
-			)
-		);
-		wp_die();
-
 		}
 
 
@@ -774,10 +748,6 @@ if ( !function_exists( 'homey_delete_message_thread' ) ) {
 		echo json_encode(
 			array(
 				'success' => true,
-// 				'column' => $column,
-// 				'thread_id' => $thread_id,
-// 				'sender_id' => $sender_id,
-// 				'receiver_id' =>$receiver_id,
 				'msg' => ''
 			)
 		);
@@ -855,35 +825,6 @@ if ( !function_exists( 'homey_chcek_reservation_thread' ) ) {
 		$homey_threads = $wpdb->get_row($sql_thread);
 		if ( null !== $homey_threads ) {
 		  // do something with the link 
-		  return $homey_threads->id;
-		} else {
-		  // no link found
-		  return '';
-		}
-
-	}
-}
-
-
-if ( !function_exists( 'homey_chcek_exp_reservation_thread' ) ) {
-
-	function homey_chcek_exp_reservation_thread($reserv_id) {
-
-		global $wpdb;
-		$tabel_threads = $wpdb->prefix . 'homey_threads';
-
-		$sql_thread = $wpdb->prepare(
-			"
-			SELECT * 
-			FROM $tabel_threads 
-			WHERE experience_id = %d OR listing_id = %d
-			",
-			$reserv_id, $reserv_id
-		);
-
-		$homey_threads = $wpdb->get_row($sql_thread);
-		if ( null !== $homey_threads ) {
-		  // do something with the link
 		  return $homey_threads->id;
 		} else {
 		  // no link found

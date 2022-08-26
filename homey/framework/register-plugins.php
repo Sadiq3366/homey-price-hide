@@ -64,7 +64,7 @@ function homey_register_required_plugins() {
 			'slug'     				=> 'homey-core',
 			'source'   				=> 'https://gethomey.io/plugins/homey-core.zip', 
 			'required' 				=> true, 
-			'version' 				=> '2.1.1', 
+			'version' 				=> '1.6.6', 
 			'external_url' 			=> '',
 		),
 		array(
@@ -72,7 +72,7 @@ function homey_register_required_plugins() {
 			'slug'     				=> 'homey-login-register',
 			'source'   				=> 'https://gethomey.io/plugins/homey-login-register.zip', 
 			'required' 				=> true, 
-			'version' 				=> '2.1.0',
+			'version' 				=> '1.6.5',
 			'external_url' 			=> '',
 		),
 		array(
@@ -86,7 +86,7 @@ function homey_register_required_plugins() {
 			'slug'     				=> 'favethemes-currency-converter',
 			'source'   				=> 'https://gethomey.io/plugins/favethemes-currency-converter.zip', 
 			'required' 				=> true, 
-			'version' 				=> '2.0',
+			'version' 				=> '1.0.2',
 			'external_url' 			=> '',
 		),
 		array(
@@ -101,8 +101,14 @@ function homey_register_required_plugins() {
 			'slug'     				=> 'revslider',
 			'source'   				=> 'https://gethomey.io/plugins/revslider.zip', 
 			'required' 				=> true, 
-			'version' 				=> '',
+			'version' 				=> '6.4.11',
 			'external_url' 			=> '',
+		),
+
+		array(
+			'name'     				=> 'Classic Editor', // The plugin name
+			'slug'     				=> 'classic-editor', // The plugin slug (typically the folder name)
+			'required' 				=> true, // If false, the plugin is only 'recommended' instead of required
 		),
 		array(
 			'name'     				=> 'Contact Form 7', // The plugin name

@@ -40,34 +40,34 @@ $cancellation_policy       = get_post_meta($listing_id, $homey_prefix.'cancellat
 
 if($smoke != 1) {
     $smoke_allow = 'fa fa-times'; 
-    $smoke_text = esc_html__(homey_option('sn_text_no'), 'homey');
+    $smoke_text = homey_option('sn_text_no');
 } else {
     $smoke_allow = 'fa fa-check';
-    $smoke_text = esc_html__(homey_option('sn_text_yes'), 'homey');
+    $smoke_text = homey_option('sn_text_yes');
 }
 
 if($pets != 1) {
     $pets_allow = 'fa fa-times';
-    $pets_text = esc_html__(homey_option('sn_text_no'), 'homey');
+    $pets_text = homey_option('sn_text_no');
 } else {
     $pets_allow = 'fa fa-check';
-    $pets_text = esc_html__(homey_option('sn_text_yes'), 'homey');
+    $pets_text = homey_option('sn_text_yes');
 }
 
 if($party != 1) {
     $party_allow = 'fa fa-times'; 
-    $party_text = esc_html__(homey_option('sn_text_no'), 'homey');
+    $party_text = homey_option('sn_text_no');
 } else {
     $party_allow = 'fa fa-check';
-    $party_text = esc_html__(homey_option('sn_text_yes'), 'homey');
+    $party_text = homey_option('sn_text_yes');
 }
 
 if($children != 1) {
     $children_allow = 'fa fa-times';
-    $children_text = esc_html__(homey_option('sn_text_no'), 'homey');
+    $children_text = homey_option('sn_text_no');
 } else {
     $children_allow = 'fa fa-check';
-    $children_text = esc_html__(homey_option('sn_text_yes'), 'homey');
+    $children_text = homey_option('sn_text_yes');
 }
 
 
@@ -163,17 +163,7 @@ $stripe_processor_link = homey_get_template_link('template/template-stripe-charg
                                         <input type="text" id="last-name" class="form-control" value="<?php echo esc_attr($current_user->last_name); ?>" placeholder="<?php echo esc_attr($homey_local['lname_plac']); ?>">
                                     </div>
                                 </div>
-
-                                <?php $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
-                                 if(!is_user_logged_in() && $no_login_needed_for_booking == 'yes'){ ?>
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label for="email"><?php echo esc_attr($homey_local['email_label']); ?></label>
-                                            <input type="text" id="email" class="form-control" value="<?php echo esc_attr($current_user->email); ?>" placeholder="<?php echo esc_attr($homey_local['email_plac']); ?>">
-                                        </div>
-                                    </div>
-                                <?php } ?>
-
+                                
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="phone"><?php echo esc_attr($homey_local['phone_label']); ?></label>

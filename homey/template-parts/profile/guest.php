@@ -9,7 +9,7 @@ $email_verified = $author['is_email_verified'];
 $email_address = true;
 
 $verified = false;
-if($doc_verified) {
+if($email_verified) {
     $verified = true;
 }
 

@@ -86,7 +86,7 @@
             disableAutoPan: false,
             pixelOffset: new google.maps.Size(-160, infobox_top),
             zIndex: null,
-            boxClass: 'homeyInfobox',
+            boxClass: 'homeyInfobox sa-homeyInfobox',
             closeBoxMargin: "13px 2px -14px 2px",
             closeBoxURL: infoboxClose,
             infoBoxClearance: new google.maps.Size(20, 20),
@@ -178,7 +178,7 @@
 
         var homey_change_map_type = function(map_type){
 
-            if(map_type==='roadmap'){
+            /*if(map_type==='roadmap'){
                 homeyMap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
             }else if(map_type==='satellite'){
                 homeyMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
@@ -186,7 +186,10 @@
                 homeyMap.setMapTypeId(google.maps.MapTypeId.HYBRID);
             }else if(map_type==='terrain'){
                 homeyMap.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-            }
+            }*/
+
+            homeyMap.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+
             return false;
         }
 
@@ -304,19 +307,15 @@
         }
 
         var homeyAddMarker = function( props, map ) {
-          
-            console.log(props);
+
+
             $.each(props, function(i, prop) {
 
 
                 var latlng = new google.maps.LatLng(prop.lat,prop.long);
 
                 var prop_title = prop.data ? prop.data.post_title : prop.title;
-                
-                // var price_pins = '<div class="gm-marker-price">'+prop.price+'</div>';
-                // if (props.price_no == 'no') {
-                //     price_pins = '<div class="gm-marker-price">On Request</div>';
-                // }
+
 
                 if( markerPricePins == 'yes' ) {
                     var pricePin = '<div data-id="'+prop.id+'" class="gm-marker gm-marker-color-'+prop.term_id+'"><div class="gm-marker-price">'+prop.price+'</div></div>';
@@ -374,19 +373,14 @@
                     listing_type = '<li class="item-type">'+prop.listing_type+'</li>';
                 }
 
-                // var price_span = '<span class="item-price">'+prop.price+'</span>';
-                // if (prop.price_no == 'no') {
-                //     price_span = '<span class="item-price">On Request</span>';
-                // }
-
                 var infoboxContent = '<div id="google-maps-info-window">'+
-                    '<div class="item-wrap item-grid-view">'+
-                    '<div class="media property-item">'+
+                    '<div class="item-wrap item-grid-view sa-item-wrap">'+
+                    '<div class="media property-item sa-media">'+
                     '<div class="media-left">'+
                     '<div class="item-media item-media-thumb">'+
-                    '<a href="'+prop.url+'" class="hover-effect">'+prop.thumbnail+'</a>'+
+                    '<a href="'+prop.url+'" target="_blank" class="hover-effect">'+prop.thumbnail+'</a>'+
                     '<div class="item-media-price">'+
-                    '<span class="item-price">'+prop.price+'</span>'+
+                    '<span class="item-price sa-item-price">'+prop.price+'</span>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
@@ -394,7 +388,7 @@
                     '<div class="item-title-head">'+
                     '<div class="title-head-left">'+
                     '<h2 class="title">'+
-                    '<a href="'+prop.url+'">'+prop_title+'</a></h2>'+
+                    '<a href="'+prop.url+'" target="_blank">'+prop_title+'</a></h2>'+
                     '<address class="item-address">'+prop.address+'</address>'+
                     '</div>'+
                     '</div>'+
@@ -452,18 +446,18 @@
 
                 homeyMap = new google.maps.Map(document.getElementById(element), {
                     zoom: defaultZoom,
-                    zoomControl: false,
+                    zoomControl: true,
                     mapTypeControl: false,
                     streetViewControl: false,
                     overviewMapControl: false,
-                    scrollwheel: false,
+                    scrollwheel: true,
                     fullscreenControl: true,
                     fullscreenControlOptions: {
                         position: google.maps.ControlPosition.RIGHT_BOTTOM
                     },
                     center: new google.maps.LatLng(_lat, _long),
-                    mapTypeId: "roadmap",
-                    gestureHandling: 'cooperative',
+                    mapTypeId: "satellite",
+                    gestureHandling: 'greedy',
                     styles: google_map_style,
                 });
 
@@ -561,7 +555,10 @@
 
                                 if(isHalfMap) {
                                     half_map_ajax_pagi();
+
                                     $(".half-map-left-wrap, .half-map-right-wrap").animate({ scrollTop: 0 }, "slow");
+
+
                                 }
 
                                 $('#homey-map-loading').hide();
@@ -575,14 +572,6 @@
                                 halfmap_ajax_container.empty().html('<div class="map-notfound">'+not_found+'</div>');
                                 total_results.empty().html(data.total_results);
                             }
-
-                            var clearScrollVarPagi = setInterval(function (){
-
-                                $([document.documentElement, document.body]).animate({
-                                    scrollTop: $(".half-map-right-wrap").offset().top
-                                }, 'slow');
-                                clearInterval(clearScrollVarPagi);
-                            }, 500);
 
                         },
                         error : function (e) {
@@ -631,7 +620,13 @@
             arrive = current_form.find('input[name="arrive"]').val();
             depart = current_form.find('input[name="depart"]').val();
             guests = current_form.find('input[name="guest"]').val();
+
             keyword = current_form.find('input[name="keyword"]').val();
+            
+            if(typeof keyword == 'undefined'){
+                keyword = $(document).find('#main_search_selectbox').val();
+            }
+
             pets = current_form.find('input[name="pets"]:checked').val();
             search_area = current_form.find('input[name="search_area"]').val();
             search_city = current_form.find('input[name="search_city"]').val();
@@ -780,7 +775,7 @@
                     center: mapCenter,
                     disableDefaultUI: false,
                     //scrollwheel: true,
-                    gestureHandling: 'cooperative',
+                    gestureHandling: 'greedy',
                     styles: google_map_style,
                 };
                 var mapElement = document.getElementById(element);
@@ -827,7 +822,8 @@
                     },
                     center: new google.maps.LatLng(_lat, _long),
                     mapTypeId: "roadmap",
-                    gestureHandling: 'cooperative',
+                    gestureHandling: 'greedy',
+                    //gestureHandling: 'cooperative',
                     styles: google_map_style,
                 });
 
@@ -1009,8 +1005,6 @@
                     var current_page = $(this).data('homeypagi');
                     var current_form = $(this).parents('.half-map-wrap');
                     homey_make_search_call(current_form, current_page, _lat, _long, element, markerTarget, showMarkerLabels, defaultZoom, optimizedMapLoading, isHalfMap);
-                    $(".half-map-left-wrap, .half-map-right-wrap").animate({ scrollTop: 0 }, "slow");
-
                 });
                 return false;
             } // enf half_map_ajax_pagi
@@ -1021,7 +1015,7 @@
                         value: default_radius,
                         min: 0,
                         max: 100,
-                        step: 5,
+                        step: 1,
                         slide: function (event, ui) {
                             $("#radius-range-text").html(ui.value);
                             $("#radius-range-value").val(ui.value);
@@ -1065,6 +1059,7 @@
                 var showCircle = true;
             }
             homeySimpleMap(_lat, _long, element, markerDragable, showCircle, defaultZoom, marker_pin, marker_pin_retina);
+            homey_change_map_type();
         }
 
         // Single listing map
@@ -1098,18 +1093,9 @@
             political: 'long_name'
         };
 
-        if (document.getElementById('listing_address') || document.getElementById('experience_address')) {
+        if (document.getElementById('listing_address')) {
             var inputField, defaultBounds, autocomplete;
-
-            var inputField = "";
-            if(typeof $('input[name="listing_address"]').val() != 'undefined'){
-                inputField = $('input[name="listing_address"]');
-            }
-
-            if(typeof $('input[name="experience_address"]').val() != 'undefined'){
-                inputField = $('input[name="experience_address"]');
-            }
-
+            inputField = (document.getElementById('listing_address'));
             defaultBounds = new google.maps.LatLngBounds(
                 new google.maps.LatLng(-90, -180),
                 new google.maps.LatLng(90, 180)

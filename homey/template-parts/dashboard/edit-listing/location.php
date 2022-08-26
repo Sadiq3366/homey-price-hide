@@ -9,14 +9,6 @@ if( $geo_country_limit != 0 ) {
 $add_location_lat = homey_get_field_meta('geolocation_lat');
 $add_location_long = homey_get_field_meta('geolocation_long');
 
-if( empty($add_location_lat) ) {
-    $add_location_lat = homey_option('add_location_lat');
-}
-
-if( empty($add_location_long) ) {
-    $add_location_long = homey_option('add_location_long');
-}
-
 $class = '';
 if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
     $class = 'in active';
@@ -43,7 +35,7 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
             <div class="col-sm-4">
                 <div class="form-group">
                     <label for="aptSuit"> <?php echo esc_attr(homey_option('ad_aptSuit')).homey_req('aptSuit'); ?> </label>
-                    <input type="text" autocomplete="false" name="aptSuit" <?php homey_required('aptSuit'); ?> class="form-control" value="<?php homey_field_meta('aptSuit'); ?>" id="aptSuit" placeholder="<?php echo esc_attr(homey_option('ad_aptSuit_placeholder')); ?>">
+                    <input type="text" autocomplete="true" name="aptSuit" <?php homey_required('aptSuit'); ?> class="form-control" value="<?php homey_field_meta('aptSuit'); ?>" id="aptSuit" placeholder="<?php echo esc_attr(homey_option('ad_aptSuit_placeholder')); ?>">
                 </div>
             </div>
             <?php } ?>
@@ -52,7 +44,8 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
             <div class="col-sm-4">
                 <div class="form-group">
                     <label for="city"><?php echo esc_attr(homey_option('ad_city')).homey_req('city'); ?></label>
-                    <input type="text" autocomplete="false" name="locality" <?php homey_required('city'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_city'); ?>" id="city" class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_city_placeholder')); ?>">
+                    <input type="text" autocomplete="true" name="locality" <?php homey_required('city'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_city'); ?>" id="city" class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_city_placeholder')); ?>" list="cities_datalist">
+                     <?php echo homey_get_data_list_terms("listing_city", "cities_datalist"); ?>
                 </div>
             </div>
             <?php } ?>
@@ -61,7 +54,8 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
             <div class="col-sm-4">
                 <div class="form-group">
                     <label for="state"><?php echo esc_attr(homey_option('ad_state')).homey_req('state'); ?></label>
-                    <input type="text" autocomplete="false" name="administrative_area_level_1" <?php homey_required('state'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_state'); ?>" id="countyState"  class="form-control" id="state" placeholder="<?php echo esc_attr(homey_option('ad_state_placeholder')); ?>">
+                    <input type="text" autocomplete="true" name="administrative_area_level_1" <?php homey_required('state'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_state'); ?>" id="countyState"  class="form-control" id="state" placeholder="<?php echo esc_attr(homey_option('ad_state_placeholder')); ?>" list="states_datalist">
+                     <?php echo homey_get_data_list_terms("listing_state", "states_datalist"); ?>
 
                 </div>
             </div>
@@ -80,7 +74,8 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="neighborhood"><?php echo esc_attr(homey_option('ad_area')).homey_req('area'); ?></label>
-                    <input class="form-control" autocomplete="false" name="neighborhood" <?php homey_required('area'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_area'); ?>" id="area" placeholder="<?php echo esc_attr(homey_option('ad_area_placeholder')); ?>">
+                    <input class="form-control" autocomplete="true" name="neighborhood" <?php homey_required('area'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_area'); ?>" id="area" placeholder="<?php echo esc_attr(homey_option('ad_area_placeholder')); ?>" list="areas_datalist">
+                     <?php echo homey_get_data_list_terms("listing_area", "areas_datalist"); ?>
                 </div>
             </div>
             <?php } ?>
@@ -89,7 +84,8 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'location') {
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="country"><?php echo esc_attr(homey_option('ad_country')).homey_req('country'); ?></label>
-                    <input class="form-control" autocomplete="false" name="country" <?php homey_required('country'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_country'); ?>" id="homey_country" placeholder="<?php echo esc_attr(homey_option('ad_country_placeholder')); ?>">
+                    <input class="form-control" autocomplete="true" name="country" <?php homey_required('country'); ?> value="<?php echo homey_get_taxonomy_title($listing_id, 'listing_country'); ?>" id="homey_country" placeholder="<?php echo esc_attr(homey_option('ad_country_placeholder')); ?>" list="countries_datalist">
+                     <?php echo homey_get_data_list_terms("listing_country", "countries_datalist"); ?>
                     <input name="country_short" type="hidden" value="">
                 </div>
             </div>

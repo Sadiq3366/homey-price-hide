@@ -23,7 +23,7 @@ get_header();
 <section id="body-area">
 
     <div class="dashboard-page-title">
-        <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
+        <h1><?php the_title(); ?></h1>
     </div><!-- .dashboard-page-title -->
 
     <?php get_template_part('template-parts/dashboard/side-menu'); ?>

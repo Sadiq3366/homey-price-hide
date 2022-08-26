@@ -1,5 +1,5 @@
 <?php
-global $current_user, $homey_local, $homey_prefix;
+global $current_user, $homey_local;
 wp_get_current_user();
 $userID  =  $current_user->ID;
 $homey_author = homey_get_author_by_id('36', '36', 'img-circle', $userID);
@@ -28,7 +28,7 @@ if(!empty($guests_icon)) {
     $guests_icon = '<i class="'.esc_attr($guests_icon).'"></i>';
 }
 
-$total_guests = 0;
+
 $listing_id = $title = $address = $image = $listing_address = $night_price = $listing_bedrooms = $baths = $guests = $permalink = '';
 if((isset($_GET['edit_listing']) && $_GET['edit_listing'] != '') || (isset($_GET['upgrade_id']) && $_GET['upgrade_id'] != '') || (isset($_GET['listing_id']) && $_GET['listing_id'] != '')) {
 
@@ -44,23 +44,12 @@ if((isset($_GET['edit_listing']) && $_GET['edit_listing'] != '') || (isset($_GET
     }
 
     $title = get_the_title($listing_id);
-    $Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
-    
+
     $listing_address = homey_get_listing_data_by_id('listing_address', $listing_id);
     $night_price = homey_get_listing_data_by_id('night_price', $listing_id);
     $listing_bedrooms = homey_get_listing_data_by_id('listing_bedrooms', $listing_id);
     $baths = homey_get_listing_data_by_id('baths', $listing_id);
     $guests = homey_get_listing_data_by_id('guests', $listing_id);
-
-    $guests         = $guests > 0 ? $guests : 0;
-
-    $allow_num_additional_guests = get_post_meta($listing_id, 'homey_allow_additional_guests', true );
-
-    $num_additional_guests = get_post_meta($listing_id, 'homey_num_additional_guests', true );
-    $num_additional_guests = $num_additional_guests > 0 && $allow_num_additional_guests != 'no' ? $num_additional_guests : 0;
-
-    $total_guests   = (int) $num_additional_guests + (int) $guests;
-
     $permalink = get_permalink($listing_id);
 
     $listing_price = homey_get_price_by_id($listing_id);
@@ -90,19 +79,12 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
                     }   
                 } else {
                 ?>
-                <img src="http://place-hold.it/370x250" alt="<?php esc_attr_e('Image', 'homey'); ?>">
+                <img src="http://placehold.it/370x250" alt="<?php esc_attr_e('Image', 'homey'); ?>">
                 <?php } ?>
                 <?php echo '</a>'; ?>
             </div>
             <div class="item-media-price">
                 <span class="item-price">
-                 <?php
-                 if(!empty($Price_no)){
-                    echo 'On Request';
-                }
-                else
-                {
-                 ?>
                     <sup><?php echo homey_get_currency(false); ?></sup>
                     <span class="price-count" id="price-place">
                         <?php 
@@ -113,7 +95,6 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
                         }?> 
                     </span>
                     <sub><?php echo esc_attr($price_separator); ?><span class="price-postfix" id="price-postfix"><?php echo $price_postfix;?></span></sub>
-                <?php }?>
                 </span>
             </div>
 
@@ -171,7 +152,7 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
                 <?php if($cgl_guests!= 0) { ?>
                 <li>
                     <?php echo ''.$guests_icon; ?>
-                    <span id="total-guests"><?php echo esc_html($total_guests); ?></span>
+                    <span id="total-guests"><?php echo esc_html($guests); ?></span> 
                     <?php echo homey_option('glc_guests_label');?>
                 </li>
                 <?php } ?>

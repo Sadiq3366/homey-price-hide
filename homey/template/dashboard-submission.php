@@ -28,7 +28,7 @@ $hide_fields = homey_option('add_hide_fields');
 $required_fields = homey_option('add_listing_required_fields');
 
 $listing_mode = isset($_GET['mode']) ? $_GET['mode'] : '';
-$listing_id = -1;
+
 
 if( isset( $_POST['action'] ) ) {
 
@@ -62,13 +62,10 @@ if( isset( $_POST['action'] ) ) {
 
     wp_redirect($return_url);
 }
-
-$status_for_lsiting = get_post_status($listing_id);
-
 get_header();
 //check before header to print message
 hm_validity_check();//check if users membership is expired or not
-$listing_limit_check = hm_listing_limit_check($userID, $status_for_lsiting);
+$listing_limit_check = hm_listing_limit_check($userID);
 
 ?>
 
@@ -79,8 +76,7 @@ $listing_limit_check = hm_listing_limit_check($userID, $status_for_lsiting);
             <h1><?php if(isset($_GET['edit_listing'])){
                    echo __( 'Edit Listing', 'homey');
                 }else{
-                echo esc_html__(the_title('', '', false), 'homey');
-            } ?>
+                the_title();} ?>
             </h1>
         </div><!-- .dashboard-page-title -->
 
@@ -178,7 +174,7 @@ $listing_limit_check = hm_listing_limit_check($userID, $status_for_lsiting);
                 return true;
             }
             jQuery(".validate-errors").show();
-            jQuery(".validate-errors").text('<?php echo esc_html__('Please fill the following required fields.', 'homey'); ?>'+ validation_string);
+            jQuery(".validate-errors").text('Please fill the following required fields. '+ validation_string);
 
             jQuery([document.documentElement, document.body]).animate({
                 scrollTop: jQuery(".validate-errors").offset().top - 500
@@ -188,11 +184,7 @@ $listing_limit_check = hm_listing_limit_check($userID, $status_for_lsiting);
         });
 
         function isElementValid(itm){
-           if(typeof jQuery(itm).data('inputTitle') != 'undefined'){
-                return jQuery(itm).data('inputTitle');
-            }else{
-                return '';
-            }
+            return jQuery(itm).attr('name');
         }
 
     </script>

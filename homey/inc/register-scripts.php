@@ -9,9 +9,8 @@ if( !function_exists('homey_scripts') ) {
         wp_get_current_user();
         $userID = $current_user->ID;
         $homey_local = homey_get_localization();
-        $header_map_selected_city = $homey_allow_additional_guests = $homey_num_additional_guests = $login_redirect = $allowed_guests = $is_singular_experience = $is_singular_listing = $booking_start_hour = $booking_end_hour = $homey_min_book_days = '';
+        $header_map_selected_city = $homey_allow_additional_guests = $homey_num_additional_guests = $login_redirect = $allowed_guests = $is_singular_listing = $booking_start_hour = $booking_end_hour = $homey_min_book_days = '';
         $is_listing_detail = 'no';
-        $is_experience_detail = 'no';
         $booked_hours_array = $pending_hours_array = array();
 
         $after_login_redirect = homey_option('login_redirect');
@@ -28,11 +27,6 @@ if( !function_exists('homey_scripts') ) {
         if( isset($_GET['edit_listing']) && $_GET['edit_listing'] != '' ) {
             $edit_listing_id = $_GET['edit_listing'];
             $homey_booking_type = homey_booking_type_by_id($edit_listing_id);
-        }
-
-        if( isset($_GET['edit_experience']) && $_GET['edit_experience'] != '' ) {
-            $edit_experience_id = $_GET['edit_experience'];
-            $homey_booking_type = homey_booking_type_by_id($edit_experience_id);
         }
 
         $replytocom = isset($_GET['replytocom']) ? $_GET['replytocom'] : '';
@@ -82,47 +76,6 @@ if( !function_exists('homey_scripts') ) {
             $is_listing_detail = 'yes';
             
         }
-
-
-        // data type => experience
-        $edit_experience_id = isset($_GET['edit_experience']) ? $_GET['edit_experience'] : '';
-        $edit_experience_page = homey_get_template_link_2('template/dashboard-experience-submission.php');
-        $edit_experience_calendar = add_query_arg( array(
-            'edit_experience' => $edit_experience_id,
-            'tab' => 'calendar'
-        ), $edit_experience_page );
-
-        $edit_experience_pricing = add_query_arg( array(
-            'edit_experience' => $edit_experience_id,
-            'tab' => 'pricing'
-        ), $edit_experience_page );
-
-        if(is_singular('experience')) {
-
-            $homey_allow_additional_guests = get_post_meta($post->ID, 'homey_allow_additional_guests', true);
-            $homey_num_additional_guests = get_post_meta($post->ID, 'homey_num_additional_guests', true);
-            $allowed_guests = get_post_meta($post->ID, 'homey_guests', true);
-            $is_singular_experience = 'yes';
-
-            $booking_start_hour = get_post_meta($post->ID, 'homey_start_hour',true );
-            $booking_end_hour = get_post_meta($post->ID, 'homey_end_hour',true );
-            $homey_min_book_days = get_post_meta($post->ID, 'homey_min_book_days',true );
-            $booked_hours_array = homey_get_booked_hours_slots($post->ID);
-            $pending_hours_array = homey_get_pending_hours_slots($post->ID);
-
-            if(empty($booking_start_hour)) {
-                $booking_start_hour = '01:00';
-            }
-
-            if(empty($booking_end_hour)) {
-                $booking_end_hour = '24:00';
-            }
-
-            $is_experience_detail = 'yes';
-
-        }
-
-        // /data type => experience
 
         $homey_logged_in = 'yes';
         if (!is_user_logged_in()) {
@@ -191,18 +144,11 @@ if( !function_exists('homey_scripts') ) {
         wp_enqueue_style('jquery-ui', get_template_directory_uri() . '/css/jquery-ui.css', array(), '1.12.0', 'all');
         wp_enqueue_style('radio-checkbox', get_template_directory_uri() . '/css/radio-checkbox.css', array(), '1.0.0', 'all');
 
-        if( (is_singular('listing') || is_page_template('template/dashboard-submission.php') ) && $homey_booking_type == 'per_hour') {
-            wp_enqueue_script('fullcalendar-core', get_template_directory_uri() . '/js/fullcalendar/core/main.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-local-all', get_template_directory_uri() . '/js/fullcalendar/core/locales-all.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-daygrid', get_template_directory_uri() . '/js/fullcalendar/daygrid/main.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-timegrid', get_template_directory_uri() . '/js/fullcalendar/timegrid/main.min.js', array('jquery'), '4.0.2', true);
-        }
 
-        if( (is_singular('experience') || is_page_template('template/dashboard-experience-submission.php') ) && $homey_booking_type == 'per_hour') {
-            wp_enqueue_script('fullcalendar-core', get_template_directory_uri() . '/js/fullcalendar/core/main.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-local-all', get_template_directory_uri() . '/js/fullcalendar/core/locales-all.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-daygrid', get_template_directory_uri() . '/js/fullcalendar/daygrid/main.min.js', array('jquery'), '4.0.2', true);
-            wp_enqueue_script('fullcalendar-timegrid', get_template_directory_uri() . '/js/fullcalendar/timegrid/main.min.js', array('jquery'), '4.0.2', true);
+        if( (is_singular('listing') || is_page_template('template/dashboard-submission.php') ) && $homey_booking_type == 'per_hour') {
+            wp_enqueue_style('fullcalendar-core', get_template_directory_uri() . '//js/fullcalendar/core/main.min.css', array(), '4.0.2', 'all');
+            wp_enqueue_style('fullcalendar-daygrid', get_template_directory_uri() . '//js/fullcalendar/daygrid/main.min.css', array(), '4.0.2', 'all');
+            wp_enqueue_style('fullcalendar-timegrid', get_template_directory_uri() . '//js/fullcalendar/timegrid/main.min.css', array(), '4.0.2', 'all');
         }
         
         if (is_rtl()) {
@@ -238,6 +184,16 @@ if( !function_exists('homey_scripts') ) {
         wp_enqueue_script('bootstrap-select', get_template_directory_uri() . '/js/bootstrap-select.min.js', array('jquery'), '1.12.4', true);
         wp_enqueue_script('bootstrap-slider', get_template_directory_uri() . '/js/bootstrap-slider.min.js', array('jquery'), '10.0.2', true);
 
+        if( (is_singular('listing') || is_page_template('template/dashboard-submission.php') ) && $homey_booking_type == 'per_hour') {
+            wp_enqueue_script('fullcalendar-core', get_template_directory_uri() . '/js/fullcalendar/core/main.min.js', array('jquery'), '4.0.2', true);
+
+            wp_enqueue_script('fullcalendar-local-all', get_template_directory_uri() . '/js/fullcalendar/core/locales-all.min.js', array('jquery'), '4.0.2', true);
+
+            wp_enqueue_script('fullcalendar-daygrid', get_template_directory_uri() . '/js/fullcalendar/daygrid/main.min.js', array('jquery'), '4.0.2', true);
+            wp_enqueue_script('fullcalendar-timegrid', get_template_directory_uri() . '/js/fullcalendar/timegrid/main.min.js', array('jquery'), '4.0.2', true);
+        }
+        
+
         wp_enqueue_script('parallax-background', get_template_directory_uri() . '/js/parallax-background.min.js', array('jquery'), '1.2', true);
         wp_enqueue_script('jquery-matchHeight', get_template_directory_uri() . '/js/jquery.matchHeight-min.js', array('jquery'), '0.7.2', true);
         wp_enqueue_script('jquery-vide', get_template_directory_uri() . '/js/jquery.vide.min.js', array('jquery'), '0.5.1', true);
@@ -246,7 +202,7 @@ if( !function_exists('homey_scripts') ) {
         wp_enqueue_script('jquery-effects-core');
         wp_enqueue_script('jquery-ui-datepicker');
         wp_enqueue_script( 'jquery-ui-slider' );
-        
+
         $woo_checkout_url = '';
         if ( class_exists( 'WooCommerce' ) ) {
             $woo_checkout_url = wc_get_checkout_url();
@@ -259,10 +215,6 @@ if( !function_exists('homey_scripts') ) {
 
         if( homey_is_listing_page() ) { 
             $homey_booking_type = get_post_meta( $post->ID, 'homey_listings_booking_type', true );
-        }
-
-        if( homey_is_experiences_page() ) {
-            $homey_booking_type = get_post_meta( $post->ID, 'homey_experiences_booking_type', true );
         }
 
         // Ajax Calls
@@ -279,7 +231,6 @@ if( !function_exists('homey_scripts') ) {
                 'processing_text' => esc_html__('Processing, Please wait...', 'homey'),
                 'user_id' => $userID,
                 'is_singular_listing' => $is_singular_listing,
-                'is_singular_experience' => $is_singular_experience,
                 'process_loader_refresh' => 'fa fa-spin fa-refresh',
                 'process_loader_spinner' => 'fa fa-spin fa-spinner',
                 'process_loader_circle' => 'fa fa-spin fa-circle-o-notch',
@@ -300,10 +251,8 @@ if( !function_exists('homey_scripts') ) {
                 'currency_updating_msg' => esc_html__('Updating Currency, Please wait...', 'homey'),
                 'agree_term_text' => $homey_local['agree_term_text'],
                 'choose_gateway_text' => $homey_local['choose_gateway_text'],
-                'homey_tansparent_logo' => homey_is_transparent_logo(),
-                'homey_is_tansparent_logo' => homey_is_transparent_logo(),
+                'homey_tansparent' => homey_is_transparent_logo(),
                 'homey_is_transparent' => homey_is_transparent(),
-                'homey_transparent' => homey_is_transparent(),
                 'homey_is_top_header' => homey_is_top_header(),
                 'simple_logo' => $simple_logo,
                 'retina_logo' => $retina_logo,
@@ -340,8 +289,9 @@ if( !function_exists('homey_scripts') ) {
                 'homey_calendar_months' => homey_calendar_months(),
                 'geocomplete_country' => $geocomplete_country,
                 'homey_min_book_days' => $homey_min_book_days,
-                'homey_login_register_msg_text' => esc_html__('Error: Something wrong happened. If you are not able to login, contact to Website Administrator.', 'homey'),
-    
+                'sa_guest_message' => esc_html__('Please enter guest number.', 'homey'),
+                'sa_daterange_message' => esc_html__('Please select check in and check out dates.', 'homey'),
+                
             )
         ); // end ajax calls
         
@@ -401,8 +351,6 @@ if( !function_exists('homey_scripts') ) {
         $pin_cluster_zoom = homey_option('pin_cluster_zoom');
 
         //API and Ajax Calls for map
-
-        
 
         if( homey_get_map_system() == 'google' ) { 
             if (is_ssl()) {
@@ -516,6 +464,7 @@ if( !function_exists('homey_scripts') ) {
                     $booking_end_hour2 = '24:00';
                 }
             }
+            
 
             wp_enqueue_script('plupload');
             wp_enqueue_script('jquery-ui-sortable');
@@ -523,10 +472,14 @@ if( !function_exists('homey_scripts') ) {
             wp_enqueue_script('jquery-validate-min', get_template_directory_uri() . '/js/jquery.validate.min.js', array('jquery'), '1.15.0', true);
             wp_enqueue_script('bootbox-min', get_template_directory_uri() . '/js/bootbox.min.js', array('jquery'), '4.4.0', true);
 
+            wp_enqueue_script('homey-listing', get_template_directory_uri() . '/js/homey-listing.js', array('jquery', 'plupload', 'jquery-ui-sortable'), HOMEY_THEME_VERSION, true);
+
+
             if( isset($_GET['edit_listing']) && $_GET['edit_listing'] != '' ) {
                 $edit_listing_id = $_GET['edit_listing'];
                 $homey_booking_type = homey_booking_type_by_id($edit_listing_id);
             } else {
+
                 $homey_booking_type = isset($_GET['mode']) ? $_GET['mode'] : '';
             }
 
@@ -544,180 +497,85 @@ if( !function_exists('homey_scripts') ) {
                 $ex_per_night_per_guest = $homey_local['ex_per_night_per_guest'];
             }
 
-            if (is_page_template('template/dashboard-experience-submission.php') || is_page_template('template/dashboard-experience-submitted.php')  || is_page_template('template/dashboard-experiences.php')
-                || is_page_template('template/dashboard-experience-list.php') || is_page_template('template/dashboard-reservations-experiences.php') || is_page_template('template/dashboard-reservations2-experiences.php')
-            ){
-                wp_enqueue_script('homey-experience', get_template_directory_uri() . '/js/homey-experience.js', array('jquery', 'plupload', 'jquery-ui-sortable'), HOMEY_THEME_VERSION, true);
+            $listing_data = array(
+                'ajaxURL' => admin_url('admin-ajax.php'),
+                'verify_nonce' => wp_create_nonce('verify_gallery_nonce'),
+                'verify_file_type' => esc_html__('Valid file formats', 'homey'),
+                'msg_digits' => esc_html__('Please enter only digits', 'homey'),
+                'homey_is_rtl' => $homey_rtl,
+                'max_prop_images' => '',
+                'image_max_file_size' => '',
+                'homey_logged_in' => $homey_logged_in,
+                'process_loader_refresh' => 'fa fa-spin fa-refresh',
+                'process_loader_spinner' => 'fa fa-spin fa-spinner',
+                'process_loader_circle' => 'fa fa-spin fa-circle-o-notch',
+                'process_loader_cog' => 'fa fa-spin fa-cog',
+                'success_icon' => 'fa fa-check',
+                'are_you_sure_text' => $homey_local['are_you_sure_text'],
+                'delete_btn_text' => $homey_local['delete_btn'],
+                'cancel_btn_text' => $homey_local['cancel_btn'],
+                'confirm_btn_text' => esc_html__('Confirm', 'homey'),
+                'login_loading' => esc_html__('Sending user info, please wait...', 'homey'),
+                'processing_text' => esc_html__('Processing, Please wait...', 'homey'),
+                'add_listing_msg' => esc_html__('Submitting, Please wait...', 'homey'),
+                'both_required' => esc_html__('Both fields required.', 'homey'),
+                'discount_value' => esc_html__('Enter discount value', 'homey'),
+                'btn_save' => esc_html__('Save', 'homey'),
+                'acc_bedroom_name' => homey_option('ad_acc_bedroom_name'),
+                'acc_bedroom_name_plac' => homey_option('ad_acc_bedroom_name_plac'),
+                'acc_guests' => homey_option('ad_acc_guests'),
+                'acc_guests_plac' => homey_option('ad_acc_guests_plac'),
+                'acc_no_of_beds' => homey_option('ad_acc_no_of_beds'),
+                'acc_no_of_beds_plac' => homey_option('ad_acc_no_of_beds_plac'),
+                'acc_bedroom_type' => homey_option('ad_acc_bedroom_type'),
+                'acc_bedroom_type_plac' => homey_option('ad_acc_bedroom_type_plac'),
+                'acc_btn_remove_room' => homey_option('ad_acc_btn_remove_room'),
 
-                $experience_data = array(
-                    'ajaxURL' => admin_url('admin-ajax.php'),
-                    'verify_experience_gallery_nonce' => wp_create_nonce('verify_experience_gallery_nonce'),
-                    'verify_file_type' => esc_html__('Valid file formats', 'homey'),
-                    'msg_digits' => esc_html__('Please enter only digits', 'homey'),
-                    'homey_is_rtl' => $homey_rtl,
-                    'max_prop_images' => '',
-                    'image_max_file_size' => '',
-                    'homey_logged_in' => $homey_logged_in,
-                    'process_loader_refresh' => 'fa fa-spin fa-refresh',
-                    'process_loader_spinner' => 'fa fa-spin fa-spinner',
-                    'process_loader_circle' => 'fa fa-spin fa-circle-o-notch',
-                    'process_loader_cog' => 'fa fa-spin fa-cog',
-                    'success_icon' => 'fa fa-check',
-                    'are_you_sure_text' => $homey_local['are_you_sure_text'],
-                    'delete_btn_text' => $homey_local['delete_btn'],
-                    'cancel_btn_text' => $homey_local['cancel_btn'],
-                    'confirm_btn_text' => esc_html__('Confirm', 'homey'),
-                    'login_loading' => esc_html__('Sending user info, please wait...', 'homey'),
-                    'processing_text' => esc_html__('Processing, Please wait...', 'homey'),
-                    'add_experience_msg' => esc_html__('Submitting, Please wait...', 'homey'),
-                    'both_required' => esc_html__('Both fields required.', 'homey'),
-                    'discount_value' => esc_html__('Enter discount value', 'homey'),
-                    'btn_save' => esc_html__('Save', 'homey'),
-                    'acc_bedroom_name' => homey_option('ad_acc_bedroom_name'),
-                    'acc_bedroom_name_plac' => homey_option('ad_acc_bedroom_name_plac'),
-                    'acc_guests' => homey_option('ad_acc_guests'),
-                    'acc_guests_plac' => homey_option('ad_acc_guests_plac'),
-                    'acc_no_of_beds' => homey_option('ad_acc_no_of_beds'),
-                    'acc_no_of_beds_plac' => homey_option('ad_acc_no_of_beds_plac'),
-                    'acc_bedroom_type' => homey_option('ad_acc_bedroom_type'),
-                    'acc_bedroom_type_plac' => homey_option('ad_acc_bedroom_type_plac'),
-                    'acc_btn_remove_room' => homey_option('ad_acc_btn_remove_room'),
-                    'service_name' => homey_option('ad_service_name'),
-                    'service_name_plac' => homey_option('ad_service_name_plac'),
-                    'service_price' => homey_option('ad_service_price'),
-                    'service_price_plac' => homey_option('ad_service_price_plac'),
-                    'service_des' => homey_option('ad_service_des'),
-                    'service_des_plac' => homey_option('ad_service_des_plac'),
-                    'btn_remove_service' => homey_option('ad_btn_remove_service'),
-                    'calendar_link' => $edit_experience_calendar,
-                    'pricing_link' => $edit_experience_pricing,
-                    'geo_coding' => esc_html__('Geocode was not successful for the following reason', 'homey'),
-                    'avail_label' => $homey_local['avail_label'],
-                    'unavail_label' => $homey_local['unavail_label'],
-                    'add_ical_feeds' => esc_html__('Please add feeds first.', 'homey'),
-                    'add_expense_msg' => esc_html__('Please add expense first.', 'homey'),
-                    'geo_country_limit' => $geo_country_limit,
-                    'geocomplete_country' => $geocomplete_country,
-                    'homey_booking_type' => $homey_booking_type,
-                    'booked_hours_array' => json_encode($booked_hours_array2),
-                    'pending_hours_array' => json_encode($pending_hours_array2),
-                    'booking_start_hour' => $booking_start_hour2,
-                    'booking_end_hour' => $booking_end_hour2,
-                    'hc_reserved_label' => $homey_local['hc_reserved_label'],
-                    'hc_pending_label' => $homey_local['hc_pending_label'],
-                    'hc_hours_label' => $homey_local['hc_hours_label'],
-                    'hc_today_label' => $homey_local['hc_today_label'],
-                    'ex_name' => $homey_local['ex_name'],
-                    'ex_name_plac' => $homey_local['ex_name_plac'],
-                    'ex_price' => $homey_local['ex_price'],
-                    'ex_price_plac' => $homey_local['ex_price_plac'],
-                    'ex_type' => $homey_local['ex_type'],
-                    'ex_type_plac' => $homey_local['ex_type_plac'],
-                    'ex_single_fee' => $homey_local['ex_single_fee'],
-                    'ex_per_night' => $ex_per_night,
-                    'ex_per_guest' => $homey_local['ex_per_guest'],
-                    'ex_per_night_per_guest' => $ex_per_night_per_guest,
-                    'homey_timezone' => get_option('timezone_string'),
-                    'homey_current_lang' => $homey_current_lang,
-                    'edit_tab' => isset($_GET['tab']) ? $_GET['tab'] : '',
-
-                    'what_to_bring_name' => esc_html__(esc_attr(homey_option('experience_what_bring_name'), 'homey')),
-                    'what_to_bring_name_plac' => esc_html__(esc_attr(homey_option('experience_what_bring_name_plac'), 'homey')),
-
-                    'what_to_bring_desc' => esc_html__('Description', 'homey'),
-                    'what_to_bring_desc_plac' => esc_html__('Type description here.', 'homey'),
-
-                    'what_to_provided_name' => esc_html__(esc_attr(homey_option('experience_ad_acc_what_provide_name'), 'homey')),
-                    'what_to_provided_name_plac' => esc_html__(esc_attr(homey_option('experience_ad_acc_what_provide_name_plac'), 'homey')),
-
-                    'what_to_provided_desc' => esc_html__('Description', 'homey'),
-                    'what_to_provided_desc_plac' => esc_html__('Type description here.', 'homey'),
-
-                );
-                wp_localize_script('homey-experience', 'Homey_Experience', $experience_data);
-            }else{
-                wp_enqueue_script('homey-listing', get_template_directory_uri() . '/js/homey-listing.js', array('jquery', 'plupload', 'jquery-ui-sortable'), HOMEY_THEME_VERSION, true);
-
-                $listing_data = array(
-                    'ajaxURL' => admin_url('admin-ajax.php'),
-                    'verify_nonce' => wp_create_nonce('verify_gallery_nonce'),
-                    'verify_file_type' => esc_html__('Valid file formats', 'homey'),
-                    'msg_digits' => esc_html__('Please enter only digits', 'homey'),
-                    'homey_is_rtl' => $homey_rtl,
-                    'max_prop_images' => '',
-                    'image_max_file_size' => '',
-                    'homey_logged_in' => $homey_logged_in,
-                    'process_loader_refresh' => 'fa fa-spin fa-refresh',
-                    'process_loader_spinner' => 'fa fa-spin fa-spinner',
-                    'process_loader_circle' => 'fa fa-spin fa-circle-o-notch',
-                    'process_loader_cog' => 'fa fa-spin fa-cog',
-                    'success_icon' => 'fa fa-check',
-                    'are_you_sure_text' => $homey_local['are_you_sure_text'],
-                    'delete_btn_text' => $homey_local['delete_btn'],
-                    'cancel_btn_text' => $homey_local['cancel_btn'],
-                    'confirm_btn_text' => esc_html__('Confirm', 'homey'),
-                    'login_loading' => esc_html__('Sending user info, please wait...', 'homey'),
-                    'processing_text' => esc_html__('Processing, Please wait...', 'homey'),
-                    'add_listing_msg' => esc_html__('Submitting, Please wait...', 'homey'),
-                    'both_required' => esc_html__('Both fields required.', 'homey'),
-                    'discount_value' => esc_html__('Enter discount value', 'homey'),
-                    'btn_save' => esc_html__('Save', 'homey'),
-                    'acc_bedroom_name' => homey_option('ad_acc_bedroom_name'),
-                    'acc_bedroom_name_plac' => homey_option('ad_acc_bedroom_name_plac'),
-                    'acc_guests' => homey_option('ad_acc_guests'),
-                    'acc_guests_plac' => homey_option('ad_acc_guests_plac'),
-                    'acc_no_of_beds' => homey_option('ad_acc_no_of_beds'),
-                    'acc_no_of_beds_plac' => homey_option('ad_acc_no_of_beds_plac'),
-                    'acc_bedroom_type' => homey_option('ad_acc_bedroom_type'),
-                    'acc_bedroom_type_plac' => homey_option('ad_acc_bedroom_type_plac'),
-                    'acc_btn_remove_room' => homey_option('ad_acc_btn_remove_room'),
-
-                    'service_name' => homey_option('ad_service_name'),
-                    'service_name_plac' => homey_option('ad_service_name_plac'),
-                    'service_price' => homey_option('ad_service_price'),
-                    'service_price_plac' => homey_option('ad_service_price_plac'),
-                    'service_des' => homey_option('ad_service_des'),
-                    'service_des_plac' => homey_option('ad_service_des_plac'),
-                    'btn_remove_service' => homey_option('ad_btn_remove_service'),
-                    'calendar_link' => $edit_listing_calendar,
-                    'pricing_link' => $edit_listing_pricing,
-                    'geo_coding' => esc_html__('Geocode was not successful for the following reason', 'homey'),
-                    'avail_label' => $homey_local['avail_label'],
-                    'unavail_label' => $homey_local['unavail_label'],
-                    'add_ical_feeds' => esc_html__('Please add feeds first.', 'homey'),
-                    'add_expense_msg' => esc_html__('Please add expense first.', 'homey'),
-                    'geo_country_limit' => $geo_country_limit,
-                    'geocomplete_country' => $geocomplete_country,
-                    'homey_booking_type' => $homey_booking_type,
-                    'booked_hours_array' => json_encode($booked_hours_array2),
-                    'pending_hours_array' => json_encode($pending_hours_array2),
-                    'booking_start_hour' => $booking_start_hour2,
-                    'booking_end_hour' => $booking_end_hour2,
-                    'hc_reserved_label' => $homey_local['hc_reserved_label'],
-                    'hc_pending_label' => $homey_local['hc_pending_label'],
-                    'hc_hours_label' => $homey_local['hc_hours_label'],
-                    'hc_today_label' => $homey_local['hc_today_label'],
-                    'ex_name' => $homey_local['ex_name'],
-                    'ex_name_plac' => $homey_local['ex_name_plac'],
-                    'ex_price' => $homey_local['ex_price'],
-                    'ex_price_plac' => $homey_local['ex_price_plac'],
-                    'ex_type' => $homey_local['ex_type'],
-                    'ex_type_plac' => $homey_local['ex_type_plac'],
-                    'ex_single_fee' => $homey_local['ex_single_fee'],
-                    'ex_per_night' => $ex_per_night,
-                    'ex_per_guest' => $homey_local['ex_per_guest'],
-                    'ex_per_night_per_guest' => $ex_per_night_per_guest,
-                    'homey_timezone' => get_option('timezone_string'),
-                    'homey_current_lang' => $homey_current_lang,
-                    'edit_tab' => isset($_GET['tab']) ? $_GET['tab'] : '',
-                );
-                wp_localize_script('homey-listing', 'Homey_Listing', $listing_data);
-            }
+                'service_name' => homey_option('ad_service_name'),
+                'service_name_plac' => homey_option('ad_service_name_plac'),
+                'service_price' => homey_option('ad_service_price'),
+                'service_price_plac' => homey_option('ad_service_price_plac'),
+                'service_des' => homey_option('ad_service_des'),
+                'service_des_plac' => homey_option('ad_service_des_plac'),
+                'btn_remove_service' => homey_option('ad_btn_remove_service'),
+                'calendar_link' => $edit_listing_calendar,
+                'pricing_link' => $edit_listing_pricing,
+                'geo_coding' => esc_html__('Geocode was not successful for the following reason', 'homey'),
+                'avail_label' => $homey_local['avail_label'],
+                'unavail_label' => $homey_local['unavail_label'],
+                'add_ical_feeds' => esc_html__('Please add feeds first.', 'homey'),
+                'add_expense_msg' => esc_html__('Please add expense first.', 'homey'),
+                'geo_country_limit' => $geo_country_limit,
+                'geocomplete_country' => $geocomplete_country,
+                'homey_booking_type' => $homey_booking_type,
+                'booked_hours_array' => json_encode($booked_hours_array2),
+                'pending_hours_array' => json_encode($pending_hours_array2),
+                'booking_start_hour' => $booking_start_hour2,
+                'booking_end_hour' => $booking_end_hour2,
+                'hc_reserved_label' => $homey_local['hc_reserved_label'],
+                'hc_pending_label' => $homey_local['hc_pending_label'],
+                'hc_hours_label' => $homey_local['hc_hours_label'],
+                'hc_today_label' => $homey_local['hc_today_label'],
+                'ex_name' => $homey_local['ex_name'],
+                'ex_name_plac' => $homey_local['ex_name_plac'],
+                'ex_price' => $homey_local['ex_price'],
+                'ex_price_plac' => $homey_local['ex_price_plac'],
+                'ex_type' => $homey_local['ex_type'],
+                'ex_type_plac' => $homey_local['ex_type_plac'],
+                'ex_single_fee' => $homey_local['ex_single_fee'],
+                'ex_per_night' => $ex_per_night,
+                'ex_per_guest' => $homey_local['ex_per_guest'],
+                'ex_per_night_per_guest' => $ex_per_night_per_guest,
+                'homey_timezone' => get_option('timezone_string'),
+                'homey_current_lang' => $homey_current_lang,
+                'edit_tab' => isset($_GET['tab']) ? $_GET['tab'] : '',
+            );
+            wp_localize_script('homey-listing', 'Homey_Listing', $listing_data);
         }
 
         // Edit profile template
         if (is_page_template('template/dashboard-profile.php') || homey_is_dashboard()) {
-            //wp_enqueue_script('plupload');
+            wp_enqueue_script('plupload');
 
             wp_register_script('homey-profile', get_template_directory_uri() . '/js/homey-profile.js', array('jquery', 'plupload'), HOMEY_THEME_VERSION, true);
             $profile_data = array(
@@ -734,70 +592,48 @@ if( !function_exists('homey_scripts') ) {
                 'processing_text' => esc_html__('Processing, Please wait...', 'homey'),
                 'gdpr_agree_text' => esc_html__('Please Agree with GDPR', 'homey'),
                 'sending_info' => esc_html__('Sending info', 'homey'),
-
-                'profile_picture_req_text' => esc_html__('Profile Picture is required.', 'homey'),
-                'first_name_req_text' => esc_html__('First Name is required.', 'homey'),
-                'last_name_req_text' => esc_html__('Last Name is required.', 'homey'),
-                'tell_about_req_text' => esc_html__('Tell About Yourself is required.', 'homey'),
-                'mobile_num_req_text' => esc_html__('Mobile number is required.', 'homey'),
-                'phone_num_req_text' => esc_html__('Phone number is required.', 'homey'),
             );
             wp_localize_script('homey-profile', 'homeyProfile', $profile_data);
-
+            wp_enqueue_script('homey-profile');
         } // end edit profile
 
 
         if( homey_option('enable_stripe') ) {
             $reservation_page_link = homey_get_template_link('template/dashboard-reservations.php');
             $reservation_page_link_host = homey_get_template_link('template/dashboard-reservations2.php');
-
-            $reservation_exp_page_link = homey_get_template_link('template/dashboard-reservations-experiences.php');
-            $reservation_exp_page_link_host = homey_get_template_link('template/dashboard-reservations2-experiences.php');
-
             $add_new_listing = homey_get_template_link('template/dashboard-submission.php');
 
             $reservation_id = isset($_GET['reservation_id']) ? $_GET['reservation_id'] : '';
 
             if(homey_is_renter()) {
                 $reservation_return_link = $reservation_page_link;
-                $reservation_exp_return_link = $reservation_exp_page_link;
             } else {
                 $reservation_return_link = $reservation_page_link_host;
-                $reservation_exp_return_link = $reservation_exp_page_link_host;
             }
-
-            $return_link = add_query_arg(
+            
+            $return_link = add_query_arg( 
                 array(
-                    'edit_listing' => isset($_GET['upgrade_id']) ? $_GET['upgrade_id'] : '',
+                    'edit_listing' => isset($_GET['upgrade_id']) ? $_GET['upgrade_id'] : '', 
                     'featured' => true
                 ), $add_new_listing );
 
             wp_enqueue_script('stripe','https://js.stripe.com/v3/',array('jquery'), '1.0', true);
 
             wp_register_script('homey-stripe', get_template_directory_uri() . '/js/stripe-sca.js', array('jquery'), HOMEY_THEME_VERSION, true);
-
-            $is_experience_template = 0;
-            if ( is_page_template('template/template-instance-exp-booking.php') || is_page_template('template/dashboard-exp-payment.php') )
-            {
-                $is_experience_template = 1;
-            }
-
             wp_localize_script('homey-stripe', 'HOMEY_stripe_vars',
                 array(
                     'stripe_publishable_key' => homey_option('stripe_publishable_key', ''),
                     'featured_return_link' => $return_link,
-                    'is_experience_template' => $is_experience_template,
                     'reservation_return_link' => $reservation_return_link,
-                    'reservation_exp_return_link' => $reservation_exp_return_link,
                     'req_name' => esc_html__('Name field required', 'homey'),
                     'req_email' => esc_html__('Email field required', 'homey'),
                     'req_phone' => esc_html__('Phone field required', 'homey'),
                     'payment_failed' => esc_html__('Payment Failed, please make sure you have entered name, email and valid card number', 'homey'),
-
-                    'successful_message' => esc_html__('Successfully Paid, Redirecting...', 'homey'),
                 )
             ); // end vars
             wp_enqueue_script('homey-stripe');
+        
+        
         }
 
 
@@ -815,10 +651,15 @@ if( !function_exists('homey_scripts') ) {
             );
             wp_localize_script('homey-reCaptcha', 'homey_reCaptcha', $reCaptcha_data);
         }
+
         
         if (is_singular('post') && comments_open() && get_option('thread_comments')) {
             wp_enqueue_script('comment-reply');
         }
+
+        
+
+
     }
 }
 add_action( 'wp_enqueue_scripts', 'homey_scripts' );
