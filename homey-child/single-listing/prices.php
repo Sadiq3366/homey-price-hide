@@ -76,6 +76,18 @@ if($weekends_days == 'sat_sun') {
 } elseif($weekends_days == 'fri_sat_sun') {
     $weekendDays = esc_html__('Fri, Sat & Sun', 'homey');
 }
+
+?>
+<?php 
+
+$price_no=get_post_meta($listing_id,'homey_yes_no',true);
+if(!empty($price_no))
+{
+    echo '';
+}
+else
+{
+
 ?>
 <div id="price-section" class="price-section">
     <div class="block">
@@ -182,3 +194,4 @@ if($weekends_days == 'sat_sun') {
         </div><!-- block-section -->
     </div><!-- block -->
 </div>
+<?php }?>

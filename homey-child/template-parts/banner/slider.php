@@ -18,6 +18,7 @@ $rating = homey_option('rating');
             if( $slider->have_posts() ): while( $slider->have_posts() ): $slider->the_post();
                 $slider_img = get_post_meta( $post->ID, $homey_prefix. 'slider_image', true );
                 $imag_url = wp_get_attachment_image_src( $slider_img, 'full', true );
+                $Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 
                 $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
                 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
@@ -44,9 +45,20 @@ $rating = homey_option('rating');
                                     </div>
                                 </div>
                                 <div class="item-media-price">
+                                <?php
+                                    if(!empty($Price_no)){
+                                        ?>
+                                        <span class="item-price">
+                                            <h3>No Request</h3>
+                                        </span>
+                                    <?php }
+                                    else
+                                    {
+                                    ?>
                                     <span class="item-price">
                                         <?php echo homey_formatted_price($night_price, false, true); ?><sub>/<?php echo esc_attr(homey_option('glc_day_night_label'));?></sub>
                                     </span>
+                                 <?php}?>
                                 </div>
                                 <ul class="item-amenities">
                                     <li>

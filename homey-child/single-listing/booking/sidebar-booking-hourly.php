@@ -7,6 +7,8 @@ $price_per_night = get_post_meta($listing_id, $homey_prefix.'night_price', true)
 $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', true);
 $start_hour = get_post_meta($listing_id, $homey_prefix.'start_hour', true);
 $end_hour = get_post_meta($listing_id, $homey_prefix.'end_hour', true);
+$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
+
 $offsite_payment = homey_option('off-site-payment');
 
 $key = '';
@@ -56,7 +58,12 @@ for ($halfhour = $start_hour; $halfhour <= $end_hour; $halfhour = $halfhour+30*6
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($listing_price)) { ?>
+					if(!empty($Price_no)){?>
+                       <span class="item-price">
+		                  <h3>On Request</h3>
+					   </span>
+					<?php}
+				else if(!empty($listing_price)) { ?>
 
 					<span class="item-price">
 					<?php 	

@@ -1080,6 +1080,7 @@ if( !function_exists('homey_half_map') ) {
             $night_price          = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
             $location = get_post_meta( get_the_ID(), $homey_prefix.'listing_location',true);
             $lat_long = explode(',', $location);
+            $price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );  
 
             //$listing_price = $sa_nights_in_diff * homey_get_price_by_id($listing_id);
             $listing_price = homey_calculate_booking_cost_ajax_nightly($listing_id, $arrive, $depart, $guests, null, 1);
@@ -1119,6 +1120,7 @@ if( !function_exists('homey_half_map') ) {
             $listing->guests = $guests;
             $listing->beds = $beds;
             $listing->baths = $baths;
+            $listing->price_no = $price_no;
             
             if($cgl_types != 1) {
                 $listing->listing_type = '';

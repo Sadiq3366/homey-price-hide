@@ -12,6 +12,7 @@ $cgl_baths = homey_option('cgl_baths');
 $cgl_guests = homey_option('cgl_guests');
 $cgl_types = homey_option('cgl_types');
 $price_separator = homey_option('currency_separator');
+$Price_no =get_post_meta($listing_id, 'homey_yes_no', true);
 
 $bedrooms_icon = homey_option('lgc_bedroom_icon'); 
 $bathroom_icon = homey_option('lgc_bathroom_icon'); 
@@ -85,6 +86,13 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
             </div>
             <div class="item-media-price">
                 <span class="item-price">
+                <?php
+                 if(!empty($Price_no)){
+                    echo 'On Request';
+                }
+                else
+                {
+                 ?>
                     <sup><?php echo homey_get_currency(false); ?></sup>
                     <span class="price-count" id="price-place">
                         <?php 
@@ -96,6 +104,7 @@ if ( isset($_GET['mode']) && $_GET['mode'] != '' ) {
                     </span>
                     <sub><?php echo esc_attr($price_separator); ?><span class="price-postfix" id="price-postfix"><?php echo $price_postfix;?></span></sub>
                 </span>
+                <?php}?>
             </div>
 
             <?php if(!empty($author_pic)) { ?>

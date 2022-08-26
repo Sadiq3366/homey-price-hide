@@ -1054,6 +1054,12 @@ if( !function_exists('listing_submission_filter')) {
                 update_post_meta( $listing_id, $prefix.'baths', sanitize_text_field( $_POST['baths'] ) );
             }
 
+           // condition yes/no
+
+           if( isset( $_POST['yes_no'] ) && $_POST['yes_no']=='no' ) {
+            update_post_meta( $listing_id, $prefix.'yes_no',sanitize_text_field( $_POST['yes_no'] ) );
+        }
+
             // Rooms
             if( isset( $_POST['listing_rooms'] ) ) {
                 update_post_meta( $listing_id, $prefix.'listing_rooms', sanitize_text_field( $_POST['listing_rooms'] ) );
