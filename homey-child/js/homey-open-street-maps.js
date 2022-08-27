@@ -264,10 +264,14 @@
                     if ( mapData.title ) {
                         markerOptions.title = mapData.title;
                     }
-
+                 
+                    var price_pins = '<div class="gm-marker-price">'+map_properties[i].price+'</div>';
+                    if (map_properties[i].price_no == 'no') {
+                        price_pins = '<div class="gm-marker-price">On Request</div>';
+                    }
 
                     if( markerPricePins == 'yes' ) {
-                        var pricePin = '<div  id="infobox_popup_'+map_properties[i].id+'"  data-id="'+map_properties[i].id+'" class="gm-marker gm-marker-color-'+map_properties[i].term_id+'"><div class="gm-marker-price">'+map_properties[i].price+'</div></div>';
+                        var pricePin = '<div  id="infobox_popup_'+map_properties[i].id+'"  data-id="'+map_properties[i].id+'" class="gm-marker gm-marker-color-'+map_properties[i].term_id+'">'+price_pins+'</div>';
 
                         var myIcon = L.divIcon({
                             className:'someclass',
@@ -331,6 +335,11 @@
                         listing_type = '<li class="item-type">'+map_properties[i].listing_type+'</li>';
                     }
 
+                    var price_span = '<span class="item-price">'+map_properties[i].price+'</span>';
+                    if (map_properties[i].price_no == 'no') {
+                        price_span = '<span class="item-price">On Request</span>';
+                    }
+
                     var infoboxContent = '<div id="google-maps-info-window" class="homey-open-street-map">'+
                         '<div class="item-wrap item-grid-view">'+
                         '<div class="media property-item">'+
@@ -338,7 +347,7 @@
                         '<div class="item-media item-media-thumb">'+
                         '<a href="'+map_properties[i].url+'" class="hover-effect">'+map_properties[i].thumbnail+'</a>'+
                         '<div class="item-media-price">'+
-                        '<span class="item-price">'+map_properties[i].price+'</span>'+
+                        price_span + 
                         '</div>'+
                         '</div>'+
                         '</div>'+

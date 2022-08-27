@@ -380,8 +380,9 @@ if( !function_exists('homey_scripts') ) {
             }
 
             wp_enqueue_script( 'jquery-ui-autocomplete' );
-
+ 
             wp_enqueue_script('homey-maps', get_stylesheet_directory_uri() . '/js/homey-open-street-maps'.$js_minify_prefix.'.js', array('jquery'), HOMEY_THEME_VERSION, true);
+        
         }
 
 
@@ -662,7 +663,7 @@ if( !function_exists('homey_scripts') ) {
 
     }
 }
-
+  
 // add_action( 'wp_enqueue_scripts', 'homey_scripts' );
 
 // if (is_admin() ){
@@ -708,4 +709,4 @@ if( !function_exists('homey_scripts') ) {
 // }
 // if(!is_admin()){
 //     add_action( 'wp_footer', 'homey_footer_scripts', 100 );
-// }
+// }    
