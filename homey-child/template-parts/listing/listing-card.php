@@ -62,7 +62,7 @@ $homey_permalink = homey_listing_permalink();
 
                     <?php 
                     
-                    if(!empty($price_no))
+                    if($price_no=='no')
                     {?>
                         
                             <span class="item-price sa-listing-item-price">

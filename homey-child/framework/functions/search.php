@@ -1121,7 +1121,6 @@ if( !function_exists('homey_half_map') ) {
             $listing->beds = $beds;
             $listing->baths = $baths;
             $listing->price_no = $price_no;
-            
             if($cgl_types != 1) {
                 $listing->listing_type = '';
             } else {

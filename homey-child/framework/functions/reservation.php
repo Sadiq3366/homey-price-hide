@@ -1559,7 +1559,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_weekly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -1687,7 +1687,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_monthly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -1818,7 +1818,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_nightly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -1954,7 +1954,7 @@ if( !function_exists('homey_calculate_booking_cost_ajax_1_5_3') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -2091,7 +2091,7 @@ if( !function_exists('homey_calculate_booking_cost_instance_monthly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -2218,7 +2218,7 @@ if( !function_exists('homey_calculate_booking_cost_instance_weekly') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -2344,7 +2344,7 @@ if( !function_exists('homey_calculate_booking_cost_instance') ) {
         $output .= '</div>';
 
         $output .= '<div class="pull-right text-right">';
-        if(!empty($Price_no)) 
+        if($Price_no=='no') 
         {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
         }
@@ -2481,7 +2481,7 @@ if( !function_exists('homey_calculate_booking_cost') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no)) 
+            if($Price_no=='no') 
            {
             $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
            }
@@ -2684,7 +2684,7 @@ if( !function_exists('homey_calculate_reservation_cost_monthly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no)) 
+            if($Price_no=='no') 
             {
                 $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
             }
@@ -2887,7 +2887,7 @@ if( !function_exists('homey_calculate_reservation_cost_weekly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no)) 
+            if($Price_no=='no') 
             {
                 $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
             }
@@ -3087,7 +3087,7 @@ if( !function_exists('homey_calculate_reservation_cost_nightly') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no)) 
+            if($Price_no=='no') 
             {
                 $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
             }
@@ -3291,7 +3291,7 @@ if( !function_exists('homey_calculate_reservation_cost_1_5_3') ) {
             $output .= '</div>';
 
             $output .= '<div class="pull-right text-right">';
-            if(!empty($Price_no)) 
+            if($Price_no=='no') 
             {
                 $output .= '<div class="payment-list-price-detail-total-price "> On Request </div>';
             }
@@ -5281,7 +5281,7 @@ if ( ! function_exists('homey_approved_post_status') ) {
 
 }
 
-if ( ! function_exists('homey_in-review_post_status') ) {
+if ( ! function_exists('homey_in_review_post_status') ) {
     function homey_in_review_post_status() {
 
         $args = array(

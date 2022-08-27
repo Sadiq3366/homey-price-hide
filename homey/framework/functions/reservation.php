@@ -5189,7 +5189,7 @@ if ( ! function_exists('homey_approved_post_status') ) {
 
 }
 
-if ( ! function_exists('homey_in-review_post_status') ) {
+if ( ! function_exists('homey_in_review_post_status') ) {
     function homey_in_review_post_status() {
 
         $args = array(

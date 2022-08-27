@@ -35,7 +35,7 @@ $listing_price = homey_get_price();
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($Price_no)){?>
+					if($Price_no=='no'){?>
                         <span class="item-price">
 					       <h3> On Request </h3>
 					    </span>   
@@ -113,12 +113,13 @@ $listing_price = homey_get_price();
 					<!-- 	<button id="instance_reservation" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Instant Booking', 'homey'); ?></button> -->
 					<?php } else { ?> 
 					<!-- 	<button id="request_for_reservation" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Request to Book', 'homey'); ?></button>
-						<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div> -->
+						 -->
 					<?php } ?>
 					
 				<?php } ?>
 				
-				<button data-whats-app-message-body="<?php echo homey_option('homey_sa_whatsapp_message'); ?>" data-listing-title="<?php echo the_title();?>" data-listing-link="<?php echo get_permalink();?>" data-wa-number="<?php echo homey_option('homey_sa_whatsapp_number'); ?>" id="request_for_reservation_wa" type="button" class="btn btn-full-width btn-primary"><?php esc_html_e(homey_option('homey_sa_whatsapp_btn'), 'homey'); ?></button>
+				<button data-whats-app-message-body="<?php echo homey_option('homey_sa_whatsapp_message'); ?>" data-listing-title="<?php echo the_title();?>" data-listing-link="<?php echo get_permalink();?>" data-wa-number="<?php echo homey_option('homey_sa_whatsapp_number'); ?>" id="request_for_reservation_wa" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__(homey_option('homey_sa_whatsapp_btn'), 'homey'); ?></button>
+				<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div>
 			</div><!-- block-body-sidebar -->
 		</div><!-- sidebar-booking-module-body -->
 		

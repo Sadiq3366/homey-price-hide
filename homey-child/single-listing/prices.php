@@ -80,8 +80,8 @@ if($weekends_days == 'sat_sun') {
 ?>
 <?php 
 
-$price_no=get_post_meta($listing_id,'homey_yes_no',true);
-if(!empty($price_no))
+$price_no=get_post_meta(get_the_ID(),'homey_yes_no',true);
+if($price_no=='no')
 {
     echo '';
 }

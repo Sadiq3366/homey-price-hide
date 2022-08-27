@@ -65,7 +65,7 @@ $homey_permalink = homey_listing_permalink();
 
                 <?php 
                 
-                if(!empty($price_no))
+                if($price_no=='no')
                 {?>
                     <div class="item-media-price">
                         <span class="item-price sa-listing-item-price">
@@ -109,7 +109,7 @@ $homey_permalink = homey_listing_permalink();
                             $city_tax_html = '<a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_city' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_city' ).'</a>';
                         }
                         // echo '<address class="item-address">'.esc_attr($address).'</address>';
-                        echo '<address class="item-address"><a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_country' ).'</a> '.$address_tax_separator.$city_tax_html.'</address>';
+                        echo '<address class="item-address sa-item-address"><a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_country' ).'</a> '.$address_tax_separator.$city_tax_html.'</address>';
                         
                     }
                     ?>

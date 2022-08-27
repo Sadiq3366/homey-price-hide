@@ -19,7 +19,7 @@ $rating = homey_option('rating');
                 $slider_img = get_post_meta( $post->ID, $homey_prefix. 'slider_image', true );
                 $imag_url = wp_get_attachment_image_src( $slider_img, 'full', true );
                 $Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
-
+ 
                 $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
                 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
                 $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
@@ -46,7 +46,7 @@ $rating = homey_option('rating');
                                 </div>
                                 <div class="item-media-price">
                                 <?php
-                                    if(!empty($Price_no)){
+                                    if($Price_no=='no'){
                                         ?>
                                         <span class="item-price">
                                             <h3>No Request</h3>

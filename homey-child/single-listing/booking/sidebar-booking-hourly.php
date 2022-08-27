@@ -58,12 +58,12 @@ for ($halfhour = $start_hour; $halfhour <= $end_hour; $halfhour = $halfhour+30*6
 			<div class="block-body-sidebar">
 				
 					<?php 
-					if(!empty($Price_no)){?>
+					if($Price_no=='no'){?>
                        <span class="item-price">
 		                  <h3>On Request</h3>
 					   </span>
 					<?php}
-				else if(!empty($listing_price)) { ?>
+				    else if(!empty($listing_price)) { ?>
 
 					<span class="item-price">
 					<?php 	

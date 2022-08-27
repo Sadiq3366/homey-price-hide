@@ -1089,6 +1089,14 @@ if( !function_exists('listing_submission_filter')) {
                 update_post_meta( $listing_id, $prefix.'hourly_weekends_price', sanitize_text_field( $_POST['hourly_weekends_price'] ) );
             }
 
+            // condition yes/no
+            if( isset( $_POST['yes_no'] ) && $_POST['yes_no']=='no' ) {
+                update_post_meta( $listing_id, $prefix.'yes_no',sanitize_text_field( $_POST['yes_no'] ) );
+            }
+            if( isset( $_POST['yes_no'] ) && $_POST['yes_no']=='yes' ) {
+                update_post_meta( $listing_id, $prefix.'yes_no',sanitize_text_field( $_POST['yes_no'] ) );
+            }
+            
             // Min book Hours
             if( isset( $_POST['min_book_hours'] ) ) {
                 update_post_meta( $listing_id, $prefix.'min_book_hours', sanitize_text_field( $_POST['min_book_hours'] ) );

@@ -306,7 +306,7 @@ if($hide_fields['price_postfix'] != 1) {
             <div class="row">
                <div class="col-sm-6 col-xs-12">
                  <div class="form-group">
-                      <label for="show_hide" class="hide_show"><?php echo esc_html__('are you want to show the price','homey'); ?></label>
+                      <label for="show_hide" style="width:100%"><?php echo esc_html__('are you want to show the price','homey'); ?></label>
                          <input type="radio" name="yes_no" value="yes">
                          <label for="yes">YES</label>
                          <input type="radio"  name="yes_no" value="no">
@@ -314,7 +314,7 @@ if($hide_fields['price_postfix'] != 1) {
                    </div>
                 </div>
             </div>
-
+           
             <?php if($hide_fields['tax_rate'] != 1 && homey_option('tax_type') == 'single_tax') { ?>
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group">
