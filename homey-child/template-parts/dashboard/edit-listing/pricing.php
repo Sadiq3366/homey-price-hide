@@ -19,7 +19,7 @@ $city_fee_type = homey_get_field_meta('city_fee_type');
 $security_deposit = homey_get_field_meta('security_deposit');
 $tax_rate = homey_get_field_meta('tax_rate');
 $price_postfix = homey_get_field_meta('price_postfix');
-
+$price_no = homey_get_field_meta('yes_no');
 $class = '';
 if(isset($_GET['tab']) && $_GET['tab'] == 'pricing') {
     $class = 'in active';
@@ -307,9 +307,9 @@ if($hide_fields['price_postfix'] != 1) {
                <div class="col-sm-6 col-xs-12">
                  <div class="form-group">
                       <label for="show_hide" style="width:100%"><?php echo esc_html__('are you want to show the price','homey'); ?></label>
-                         <input type="radio" name="yes_no" value="yes">
+                         <input type="radio" name="yes_no" <?php checked( $price_no, 'yes' ); ?> value="yes">
                          <label for="yes">YES</label>
-                         <input type="radio"  name="yes_no" value="no">
+                         <input type="radio"  name="yes_no" <?php checked( $price_no, 'no' ); ?> value="no">
                          <label for="no">NO</label><br>
                    </div>
                 </div>
