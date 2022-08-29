@@ -86,7 +86,7 @@
             disableAutoPan: false,
             pixelOffset: new google.maps.Size(-160, infobox_top),
             zIndex: null,
-            boxClass: 'homeyInfobox',
+            boxClass: 'homeyInfobox sa-homeyInfobox',
             closeBoxMargin: "13px 2px -14px 2px",
             closeBoxURL: infoboxClose,
             infoBoxClearance: new google.maps.Size(20, 20),
@@ -374,13 +374,13 @@
                 }
 
                 var infoboxContent = '<div id="google-maps-info-window">'+
-                    '<div class="item-wrap item-grid-view">'+
-                    '<div class="media property-item">'+
+                    '<div class="item-wrap item-grid-view sa-item-wrap">'+
+                    '<div class="media property-item sa-media">'+
                     '<div class="media-left">'+
                     '<div class="item-media item-media-thumb">'+
                     '<a href="'+prop.url+'" target="_blank" class="hover-effect">'+prop.thumbnail+'</a>'+
                     '<div class="item-media-price">'+
-                    '<span class="item-price">'+prop.price+'</span>'+
+                    '<span class="item-price sa-item-price">'+prop.price+'</span>'+
                     '</div>'+
                     '</div>'+
                     '</div>'+
@@ -446,18 +446,18 @@
 
                 homeyMap = new google.maps.Map(document.getElementById(element), {
                     zoom: defaultZoom,
-                    zoomControl: false,
+                    zoomControl: true,
                     mapTypeControl: false,
                     streetViewControl: false,
                     overviewMapControl: false,
-                    scrollwheel: false,
+                    scrollwheel: true,
                     fullscreenControl: true,
                     fullscreenControlOptions: {
                         position: google.maps.ControlPosition.RIGHT_BOTTOM
                     },
                     center: new google.maps.LatLng(_lat, _long),
                     mapTypeId: "satellite",
-                    gestureHandling: 'cooperative',
+                    gestureHandling: 'greedy',
                     styles: google_map_style,
                 });
 
@@ -775,7 +775,7 @@
                     center: mapCenter,
                     disableDefaultUI: false,
                     //scrollwheel: true,
-                    gestureHandling: 'cooperative',
+                    gestureHandling: 'greedy',
                     styles: google_map_style,
                 };
                 var mapElement = document.getElementById(element);
@@ -822,7 +822,8 @@
                     },
                     center: new google.maps.LatLng(_lat, _long),
                     mapTypeId: "roadmap",
-                    gestureHandling: 'cooperative',
+                    gestureHandling: 'greedy',
+                    //gestureHandling: 'cooperative',
                     styles: google_map_style,
                 });
 

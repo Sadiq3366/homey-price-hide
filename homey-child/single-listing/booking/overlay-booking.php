@@ -6,7 +6,7 @@ $listing_id = $post->ID;
 $price_per_night = get_post_meta($listing_id, $homey_prefix.'night_price', true);
 $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', true);
 $offsite_payment = homey_option('off-site-payment');
-
+$Price_no =get_post_meta($listing_id, $homey_prefix.'yes_no', true);
 $rating = homey_option('rating');
 $total_rating = get_post_meta( $listing_id, 'listing_total_rating', true );
 
@@ -114,7 +114,15 @@ if(isset($_GET['arrive']) && $_GET['depart']){
 <div class="overlay-booking-btn visible-sm visible-xs">
 	<div class="pull-left">
 		<div class="overlay-booking-price">
+		<?php 
+			if($Price_no=='no'){?>
+                       
+		      On Request
+					   
+		<?php}
+		else{?>
 			<?php echo homey_formatted_price($price_per_night, true, false, $is_txt_from); ?><span><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label($sa_nights_in_diff, $sa_nights_in_diff);?></span>
+		 <?php}?>       
 		</div>
 		<?php 
         if($rating && ($total_rating != '' && $total_rating != 0 ) ) { ?>
