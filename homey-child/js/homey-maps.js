@@ -315,10 +315,14 @@
                 var latlng = new google.maps.LatLng(prop.lat,prop.long);
 
                 var prop_title = prop.data ? prop.data.post_title : prop.title;
-
+                  
+                var price_pins = '<div class="gm-marker-price">'+map_properties[i].price+'</div>';
+                    if (map_properties[i].price_no == 'no') {
+                        price_pins = '<div class="gm-marker-price">On Request</div>';
+                    }
 
                 if( markerPricePins == 'yes' ) {
-                    var pricePin = '<div data-id="'+prop.id+'" class="gm-marker gm-marker-color-'+prop.term_id+'"><div class="gm-marker-price">'+prop.price+'</div></div>';
+                    var pricePin = '<div data-id="'+prop.id+'" class="gm-marker gm-marker-color-'+prop.term_id+'">'+price_pins+'</div>';
 
                     var marker = new RichMarker({
                         map: map,
@@ -373,6 +377,12 @@
                     listing_type = '<li class="item-type">'+prop.listing_type+'</li>';
                 }
 
+
+                var price_span = '<span class="item-price">'+map_properties[i].price+'</span>';
+                    if (map_properties[i].price_no == 'no') {
+                        price_span = '<span class="item-price">On Request</span>';
+                    }
+
                 var infoboxContent = '<div id="google-maps-info-window">'+
                     '<div class="item-wrap item-grid-view sa-item-wrap">'+
                     '<div class="media property-item sa-media">'+
@@ -380,7 +390,7 @@
                     '<div class="item-media item-media-thumb">'+
                     '<a href="'+prop.url+'" target="_blank" class="hover-effect">'+prop.thumbnail+'</a>'+
                     '<div class="item-media-price">'+
-                    '<span class="item-price sa-item-price">'+prop.price+'</span>'+
+                     price_span+
                     '</div>'+
                     '</div>'+
                     '</div>'+

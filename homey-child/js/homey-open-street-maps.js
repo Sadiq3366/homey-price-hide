@@ -347,7 +347,7 @@
                         '<div class="item-media item-media-thumb">'+
                         '<a href="'+map_properties[i].url+'" class="hover-effect">'+map_properties[i].thumbnail+'</a>'+
                         '<div class="item-media-price">'+
-                        price_span + 
+                        price_span+ 
                         '</div>'+
                         '</div>'+
                         '</div>'+
