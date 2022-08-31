@@ -55,6 +55,13 @@ if( !function_exists('homey_reservation_declined_callback') ) {
 
                 $carbon_booked_datetime = Carbon::parse($booked_on);
                 $now = Carbon::now();
+//                echo '<pre>';
+//print_r($carbon_booked_datetime);
+//                echo ' < carbon_booked_datetime ,'.$now. ' < now ' .$carbon_booked_datetime->diffInHours($now) .'>'. $num_hours.' <br>';
+//                exit;
+
+                file_put_contents('./log_auto_decline_'.date("j.n.Y").'.txt', ' < carbon_booked_datetime ,'.$now. ' < now ' .$carbon_booked_datetime->diffInHours($now) .'>'. $num_hours.' <br>', FILE_APPEND);
+
                 if ($carbon_booked_datetime->diffInHours($now) > $num_hours) {
                     //Remove Pending Dates
                     $pending_dates_array = homey_remove_booking_pending_days($listing_id, $reservation_id);
@@ -96,7 +103,7 @@ if( !function_exists('homey_featured_listing_expire_callback') ) {
 
                 $expiration_date = $prop_listed_date + $featured_listing_expire * 24 * 60 * 60;
 
-                $today = strtotime(date( 'Y-m-d g:i:s', current_time( 'timestamp', 0 ) ));
+                $today = strtotime(date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ) ));
 
                 $user_id = homey_get_author_by_post_id($the_id);
                 $user = new WP_User($user_id); //administrator

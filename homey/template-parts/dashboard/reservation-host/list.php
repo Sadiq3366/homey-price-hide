@@ -8,6 +8,8 @@ $booking_hide_fields = homey_option('booking_hide_fields');
 $reservation_page_link = homey_get_template_link('template/dashboard-reservations2.php');
 $mine_link = add_query_arg( 'mine', 1, $reservation_page_link );
 
+$hide_labels = homey_option('show_hide_labels');
+
 $total_reservations = homey_posts_count('homey_reservation');
 
 
@@ -53,11 +55,14 @@ $res_query = new WP_Query($args);
                                             <th><?php echo esc_attr($homey_local['check_in']); ?></th>
                                             <th><?php echo esc_attr($homey_local['check_out']); ?></th>
 
-                                            <?php if($booking_hide_fields['guests'] != 1) {?>
+                                            <?php if($booking_hide_fields['guests'] != 1 && 0 != homey_option('cgl_guests')) {?>
                                             <th><?php echo homey_option('glc_guests_label');?></th>
                                             <?php } ?>
 
-                                            <th><?php echo esc_attr($homey_local['pets_label']);?></th>
+                                            <?php if($hide_labels['sn_pets_allowed'] != 1) { ?>
+                                                <th><?php echo esc_attr($homey_local['pets_label']);?></th>
+                                            <?php } ?>
+
                                             <th><?php echo esc_attr($homey_local['subtotal_label']); ?></th>
                                             <th><?php echo esc_attr($homey_local['actions_label']); ?></th>
                                         </tr>

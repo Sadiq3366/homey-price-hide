@@ -3,9 +3,6 @@ global $post, $homey_local, $homey_prefix;
 $advanced_filter = (int) homey_option('advanced_filter');
 $search_width = homey_option('search_width');
 
-$keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
-$srh_whr_to_go = isset($_GET['keyword']) ? $_GET['keyword'] : esc_attr(homey_option('srh_whr_to_go'));
-
 $location_search = isset($_GET['location_search']) ? $_GET['location_search'] : '';
 $country = isset($_GET['search_country']) ? $_GET['search_country'] : '';
 $city = isset($_GET['search_city']) ? $_GET['search_city'] : '';
@@ -90,8 +87,8 @@ $end_hour = strtotime('24:00');
                                 ?>
                                 <div class="<?php echo esc_attr($location_classes); ?>">
                                     <?php if($location_field == 'geo_location') { ?>
-                                    <label class="animated-label"><?php echo $srh_whr_to_go; ?></label>    
-                                    <input type="text" name="location_search" autocomplete="off" id="location_search" value="<?php echo esc_attr($location_search); ?>" class="form-control input-search" placeholder="<?php echo $srh_whr_to_go; ?>">
+                                    <label class="animated-label"><?php echo esc_attr(homey_option('srh_whr_to_go')); ?></label>    
+                                    <input type="text" name="location_search" autocomplete="off" id="location_search" value="<?php echo esc_attr($location_search); ?>" class="form-control input-search" placeholder="<?php echo esc_attr(homey_option('srh_whr_to_go')); ?>">
                                     <input type="hidden" name="search_city" data-value="<?php echo esc_attr($city); ?>" value="<?php echo esc_attr($city); ?>"> 
                                     <input type="hidden" name="search_area" data-value="<?php echo esc_attr($area); ?>" value="<?php echo esc_attr($area); ?>"> 
                                     <input type="hidden" name="search_country" data-value="<?php echo esc_attr($country); ?>" value="<?php echo esc_attr($country); ?>">
@@ -103,15 +100,15 @@ $end_hour = strtotime('24:00');
 
                                     <?php } elseif($location_field == 'keyword') { ?>
 
-                                        <label class="animated-label"><?php echo $srh_whr_to_go; ?></label>
-                                        <input type="text" name="keyword" autocomplete="off" value="<?php echo isset($_GET['keyword']) ? esc_attr($_GET['keyword']) : ''; ?>" class="form-control input-search" placeholder="<?php echo $srh_whr_to_go; ?>">
+                                        <label class="animated-label"><?php echo esc_attr(homey_option('srh_whr_to_go')); ?></label>
+                                        <input type="text" name="keyword" autocomplete="off" value="<?php echo isset($_GET['keyword']) ? esc_attr($_GET['keyword']) : ''; ?>" class="form-control input-search" placeholder="<?php echo esc_attr(homey_option('srh_whr_to_go')); ?>">
 
                                     <?php } elseif($location_field == 'country') { ?>
 
                                     <select name="country" class="selectpicker" data-live-search="true">
                                     <?php
                                     // All Option
-                                    echo '<option value="'.$keyword.'">'.$srh_whr_to_go.'</option>';
+                                    echo '<option value="">'.esc_attr(homey_option('srh_whr_to_go')).'</option>';
 
                                     $listing_country = get_terms (
                                         array(
@@ -133,7 +130,7 @@ $end_hour = strtotime('24:00');
                                     <select name="state" class="selectpicker" data-live-search="true">
                                     <?php
                                     // All Option
-                                    echo '<option value="'.$keyword.'">'.$srh_whr_to_go.'</option>';
+                                    echo '<option value="">'.esc_attr(homey_option('srh_whr_to_go')).'</option>';
 
                                     $listing_state = get_terms (
                                         array(
@@ -155,7 +152,7 @@ $end_hour = strtotime('24:00');
                                     <select name="city" class="selectpicker" data-live-search="true">
                                     <?php
                                     // All Option
-                                    echo '<option value="'.$keyword.'">'.$srh_whr_to_go.'</option>';
+                                    echo '<option value="">'.esc_attr(homey_option('srh_whr_to_go')).'</option>';
 
                                     $listing_city = get_terms (
                                         array(
@@ -177,7 +174,7 @@ $end_hour = strtotime('24:00');
                                     <select name="area" class="selectpicker" data-live-search="true">
                                     <?php
                                     // All Option
-                                    echo '<option value="'.$keyword.'">'.$srh_whr_to_go.'</option>';
+                                    echo '<option value="">'.esc_attr(homey_option('srh_whr_to_go')).'</option>';
 
                                     $listing_area = get_terms (
                                         array(
@@ -241,7 +238,7 @@ $end_hour = strtotime('24:00');
                             case 'guests':
                                 ?>
                                 <div class="search-guests search-guests-js">
-                                    <input name="guest" autocomplete="off" value="<?php echo esc_attr($guest); ?>" type="text" class="form-control" placeholder="<?php echo esc_attr(homey_option('srh_guests_label')); ?>">
+                                    <input name="guest" autocomplete="off" value="<?php echo esc_html__(esc_attr($guest), 'homey'); ?>" type="text" class="form-control" placeholder="<?php echo esc_html__(esc_attr(homey_option('srh_guests_label')), 'homey'); ?>">
                                     <?php get_template_part ('template-parts/search/search-guests'); ?>
                                 </div>
                                 <?php
@@ -309,7 +306,7 @@ $end_hour = strtotime('24:00');
         <div class="search-wrap search-banner-mobile">
             <form class="clearfix">
                 <div class="search-destination">
-                    <input value="<?php echo esc_attr($location_search); ?>" type="text" class="form-control" placeholder="<?php echo $srh_whr_to_go; ?>" onfocus="blur();">
+                    <input value="<?php echo esc_attr($location_search); ?>" type="text" class="form-control" placeholder="<?php echo esc_attr(homey_option('srh_whr_to_go')); ?>" onfocus="blur();">
                 </div>
             </form>
         </div><!-- search-wrap -->      

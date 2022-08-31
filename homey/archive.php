@@ -4,6 +4,7 @@
  * @since Homey 1.0
  */
 
+
 get_header();
 
 global $post, $homey_local, $homey_prefix;
@@ -68,4 +69,8 @@ if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_
 
 <?php 
 }
-get_footer(); ?>
+get_footer(); 
+
+
+
+?>

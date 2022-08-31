@@ -1,7 +1,9 @@
 <?php
 global $homey_local, $hide_fields, $homey_booking_type;
 
-if($homey_booking_type == 'per_hour') {
+if($homey_booking_type == 'per_day_date') {
+    $fees_label = homey_option('ad_day_date_text');
+}elseif($homey_booking_type == 'per_hour') {
     $fees_label = homey_option('ad_hourly_text');
 } else if($homey_booking_type == 'per_week') {
     $fees_label = homey_option('ad_weekly_text');
@@ -12,7 +14,10 @@ if($homey_booking_type == 'per_hour') {
 }
 
 $price_label = $price_plac = '';
-if($homey_booking_type == 'per_week') {
+if($homey_booking_type == 'per_day_date') {
+    $price_label = homey_option('ad_day_date_label');
+    $price_plac = homey_option('ad_day_date_plac');
+}elseif($homey_booking_type == 'per_week') {
     $price_label = homey_option('ad_weekly_label');
     $price_plac = homey_option('ad_weekly_plac');
 } else if($homey_booking_type == 'per_month') {
@@ -56,18 +61,25 @@ if(@$hide_fields['price_postfix'] != 1) {
                 <?php } ?>
 
                 <?php if($hide_fields['night_price'] != 1) { ?>
-                    <?php if($homey_booking_type == 'per_hour') { ?>
+                    <?php if($homey_booking_type == 'per_day_date') { ?>
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="night-price"><?php echo esc_html__('Price Per Day', 'homey').homey_req('night_price'); ?></label>
+                                <input type="text" name="day_date_price" class="form-control" <?php homey_required('night_price'); ?> id="day_date_price" placeholder="<?php echo esc_html__('Enter price for 1 day', 'homey'); ?>">
+                            </div>
+                        </div>
+                    <?php } elseif($homey_booking_type == 'per_hour') { ?>
                         <div class="col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label for="night-price"><?php echo esc_html__('Price Per Hour', 'homey').homey_req('night_price'); ?></label>
-                                <input type="text" name="hour_price" class="form-control" <?php homey_required('night_price'); ?> id="hour_price" placeholder="<?php echo esc_html__('Enter price for 1 hour', 'homey'); ?>">
+                                <input type="text" data-input-title="<?php echo esc_html__('Price Per Hour', 'homey'); ?>" name="hour_price" class="form-control" <?php homey_required('night_price'); ?> id="hour_price" placeholder="<?php echo esc_html__('Enter price for 1 hour', 'homey'); ?>">
                             </div>
                         </div>
                     <?php } else { ?>
                         <div class="col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label for="night-price"><?php echo esc_attr($price_label).homey_req('night_price'); ?></label>
-                                <input type="text" name="night_price" class="form-control" <?php homey_required('night_price'); ?> id="night_price" placeholder="<?php echo esc_attr($price_plac); ?>">
+                                <input type="text" data-input-title="<?php echo esc_html__('Price Per Night', 'homey'); ?>" name="night_price" class="form-control" <?php homey_required('night_price'); ?> id="night_price" placeholder="<?php echo esc_attr($price_plac); ?>">
                             </div>
                         </div>
                     <?php } ?>
@@ -87,14 +99,21 @@ if(@$hide_fields['price_postfix'] != 1) {
             <div class="row">
                 
                 <?php if($hide_fields['weekends_price'] != 1) { ?>
-                    <?php if($homey_booking_type == 'per_hour') { ?>
+                    <?php if($homey_booking_type == 'per_day_date') { ?>
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="form-group">
+                            <label for="weekends_price"><?php echo esc_attr(homey_option('ad_weekends_label')).homey_req('weekends_price'); ?></label>
+                            <input type="text" name="day_date_weekends_price" class="form-control" <?php homey_required('weekends_price'); ?> id="day_date_weekends_price" placeholder="<?php echo esc_html__('Enter per day price for weekends', 'homey'); ?>">
+                        </div>
+                    </div>
+                    <?php }elseif($homey_booking_type == 'per_hour') { ?>
                     <div class="col-sm-6 col-xs-12">
                         <div class="form-group">
                             <label for="weekends_price"><?php echo esc_attr(homey_option('ad_weekends_label')).homey_req('weekends_price'); ?></label>
                             <input type="text" name="hourly_weekends_price" class="form-control" <?php homey_required('weekends_price'); ?> id="hourly_weekends_price" placeholder="<?php echo esc_html__('Enter per hour price for weekends', 'homey'); ?>">
                         </div>
                     </div>
-                    <?php } elseif($homey_booking_type == 'per_day') { ?>
+                    <?php } elseif( $homey_booking_type == 'per_day_date' || $homey_booking_type == 'per_day' ) { ?>
 
                         <div class="col-sm-6 col-xs-12">
                             <div class="form-group">
@@ -107,7 +126,7 @@ if(@$hide_fields['price_postfix'] != 1) {
                 
                 <?php } ?>
 
-                <?php if($hide_fields['weekends_days'] != 1 && ( $homey_booking_type == 'per_day' || $homey_booking_type == 'per_hour' ) ) { ?>
+                <?php if($hide_fields['weekends_days'] != 1 && ( $homey_booking_type == 'per_day_date' || $homey_booking_type == 'per_day' || $homey_booking_type == 'per_hour' ) ) { ?>
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="weekends_days"><?php echo esc_attr(homey_option('ad_weekend_days_label')).homey_req('weekends_days'); ?></label>
@@ -122,7 +141,7 @@ if(@$hide_fields['price_postfix'] != 1) {
                 
             </div>
 
-            <?php if($homey_booking_type == 'per_day') { ?>
+            <?php if($homey_booking_type == 'per_day_date' || $homey_booking_type == 'per_day') { ?>
                 <?php if($hide_fields['priceWeek'] != 1 || $hide_fields['priceMonthly'] != 1) { ?>
                 <hr class="row-separator">
                 <div class="row">
@@ -133,13 +152,18 @@ if(@$hide_fields['price_postfix'] != 1) {
                     <?php if($hide_fields['priceWeek'] != 1) { ?>
                     <div class="col-sm-6 col-xs-12">
                         <div class="form-group">
-                            <label for="priceWeek"><?php echo homey_option('ad_weekly7nights').homey_req('priceWeek'); ?></label>
-                            <input type="text" name="priceWeek" class="form-control" <?php homey_required('priceWeek'); ?> id="priceWeek" placeholder="<?php echo esc_attr(homey_option('ad_weekly7nights_plac')); ?>">
+                            <?php $priceWeekLabel = $homey_booking_type == 'per_day_date' ? homey_option('ad_weekly7DayDates') : homey_option('ad_weekly7nights'); ?>
+                            <?php $priceWeekPlac = $homey_booking_type == 'per_day_date' ? homey_option('ad_weekly7DayDates_plac') : homey_option('ad_weekly7nights_plac'); ?>
+                            <label for="priceWeek"><?php echo $priceWeekLabel.homey_req('priceWeek'); ?></label>
+                            <input type="text" name="priceWeek" class="form-control" <?php homey_required('priceWeek'); ?> id="priceWeek" placeholder="<?php echo esc_attr($priceWeekPlac); ?>">
                         </div>
                     </div>
                     <?php } ?>
 
                     <?php if($hide_fields['priceMonthly'] != 1) { ?>
+                        <?php $priceMonthlyLabel = $homey_booking_type == 'per_day_date' ? homey_option('ad_monthly30DayDates') : homey_option('ad_monthly30nights'); ?>
+                            <?php $priceMonthlyPlac = $homey_booking_type == 'per_day_date' ? homey_option('ad_monthly30DayDates_plac') : homey_option('ad_monthly30nights_plac'); ?>
+
                     <div class="col-sm-6 col-xs-12">
                         <div class="form-group">
                             <label for="priceMonthly"><?php echo homey_option('ad_monthly30nights').homey_req('priceMonthly'); ?></label>
@@ -277,7 +301,19 @@ if(@$hide_fields['price_postfix'] != 1) {
                     </div>
                 </div>
                 <?php } ?>
-
+ 
+            <div class="row">
+               <div class="col-sm-6 col-xs-12">
+                 <div class="form-group">
+                      <label for="show_hide" class="hide_show"><?php echo esc_html__('are you want to show the price','homey'); ?></label>
+                         <input type="radio" name="yes_no" value="yes">
+                         <label for="yes">YES</label>
+                         <input type="radio"  name="yes_no" value="no">
+                         <label for="no">NO</label><br>
+                   </div>
+                </div>
+            </div>
+ 
                 <?php if($hide_fields['tax_rate'] != 1 && homey_option('tax_type') == 'single_tax') { ?>
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">

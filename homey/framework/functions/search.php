@@ -258,11 +258,9 @@ if( !function_exists('homey_listing_search') ) {
         $bedrooms = isset($_GET['bedrooms']) ? $_GET['bedrooms'] : '';
         $rooms = isset($_GET['rooms']) ? $_GET['rooms'] : '';
         $room_size = isset($_GET['room_size']) ? $_GET['room_size'] : '';
-        
         $search_country = isset($_GET['search_country']) ? $_GET['search_country'] : '';
         $search_city = isset($_GET['search_city']) ? $_GET['search_city'] : '';
         $search_area = isset($_GET['search_area']) ? $_GET['search_area'] : '';
-        
         $listing_type = isset($_GET['listing_type']) ? $_GET['listing_type'] : '';
         $lat = isset($_GET['lat']) ? $_GET['lat'] : '';
         $lng = isset($_GET['lng']) ? $_GET['lng'] : '';
@@ -271,26 +269,9 @@ if( !function_exists('homey_listing_search') ) {
         $country = isset($_GET['country']) ? $_GET['country'] : '';
         $state = isset($_GET['state']) ? $_GET['state'] : '';
         $city = isset($_GET['city']) ? $_GET['city'] : '';
-        //$city = isset($_GET['city']) ? explode(",",$city) : '';
         $area = isset($_GET['area']) ? $_GET['area'] : '';
         $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 
-        if(!empty($country)){
-            $keyword = $country;
-        }
-
-        if(!empty($state)){
-            $keyword = $state;
-        }
-
-        if(!empty($city)){
-            $keyword = $city;
-        }
-
-        if(!empty($area)){
-            $keyword = $area;
-        }
-        
         $arrive = homey_search_date_format($arrive);
         $depart = homey_search_date_format($depart);
         
@@ -406,7 +387,6 @@ if( !function_exists('homey_listing_search') ) {
         }
 
         if(!empty($city)) {
-            $city = explode(",",$city);
             $tax_query[] = array(
                 'taxonomy' => 'listing_city',
                 'field' => 'slug',
@@ -429,7 +409,7 @@ if( !function_exists('homey_listing_search') ) {
 
             if ($min_price > 0 && $max_price > $min_price) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => array($min_price, $max_price),
                     'type' => 'NUMERIC',
                     'compare' => 'BETWEEN',
@@ -439,7 +419,7 @@ if( !function_exists('homey_listing_search') ) {
             $min_price = doubleval(homey_clean($_GET['min-price']));
             if ($min_price > 0) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => $min_price,
                     'type' => 'NUMERIC',
                     'compare' => '>=',
@@ -449,7 +429,7 @@ if( !function_exists('homey_listing_search') ) {
             $max_price = doubleval(homey_clean($_GET['max-price']));
             if ($max_price > 0) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => $max_price,
                     'type' => 'NUMERIC',
                     'compare' => '<=',
@@ -462,7 +442,7 @@ if( !function_exists('homey_listing_search') ) {
                 'key' => 'homey_total_guests_plus_additional_guests',
                 'value' => intval($guests),
                 'type' => 'NUMERIC',
-                'compare' => '>=',
+                'compare' => $search_criteria,
             );
         }
 
@@ -675,7 +655,7 @@ if( !function_exists('homey_half_map') ) {
         $meta_query = array();
         $allowed_html = array();
         $query_ids = '';
-
+         
         $cgl_meta = homey_option('cgl_meta');
         $cgl_beds = homey_option('cgl_beds');
         $cgl_baths = homey_option('cgl_baths');
@@ -683,23 +663,19 @@ if( !function_exists('homey_half_map') ) {
         $cgl_types = homey_option('cgl_types');
         $price_separator = homey_option('currency_separator');
 
-        $arrive = $posted_arrive = isset($_POST['arrive']) ? $_POST['arrive'] : '';
-        $depart = $posted_depart = isset($_POST['depart']) ? $_POST['depart'] : '';
-      
+        $arrive = isset($_POST['arrive']) ? $_POST['arrive'] : '';
+        $depart = isset($_POST['depart']) ? $_POST['depart'] : '';
         $guests = isset($_POST['guest']) ? $_POST['guest'] : '';
         $pets = isset($_POST['pets']) ? $_POST['pets'] : -1;
         $bedrooms = isset($_POST['bedrooms']) ? $_POST['bedrooms'] : '';
         $rooms = isset($_POST['rooms']) ? $_POST['rooms'] : '';
-        
         $start_hour = isset($_POST['start_hour']) ? $_POST['start_hour'] : '';
         $end_hour = isset($_POST['end_hour']) ? $_POST['end_hour'] : '';
         $room_size = isset($_POST['room_size']) ? $_POST['room_size'] : '';
-        
         $search_country = isset($_POST['search_country']) ? $_POST['search_country'] : '';
         $search_city = isset($_POST['search_city']) ? $_POST['search_city'] : '';
         $search_area = isset($_POST['search_area']) ? $_POST['search_area'] : '';
         $listing_type = isset($_POST['listing_type']) ? $_POST['listing_type'] : '';
-        
         $search_lat = isset($_POST['search_lat']) ? $_POST['search_lat'] : '';
         $search_lng = isset($_POST['search_lng']) ? $_POST['search_lng'] : '';
         $search_radius = isset($_POST['radius']) ? $_POST['radius'] : 20;
@@ -712,18 +688,13 @@ if( !function_exists('homey_half_map') ) {
         $country = isset($_POST['country']) ? $_POST['country'] : '';
         $state = isset($_POST['state']) ? $_POST['state'] : '';
         $city = isset($_POST['city']) ? $_POST['city'] : '';
-        //$city = isset($_POST['city'])? explode(",",$city) : '';
         $area = isset($_POST['area']) ? $_POST['area'] : '';
-       
         $booking_type = isset($_POST['booking_type']) ? $_POST['booking_type'] : '';
         $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
-        
+
         $arrive = homey_search_date_format($arrive);
         $depart = homey_search_date_format($depart);
-        //sultan agency custom code
-        $diff = strtotime($arrive) - strtotime($depart);
-        $sa_nights_in_diff = ceil(abs($diff / 86400)) < 1 ? 1 : ceil(abs($diff / 86400));
-        //sultan agency custom code
+
         $beds_baths_rooms_search = homey_option('beds_baths_rooms_search');
         $search_criteria = '=';
         if( $beds_baths_rooms_search == 'greater') {
@@ -747,7 +718,7 @@ if( !function_exists('homey_half_map') ) {
         if (!empty($keyword)) {
             $query_args['s'] = $keyword;
         }
-       
+        
         if( !empty( $_POST["optimized_loading"] ) ) {
             $north_east_lat = sanitize_text_field($_POST['north_east_lat']);
             $north_east_lng = sanitize_text_field($_POST['north_east_lng']);
@@ -828,7 +799,6 @@ if( !function_exists('homey_half_map') ) {
 
         }
 
-
         if(!empty($listing_type)) {
             $tax_query[] = array(
                 'taxonomy' => 'listing_type',
@@ -854,9 +824,6 @@ if( !function_exists('homey_half_map') ) {
         }
 
         if(!empty($city)) {
-            if(!is_array($city)){
-                $city = explode(",", $city);
-            }
             $tax_query[] = array(
                 'taxonomy' => 'listing_city',
                 'field' => 'slug',
@@ -879,7 +846,7 @@ if( !function_exists('homey_half_map') ) {
 
             if ($min_price > 0 && $max_price > $min_price) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => array($min_price, $max_price),
                     'type' => 'NUMERIC',
                     'compare' => 'BETWEEN',
@@ -889,7 +856,7 @@ if( !function_exists('homey_half_map') ) {
             $min_price = doubleval(homey_clean($_POST['min-price']));
             if ($min_price > 0) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => $min_price,
                     'type' => 'NUMERIC',
                     'compare' => '>=',
@@ -899,7 +866,7 @@ if( !function_exists('homey_half_map') ) {
             $max_price = doubleval(homey_clean($_POST['max-price']));
             if ($max_price > 0) {
                 $meta_query[] = array(
-                    'key' => 'homey_night_price',
+                    'key' => array('homey_day_date_price', 'homey_night_price'),
                     'value' => $max_price,
                     'type' => 'NUMERIC',
                     'compare' => '<=',
@@ -912,7 +879,7 @@ if( !function_exists('homey_half_map') ) {
                 'key' => 'homey_total_guests_plus_additional_guests',
                 'value' => intval($guests),
                 'type' => 'NUMERIC',
-                'compare' => '>=',
+                'compare' => $search_criteria,
             );
         }
 
@@ -998,7 +965,7 @@ if( !function_exists('homey_half_map') ) {
                 endforeach;
             }
         }
-
+        
         if(!empty($room_size)) {
             $tax_query[] = array(
                 'taxonomy' => 'room_type',
@@ -1033,7 +1000,7 @@ if( !function_exists('homey_half_map') ) {
             $query_args['orderby'] = 'date';
             $query_args['order'] = 'DESC';
         } else if ( $sort_by == 'featured_top' ) {
-            $query_args['orderby'] = 'meta_value date';
+            $query_args['orderby'] = 'date meta_value_num';
             $query_args['meta_key'] = 'homey_featured';
             $query_args['order'] = 'DESC';
         }
@@ -1052,15 +1019,17 @@ if( !function_exists('homey_half_map') ) {
         if( $tax_count > 1 ) {
             $tax_query['relation'] = 'AND';
         }
+
         if( $tax_count > 0 ){
             $query_args['tax_query'] = $tax_query;
         }
-    
-// print_r($query_args);
-    $query_args = new WP_Query( $query_args );
+
+        $query_args = new WP_Query( $query_args );
 
         $listings = array();
-
+        //to print the query
+//        echo $query_args->request;
+//        exit;
         ob_start();
 
         $total_listings = $query_args->found_posts;
@@ -1074,16 +1043,29 @@ if( !function_exists('homey_half_map') ) {
             $listing_id = get_the_ID();
             $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
             $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
+            $price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true );  
             $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
+
+            $searched_guests = isset($_POST['guest']) ? $_POST['guest'] : '';
+
+            if( !empty ($searched_guests) && $beds_baths_rooms_search == 'greater') {
+                if(! $searched_guests >= $guests){
+                    //continue;
+                }
+            } elseif (!empty ($searched_guests) && $beds_baths_rooms_search == 'lessthen') {
+                if(! $searched_guests <= $guests){
+                    //continue;
+                }
+            }
+
             $beds           = get_post_meta( get_the_ID(), $homey_prefix.'beds', true );
             $baths          = get_post_meta( get_the_ID(), $homey_prefix.'baths', true );
             $night_price          = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
             $location = get_post_meta( get_the_ID(), $homey_prefix.'listing_location',true);
             $lat_long = explode(',', $location);
 
-            //$listing_price = $sa_nights_in_diff * homey_get_price_by_id($listing_id);
-            $listing_price = homey_calculate_booking_cost_ajax_nightly($listing_id, $arrive, $depart, $guests, null, 1);
-            
+            $listing_price = homey_get_price_by_id($listing_id);
+
             $listing_type = wp_get_post_terms( get_the_ID(), 'listing_type', array("fields" => "ids") );
 
             if($cgl_beds != 1) {
@@ -1106,19 +1088,19 @@ if( !function_exists('homey_half_map') ) {
             if(!empty($lat_long[1])) {
                 $long = $lat_long[1];
             }
-
             $listing = new stdClass();
 
             $listing->id = $listing_id;
             $listing->title = get_the_title();
             $listing->lat = $lat;
             $listing->long = $long;
-            $listing->price = homey_formatted_price($listing_price, false, true, false).'<sub>'.esc_attr($price_separator).homey_get_price_label_by_id($listing_id, $sa_nights_in_diff).'</sub>';
+            $listing->price = homey_formatted_price($listing_price, false, true).'<sub>'.esc_attr($price_separator).homey_get_price_label_by_id($listing_id).'</sub>';
             $listing->address = $address;
             $listing->bedrooms = $bedrooms;
             $listing->guests = $guests;
             $listing->beds = $beds;
             $listing->baths = $baths;
+            $listing->price_no = $price_no; 
             
             if($cgl_types != 1) {
                 $listing->listing_type = '';
@@ -1126,8 +1108,7 @@ if( !function_exists('homey_half_map') ) {
                 $listing->listing_type = homey_taxonomy_simple('listing_type');
             }
             $listing->thumbnail = get_the_post_thumbnail( $listing_id, 'homey-listing-thumb',  array('class' => 'img-responsive' ) );
-
-            $listing->url = esc_url( add_query_arg( array( 'arrive' => $posted_arrive, 'depart' => $posted_depart, 'guest' => $guests ), get_permalink( ) ) );
+            $listing->url = get_permalink();
 
             $listing->icon = get_template_directory_uri() . '/images/custom-marker.png';
 
@@ -1156,48 +1137,13 @@ if( !function_exists('homey_half_map') ) {
             array_push($listings, $listing);
 
             if($layout == 'card') {
-                get_template_part('template-parts/listing/listing-card', null, ['arrive' => $arrive, 'depart' => $depart, 'guests' => $guests, 'sa_nights_in_diff' => $sa_nights_in_diff]);
+                get_template_part('template-parts/listing/listing-card');
             } else {
-                get_template_part('template-parts/listing/listing-item', null, ['arrive' => $arrive, 'depart' => $depart, 'guests' => $guests,'sa_nights_in_diff' => $sa_nights_in_diff]);;
+                get_template_part('template-parts/listing/listing-item');
             }
 
         endwhile;
-?>
 
-<script type='text/javascript'>
-            jQuery(function ($){  
-              $(document).ready(function(){
-                //alert("hell");
-        $('.header-slider').slick({
-            //rtl: homey_is_rtl,
-            lazyLoad: 'ondemand',
-            infinite: true,
-            speed: 300,
-            slidesToShow: 1,
-            adaptiveHeight: true,
-            prevArrow: '<button type="button" class="slick-prev">  <  </button>',
-            nextArrow: '<button type="button" class="slick-next">  > </button>',
-                    responsive: [
-                            {
-                                breakpoint: 992,
-                                settings: {
-                                    slidesToShow: 2,
-                                    slidesToScroll: 2
-                                }
-                            },
-                            {
-                                breakpoint: 769,
-                                settings: {
-                                    slidesToShow: 1,
-                                    slidesToScroll: 1
-                                }
-                            }]
-            
-        })
-    })
-          });
-                  </script>
-<?php
         wp_reset_postdata();
 
         homey_pagination_halfmap( $query_args->max_num_pages, $paged, $range = 2 );

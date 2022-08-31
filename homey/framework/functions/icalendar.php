@@ -1,6 +1,7 @@
 <?php
 if (!function_exists('homey_generate_ical_export_link')) {
-    function homey_generate_ical_export_link($listing_id){
+    function homey_generate_ical_export_link($listing_id)
+    {
         $homey_ical_id = get_post_meta($listing_id, 'homey_ical_id', true);
         if ($homey_ical_id == '') {
             $homey_ical_id = md5(uniqid(mt_rand(), true));
@@ -46,7 +47,8 @@ if (!function_exists('homey_get_listing_id_by_ical_id')) {
 }
 
 if (!function_exists('homey_get_booked_dates_for_icalendar')) {
-    function homey_get_booked_dates_for_icalendar($listing_id){
+    function homey_get_booked_dates_for_icalendar($listing_id)
+    {
         $args = array(
             'post_type' => 'homey_reservation',
             'post_status' => 'any',
@@ -70,7 +72,8 @@ if (!function_exists('homey_get_booked_dates_for_icalendar')) {
 
         $wpQry = new WP_Query($args);
 
-        if ($wpQry->have_posts()) {  $return_feeds = '';
+        if ($wpQry->have_posts()) {
+            $return_feeds = '';
 
             while ($wpQry->have_posts()): $wpQry->the_post();
 
@@ -84,14 +87,136 @@ if (!function_exists('homey_get_booked_dates_for_icalendar')) {
                 $check_out = new DateTime($check_out_date);
                 $check_out_unix = $check_out->getTimestamp();
 
-                $return_feeds = $return_feeds . homey_generate_ical_event($check_in_unix, $check_out_unix, $resID);
+                $return_feeds .= homey_generate_ical_event($check_in_unix, $check_out_unix, $resID);
 
             endwhile;
             wp_reset_postdata();
         }
+
         return $return_feeds;
     }
 }
+
+//zahid .k
+if (!function_exists('homey_get_unavailable_dates_for_icalendar')) {
+    function homey_get_unavailable_dates_for_icalendar($listing_id)
+    {
+        $unavailable_dates = get_post_meta($listing_id, 'reservation_unavailable', true);
+        $check_in_date = $check_out_date = 0;
+        $return_feeds = '';
+
+        if ($unavailable_dates) {
+            if (is_array($unavailable_dates) || is_object($unavailable_dates)) {
+                foreach ($unavailable_dates as $datetime_string => $listingID) {
+                    if ($check_in_date == 0) {
+                        $check_in_date = $datetime_string;
+                    }
+                    if ($check_out_date < $datetime_string) {
+                        $check_out_date = $datetime_string;
+                    }
+
+                    if ($check_in_date != 0 && $check_out_date != 0) {
+//            $check_in_date = date('d-m-Y', $check_in_date);
+                        $check_in_date = date('d-m-Y H:i', $check_out_date);
+                        $check_out_date = date('d-m-Y H:i', strtotime('+23 hour',strtotime($check_out_date)));
+
+                        $check_in = new DateTime($check_in_date);
+                        $check_in_unix = $check_in->getTimestamp();
+                        $check_out = new DateTime($check_out_date);
+                        $check_out_unix = $check_out->getTimestamp();
+
+
+                        $return_feeds .= homey_generate_ical_event($check_in_unix, $check_out_unix, ' Manually booked for listing id: '.$listing_id);
+                    }
+                }
+            }
+        }
+
+        wp_reset_postdata();
+
+        return $return_feeds;
+    }
+}
+
+if (!function_exists('homey_get_reserved_dates_for_icalendar')) {
+    function homey_get_reserved_dates_for_icalendar($listing_id)
+    {
+        $reservation_dates = get_post_meta($listing_id, 'reservation_dates', true);
+        $check_in_date = $check_out_date = 0;
+        $return_feeds = '';
+
+        if ($reservation_dates) {
+            if (is_array($reservation_dates) || is_object($reservation_dates)) {
+                foreach ($reservation_dates as $datetime_string => $listingID) {
+                    if ($check_in_date == 0) {
+                        $check_in_date = $datetime_string;
+                    }
+                    if ($check_out_date < $datetime_string) {
+                        $check_out_date = $datetime_string;
+                    }
+
+                    if ($check_in_date != 0 && $check_out_date != 0) {
+                        //$check_in_date = date('d-m-Y', $check_in_date);
+                        $check_in_date = date('d-m-Y H:i', $check_out_date);
+                        $check_out_date = date('d-m-Y H:i', strtotime('+23 hour',strtotime($check_out_date)));
+
+                        $check_in = new DateTime($check_in_date);
+                        $check_in_unix = $check_in->getTimestamp();
+                        $check_out = new DateTime($check_out_date);
+                        $check_out_unix = $check_out->getTimestamp();
+
+                        $return_feeds .= homey_generate_ical_event($check_in_unix, $check_out_unix, ' reserved booked for listing id: '.$listing_id);
+                    }
+                }
+            }
+        }
+
+        wp_reset_postdata();
+
+        return $return_feeds;
+    }
+}
+
+if (!function_exists('homey_get_pending_dates_for_icalendar')) {
+    function homey_get_pending_dates_for_icalendar($listing_id)
+    {
+        $unavailable_dates = get_post_meta($listing_id, 'reservation_pending_dates', true);
+        $check_in_date = $check_out_date = 0;
+        $return_feeds = '';
+
+        if ($unavailable_dates) {
+            if (is_array($unavailable_dates) || is_object($unavailable_dates)) {
+                foreach ($unavailable_dates as $datetime_string => $listingID) {
+                    if ($check_in_date == 0) {
+                        $check_in_date = $datetime_string;
+                    }
+                    if ($check_out_date < $datetime_string) {
+                        $check_out_date = $datetime_string;
+                    }
+
+                    if ($check_in_date != 0 && $check_out_date != 0) {
+//            $check_in_date = date('d-m-Y', $check_in_date);
+                        $check_in_date = date('d-m-Y H:i', $check_out_date);
+                        $check_out_date = date('d-m-Y H:i', strtotime('+23 hour',strtotime($check_out_date)));
+
+                        $check_in = new DateTime($check_in_date);
+                        $check_in_unix = $check_in->getTimestamp();
+                        $check_out = new DateTime($check_out_date);
+                        $check_out_unix = $check_out->getTimestamp();
+
+                        $return_feeds .= homey_generate_ical_event($check_in_unix, $check_out_unix, ' Manually booked for listing id: '.$listing_id);
+                    }
+                }
+            }
+        }
+
+        wp_reset_postdata();
+
+        return $return_feeds;
+    }
+}
+//zahid .k
+
 
 if (!function_exists('homey_generate_ical_event')) {
     function homey_generate_ical_event($check_in_unix, $check_out_unix, $resID, $extra_summary_text = '')
@@ -102,19 +227,20 @@ if (!function_exists('homey_generate_ical_event')) {
             $summary .= ' (' . $extra_summary_text . ')';
         }
 
-        $ical_event = "BEGIN:VEVENT";
+        $ical_event = "\r\n";
+        $ical_event .= "BEGIN:VEVENT";
         $ical_event .= "\r\n";
-        $ical_event .="SUMMARY:" . homey_string_escaped($summary);
+        $ical_event .= "SUMMARY:" . homey_string_escaped($summary);
         $ical_event .= "\r\n";
-        $ical_event .="DTSTART:" . homey_convert_date_to_cal($check_in_unix);
+        $ical_event .= "DTSTART:" . homey_convert_date_to_cal($check_in_unix);
         $ical_event .= "\r\n";
-        $ical_event .="DTEND:" . homey_convert_date_to_cal($check_out_unix);
+        $ical_event .= "DTEND:" . homey_convert_date_to_cal($check_out_unix);
         $ical_event .= "\r\n";
-        $ical_event .="UID:" . md5(uniqid(mt_rand(), true)) . "@" . $_SERVER['HTTP_HOST'];
+        $ical_event .= "UID:" . md5(uniqid(mt_rand(), true)) . "@" . $_SERVER['HTTP_HOST'];
         $ical_event .= "\r\n";
-        $ical_event .="DTSTAMP:" . homey_convert_date_to_cal(time());
+        $ical_event .= "DTSTAMP:" . homey_convert_date_to_cal(time());
         $ical_event .= "\r\n";
-        $ical_event .="END:VEVENT";
+        $ical_event .= "END:VEVENT";
 
         return $ical_event;
 
@@ -170,11 +296,13 @@ if (!function_exists('homey_add_ical_feeds')) {
             wp_die();
         }
 
-        foreach ($ical_feed_url as $key => $value) {
-            if (!empty($value)) {
-                $temp_array['feed_url'] = esc_url_raw($value);
-                $temp_array['feed_name'] = esc_html($ical_feed_name[$key]);
-                $store_feeds_array[] = $temp_array;
+        if (is_array($ical_feed_url) || is_object($ical_feed_url)) {
+            foreach ($ical_feed_url as $key => $value) {
+                if (!empty($value)) {
+                    $temp_array['feed_url'] = esc_url_raw($value);
+                    $temp_array['feed_name'] = esc_html($ical_feed_name[$key]);
+                    $store_feeds_array[] = $temp_array;
+                }
             }
         }
 
@@ -192,18 +320,15 @@ if (!function_exists('homey_add_ical_feeds')) {
             $dashboard_submission
         );
 
-        //------ical
-        if(!isset($_POST['ical_is_bulk'])){
-            echo json_encode(
-                array(
-                    'success' => true,
-                    'message' => $local['feeds_imported'],
-                    'url' => $return_url,
-                )
-            );
-            wp_die();
-        }
-        //-------------
+        echo json_encode(
+            array(
+                'success' => true,
+                'message' => $local['feeds_imported'],
+                'url' => $return_url,
+            )
+        );
+        wp_die();
+
     }
 }
 
@@ -211,12 +336,13 @@ if (!function_exists('homey_import_icalendar_feeds')) {
     function homey_import_icalendar_feeds($listing_id)
     {
         $ical_feeds_meta = get_post_meta($listing_id, 'homey_ical_feeds_meta', true);
-
-        foreach ($ical_feeds_meta as $key => $value) {
-            $feed_name = $value['feed_name'];
-            $feed_url = $value['feed_url'];
-            //echo $feed_name.' = '.$feed_url.'<br/>';
-            homey_insert_icalendar_feeds($listing_id, $feed_name, $feed_url);
+        if (is_array($ical_feeds_meta) || is_object($ical_feeds_meta)) {
+            foreach ($ical_feeds_meta as $key => $value) {
+                $feed_name = $value['feed_name'];
+                $feed_url = $value['feed_url'];
+                //echo $feed_name.' = '.$feed_url.'<br/>';
+                homey_insert_icalendar_feeds($listing_id, $feed_name, $feed_url);
+            }
         }
         /*echo '<pre>';
         print_r($ical_feeds_meta);*/
@@ -236,52 +362,70 @@ if (!function_exists('homey_insert_icalendar_feeds')) {
         $events_data_array = array();
 
         $ical = new ICal($feed_url);
+
         $events = $ical->events();
+
+         $log_msg = ' here it was for feed URL '.$feed_url.' date => '. date("d-m-Y H:i:s");
+
         //$ical_timezone = $ical->cal['VCALENDAR']['X-WR-TIMEZONE'];
-        if(!empty($events[0])){
-            foreach ($events as $event) {
+        if (is_array($events) || is_object($events)) {
+            if ($events) {
+                foreach ($events as $event) {
 
-                $start_time_unix = $end_time_unix = '';
+                    $start_time_unix = $end_time_unix = '';
 
-                if (isset($event['DTSTART'])) {
-                    $start_time_unix = $ical->iCalDateToUnixTimestamp($event['DTSTART']);
-                }
+                    if (isset($event['DTSTART'])) {
+                        $start_time_unix = $ical->iCalDateToUnixTimestamp($event['DTSTART']);
+                        $log_msg .= ', DTSTART => '.$event['DTSTART'];
+                    }
 
-                if (isset($event['DTEND'])) {
-                    $end_time_unix = $ical->iCalDateToUnixTimestamp($event['DTEND']);
-                }
+                    if (isset($event['DTEND'])) {
+                        $end_time_unix = $ical->iCalDateToUnixTimestamp($event['DTEND']);
+                        $log_msg .= ', DTEND => '.$event['DTEND'];
 
-                if (!empty($start_time_unix) && !empty($end_time_unix) && !empty($feed_name)) {
+                    }
 
-                    $temp_array['start_time_unix'] = $start_time_unix;
-                    $temp_array['end_time_unix'] = $end_time_unix;
-                    $temp_array['feed_name'] = $feed_name;
+                    $feed_name = empty($feed_name) ? 'feed-name-was-null' : $feed_name;
+                    if (!empty($start_time_unix) && !empty($end_time_unix) && !empty($feed_name)) {
 
-                    $events_data_array[] = $temp_array;
+                        $temp_array['start_time_unix'] = $start_time_unix;
+                        $temp_array['end_time_unix'] = $end_time_unix;
+                        $temp_array['feed_name'] = $feed_name;
+
+                        $log_msg .= ', feed_name => '.$feed_name;
+
+                        $events_data_array[] = $temp_array;
+                    }
                 }
             }
         }
-        
 
         $booked_dates_array = get_post_meta($listing_id, 'reservation_dates', true);
 
-        if (!empty($booked_dates_array)) {
-            $events_data_to_unset = array_keys($booked_dates_array, $events_data_array[0]['feed_name']);
-            foreach ($events_data_to_unset as $key => $timestamp) {
-                unset($booked_dates_array[$timestamp]);
+        if (is_array($booked_dates_array) || is_object($booked_dates_array)) {
+            $ical_feed_name_txt = isset($events_data_array[0]['feed_name']) ? $events_data_array[0]['feed_name'] : 'No Name Available';
+            $events_data_to_unset = array_keys($booked_dates_array, $ical_feed_name_txt);
+            if (is_array($events_data_to_unset) || is_object($events_data_to_unset)) {
+                foreach ($events_data_to_unset as $key => $timestamp) {
+                    unset($booked_dates_array[$timestamp]);
+                }
             }
             update_post_meta($listing_id, 'reservation_dates', $booked_dates_array);
         }
 
-        foreach ($events_data_array as $data) {
-            $start_time_unix = $data['start_time_unix'];
-            $end_time_unix = $data['end_time_unix'];
-            $feed_name = $data['feed_name'];
-            homey_add_listing_booking_dates($listing_id, $start_time_unix, $end_time_unix, $feed_name);
+        if (is_array($events_data_array) || is_object($events_data_array)) {
+            foreach ($events_data_array as $data) {
+                $start_time_unix = $data['start_time_unix'];
+                $end_time_unix = $data['end_time_unix'];
+                $feed_name = $data['feed_name'];
+                homey_add_listing_booking_dates($listing_id, $start_time_unix, $end_time_unix, $feed_name);
+            }
         }
 
         /*echo '<pre>';
         print_r($events_data_array);*/
+        $log_msg .= ' new feed *** <br>';
+//        file_put_contents('log_calender_events_' . date("j.n.Y") . '.log', $log_msg, FILE_APPEND);
 
     }
 }
@@ -369,7 +513,7 @@ if (!function_exists('homey_remove_ical_feeds')) {
             wp_die();
         }
 
-        if ($userID != $post_owner) {
+        if ($userID != $post_owner && !homey_is_admin()) {
             echo json_encode(
                 array(
                     'success' => false,
@@ -388,9 +532,11 @@ if (!function_exists('homey_remove_ical_feeds')) {
         //Remove reserved dates
         $reservation_dates = get_post_meta($listing_id, 'reservation_dates', true);
         $array = array();
-        foreach ($reservation_dates as $key => $value) {
-            if ($feed_for_delete == $value) {
-                unset($reservation_dates[$key]);
+        if (is_array($reservation_dates) || is_object($reservation_dates)) {
+            foreach ($reservation_dates as $key => $value) {
+                if ($feed_for_delete == $value) {
+                    unset($reservation_dates[$key]);
+                }
             }
         }
         update_post_meta($listing_id, 'reservation_dates', $reservation_dates);
@@ -411,30 +557,103 @@ if (!function_exists('homey_remove_ical_feeds')) {
 if (!function_exists('homey_generate_ical_dot_ics_url')) {
     function homey_generate_ical_dot_ics_url($listing_id)
     {
-        $iCalendar ="BEGIN:VCALENDAR\r\n";
-        $iCalendar.="PRODID:-//Booking Calendar//EN\r\n";
-        $iCalendar .= "VERSION:2.0\r\n";
+        $iCalendar = "BEGIN:VCALENDAR\r\n";
+        $iCalendar .= "PRODID:-//Booking Calendar//EN\r\n";
+        $iCalendar .= "VERSION:2.0";
         $iCalendar .= homey_get_booked_dates_for_icalendar($listing_id);
-        $iCalendar.="
-        END:VCALENDAR";
+        $iCalendar .= homey_get_unavailable_dates_for_icalendar($listing_id);
+        $iCalendar .= homey_get_pending_dates_for_icalendar($listing_id);
+        $iCalendar .= "\r\n";
+        $iCalendar .= "END:VCALENDAR";
 
         $base_folder_path = WP_CONTENT_DIR . "/uploads/listings-calendars/";
-        $upload_folder   =  $base_folder_path."{$listing_id}/";
+        $upload_url = $base_folder_path."{$listing_id}.ics";
+        $content_upload_url = content_url()."/uploads/listings-calendars/{$listing_id}.ics";
 
-        if (!file_exists($upload_folder)) {
-            mkdir($upload_folder, 0777, true);
+        if (!file_exists($base_folder_path)) {
+            mkdir($base_folder_path, 0777, true);
         }
 
-        $filename_to_be_saved = date("Y").'-'.date("m").'-'.date("d").".ics";
-        $upload_url      = content_url() . "/uploads/listings-calendars/{$listing_id}/{$filename_to_be_saved}";
+        update_post_meta($listing_id, "icalendar_file_url_with_ics", $content_upload_url);
 
-        update_post_meta($listing_id, "icalendar_file_url_with_ics", $upload_url);
+        file_put_contents($upload_url, $iCalendar);
 
-        file_put_contents($upload_folder.$filename_to_be_saved, $iCalendar);
-        return $upload_url;
+        return $content_upload_url;
     }
 }
 
+function ical_test()
+{
+
+    $feed_url = "https://outlook.live.com/owa/calendar/00000000-0000-0000-0000-000000000000/4c2ce906-b114-44eb-8751-10c14966d54f/cid-B326C0B75C5C3CD4/calendar.ics";
+
+    $ical = new ICal($feed_url);
+
+    $events = $ical->events();
+
+    $log_msg = ' here it was for feed URL '.$feed_url.' date => '. date("d-m-Y H:i:s");
+
+    //$ical_timezone = $ical->cal['VCALENDAR']['X-WR-TIMEZONE'];
+    if (is_array($events) || is_object($events)) {
+        if ($events) {
+            foreach ($events as $event) {
+
+                $start_time_unix = $end_time_unix = '';
+
+                if (isset($event['DTSTART'])) {
+                    $start_time_unix = $ical->iCalDateToUnixTimestamp($event['DTSTART']);
+                    $log_msg .= ', DTSTART => '.$event['DTSTART'];
+                }
+
+                if (isset($event['DTEND'])) {
+                    $end_time_unix = $ical->iCalDateToUnixTimestamp($event['DTEND']);
+                    $log_msg .= ', DTEND => '.$event['DTEND'];
+
+                }
+
+                $feed_name = empty($feed_name) ? 'feed-name-was-null' : $feed_name;
+                if (!empty($start_time_unix) && !empty($end_time_unix) && !empty($feed_name)) {
+
+                    $temp_array['start_time_unix'] = $start_time_unix;
+                    $temp_array['end_time_unix'] = $end_time_unix;
+                    $temp_array['feed_name'] = $feed_name;
+
+                    $log_msg .= ', feed_name => '.$feed_name;
+
+                    $events_data_array[] = $temp_array;
+                }
+            }
+        }
+    }
+
+    $listing_id = 3275;
+    $booked_dates_array = get_post_meta($listing_id, 'reservation_dates', true);
+
+    if (is_array($booked_dates_array) || is_object($booked_dates_array)) {
+        $ical_feed_name_txt = isset($events_data_array[0]['feed_name']) ? $events_data_array[0]['feed_name'] : 'No Name Available';
+        $events_data_to_unset = array_keys($booked_dates_array, $ical_feed_name_txt);
+        if (is_array($events_data_to_unset) || is_object($events_data_to_unset)) {
+            foreach ($events_data_to_unset as $key => $timestamp) {
+                unset($booked_dates_array[$timestamp]);
+            }
+        }
+
+dd($booked_dates_array, 0);
+    }
 
 
+    if (is_array($events_data_array) || is_object($events_data_array)) {
+        foreach ($events_data_array as $data) {
+            $start_time_unix = $data['start_time_unix'];
+            $end_time_unix = $data['end_time_unix'];
+            $feed_name = $data['feed_name'];
+            homey_add_listing_booking_dates($listing_id, $start_time_unix, $end_time_unix, $feed_name);
+        }
+    }
 
+    /*echo '<pre>';
+    print_r($events_data_array);*/
+    $log_msg .= ' new feed *** <br>';
+//        file_put_contents('log_calender_events_' . date("j.n.Y") . '.log', $log_msg, FILE_APPEND);
+
+}

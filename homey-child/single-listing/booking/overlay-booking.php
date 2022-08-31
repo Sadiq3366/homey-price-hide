@@ -117,7 +117,7 @@ if(isset($_GET['arrive']) && $_GET['depart']){
 		<?php 
 			if($Price_no=='no'){?>
                        
-		      On Request
+				по запросу
 					   
 		<?php}
 		else{?>

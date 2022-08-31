@@ -13,10 +13,17 @@ $enable_wallet = homey_option('enable_wallet');
 $homey_author = homey_get_author_by_id('36', '36', 'img-circle', $userID);
 $author_photo = $homey_author['photo'];
 
+$dashboard_membership = homey_get_template_link_dash('template/dashboard-membership-host.php');
+
 $wallet_page_link = homey_get_template_link('template/dashboard-wallet.php');
 $dashboard = homey_get_template_link_dash('template/dashboard.php');
 $dashboard_profile = homey_get_template_link_dash('template/dashboard-profile.php');
+
 $dashboard_listings = homey_get_template_link_dash('template/dashboard-listings.php');
+
+$dashboard_experiences = homey_get_template_link_dash('template/dashboard-experiences.php');
+$dashboard_add_experience = homey_get_template_link_dash('template/dashboard-experience-submission.php');
+
 $dashboard_add_listing = homey_get_template_link_dash('template/dashboard-submission.php');
 $dashboard_favorites = homey_get_template_link_dash('template/dashboard-favorites.php');
 $dashboard_search = homey_get_template_link_dash('template/dashboard-saved-searches.php');
@@ -90,6 +97,25 @@ $home_link = home_url('/');
                     <a href="'.esc_url($dashboard_add_listing).'"><i class="fa fa-plus-circle"></i> '.$homey_local['m_add_listing_label'].' </a>
                 </li>';
             }
+
+            if(!homey_is_renter() && ! homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
+                if( !empty($dashboard_membership) ) {
+                    echo '<li>
+                        <a href="'.esc_url($dashboard_membership).'"><i class="fa fa-money"></i>'.esc_html__('Membership', 'homey').'</a>
+                    </li>';
+                }
+            }
+
+            // experiences menu items
+            if( !empty($dashboard_experiences) ) {
+                echo '<li><a href="'.esc_url($dashboard_experiences).'"><i class="fa fa-th-list"></i>'.$homey_local['m_experiences_label'].'</a></li>';
+            }
+
+            if( !empty($dashboard_add_experience) ) {
+                echo '<li><a href="'.esc_url($dashboard_add_experience).'"><i class="fa fa-plus-circle"></i>'.$homey_local['m_add_experience_label'].' </a></li>';
+            }
+            // end experiences menu items
+
         }
 
         if( !empty($dashboard_reservations) ) {
@@ -103,8 +129,11 @@ $home_link = home_url('/');
                     <a href="'.esc_url($dashboard_reservations).'"><i class="fa fa-calendar"></i>  '.esc_html__('Bookings', 'homey').'</a>
                 </li>';
             } else {
+                $new_notification = homey_booking_notification(1);
+                $new_notification = $new_notification > 0 ? '<span class="new-booking-alert" style="display: block;"></span>' : '<span class="new-booking-alert" style="display: none;"></span>';
+
                 echo '<li>
-                    <a href="'.esc_url($dashboard_reservations).'"><i class="fa fa-calendar"></i>  '.esc_html__('My Bookings', 'homey').'</a>
+                    <a href="'.esc_url($dashboard_reservations).'"><i class="fa fa-calendar"></i>  '.esc_html__('My Bookings', 'homey').' '.$new_notification.'</a>
                 </li>';
             }
         }

@@ -4,6 +4,7 @@
  * @since Homey 1.0
  */
 
+
 get_header();
 
 global $post, $homey_local, $homey_prefix;
@@ -61,4 +62,6 @@ if(!is_active_sidebar('blog-sidebar')) {
         </div><!-- .row -->
     </div>   <!-- .container -->
 
-<?php get_footer(); ?>
+<?php get_footer(); 
+
+?>

@@ -1,8 +1,9 @@
 <?php
 global $current_user, $wpdb, $userID, $homey_threads;
+$sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 'DESC';
 
-if ( sizeof( $homey_threads ) != 0 ) : 
-	foreach ( $homey_threads as $thread ) { 
+if ( sizeof( $homey_threads ) != 0 ) :
+	foreach ( $homey_threads as $thread ) {
 
 	$sender_id = $thread->sender_id;
 	$receiver_id = $thread->receiver_id;
@@ -14,13 +15,13 @@ if ( sizeof( $homey_threads ) != 0 ) :
 		$delete = $thread->receiver_delete;
 	} else {
 		if($thread->sender_delete && $thread->receiver_delete) {
-			$delete = 1;	
+			$delete = 1;
 		}
-		
+
 	}
 
 	$user_can_reply = false;
-	if($sender_id == $userID || $receiver_id == $userID) {
+	if($sender_id == $userID || $receiver_id == $userID || homey_is_admin()) {
 	    $user_can_reply = true;
 	}
 
@@ -31,27 +32,32 @@ if ( sizeof( $homey_threads ) != 0 ) :
 	$thread_id = $thread->id;
 
 
-	$homey_sql = $wpdb->prepare( 
+	$homey_sql = $wpdb->prepare(
 		"
 			SELECT * 
 			FROM $tabel 
 			WHERE thread_id = %d
-			ORDER BY id DESC
-		", 
+			ORDER BY id " .$sort,
 		$thread_id
 	);
 
 	$last_message = $wpdb->get_row($homey_sql);
 
-	$author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $sender_id );
-	$image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
+	// $author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $sender_id );
+	$user_for_photo_id = $sender_id;
+    if($sender_id == $userID){
+        // $author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $receiver_id );
+        $user_for_photo_id = $receiver_id;
+    }
+	// $image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
 
-	if( $image_array ) {
-		$user_custom_picture = $image_array[0];
-	} else {
+	$homey_current_user_info = homey_get_author_by_id('60', '60', 'img-circle', $user_for_photo_id);
+    $user_custom_picture = $homey_current_user_info['photo'];
+
+	if( empty($user_custom_picture) ) {
 		$user_custom_picture = get_template_directory_uri().'/images/profile-avatar.png';
 	}
-	
+
 	if($user_can_reply) {
 		$url_query = array( 'thread_id' => $thread_id, 'seen' => true );
 	} else {
@@ -69,11 +75,20 @@ if ( sizeof( $homey_threads ) != 0 ) :
 	$sender_first_name  =  get_the_author_meta( 'first_name', $sender_id );
 	$sender_last_name  =  get_the_author_meta( 'last_name', $sender_id );
 	$sender_display_name = get_the_author_meta( 'display_name', $sender_id );
+
+	if($sender_id == $userID){
+        $sender_first_name  =  get_the_author_meta( 'first_name', $receiver_id );
+        $sender_last_name  =  get_the_author_meta( 'last_name', $receiver_id );
+        $sender_display_name = get_the_author_meta( 'display_name', $receiver_id );
+    }
+
 	if( !empty($sender_first_name) && !empty($sender_last_name) ) {
 		$sender_display_name = $sender_first_name.' '.$sender_last_name;
 	}
 
-	$last_sender_first_name  =  get_the_author_meta( 'first_name', $last_message->created_by );
+    $last_message->created_by = $last_message->created_by > 0 ? $last_message->created_by : $sender_id;
+
+    $last_sender_first_name  =  get_the_author_meta( 'first_name', $last_message->created_by );
 	$last_sender_last_name  =  get_the_author_meta( 'last_name', $last_message->created_by );
 	$last_sender_display_name = get_the_author_meta( 'display_name', $last_message->created_by );
 	if( !empty($last_sender_first_name) && !empty($last_sender_last_name) ) {
@@ -87,11 +102,12 @@ if ( sizeof( $homey_threads ) != 0 ) :
 	        <div class="media user-list-media">
 	            <div class="media-left">
 	                <span class="media-signal">
-	                    <img src="<?php echo esc_url( $user_custom_picture ); ?>" class="img-circle" alt="<?php esc_attr_e('Image', 'homey'); ?>" width="40" height="40">
+	                    <!-- <img src="<?php echo esc_url( $user_custom_picture ); ?>" class="img-circle" alt="<?php esc_attr_e('Image', 'homey'); ?>" width="40" height="40"> -->
+	                    <?php echo $user_custom_picture; ?>
 	                </span>
 	            </div>
 	            <div class="media-body">
-	                <strong><?php echo ucfirst( $sender_display_name ); ?></strong><br> 
+	                <strong><?php echo ucfirst( $sender_display_name ); ?></strong><br>
 	                <?php echo date_i18n( homey_convert_date(homey_option('homey_date_format')).' '.get_option('time_format'), strtotime( $last_message->time ) ); ?>
 	            </div>
 	        </div>

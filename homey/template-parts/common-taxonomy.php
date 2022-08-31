@@ -7,13 +7,14 @@
  * Time: 6:09 PM
  */
 global $post, $taxonomy_title, $taxonomy_name, $listing_founds, $listing_view;
+$sticky_sidebar = '';
+
 $sticky_sidebar = homey_option('sticky_sidebar');
 
 
 // Title
 $current_term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
 $taxonomy_title = $current_term->name;
-$sticky_sidebar = '';
 $taxonomy_name = get_query_var( 'taxonomy' );
 
 $taxonomy_sidebar = homey_option('taxonomy_layout');
@@ -41,20 +42,52 @@ if(!$number_of_prop){
     $number_of_prop = 9;
 }
 
-$sort_args = array('posts_per_page' => $number_of_prop, 'post_status' => 'publish');
+$sort_args = array( 'post_status' => 'publish');
 $sort_args = homey_listing_sort($sort_args);
+$sort_args['post_status'] = 'publish';
+
+$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+
+$sort_args['paged'] = $paged;
+$sort_args['posts_per_page'] = $number_of_prop;
 
 global $wp_query;
 $args = array_merge( $wp_query->query_vars, $sort_args );
 
-$wp_query = new WP_Query( $args );
+// if radius is enabled zahid.k
+$lat = isset($_REQUEST['lat']) ? $_REQUEST['lat'] : '';
+$lng = isset($_REQUEST['lng']) ? $_REQUEST['lng'] : '';
+$search_radius = isset($_REQUEST['radius']) ? $_REQUEST['radius'] : 50;
 
-$attach_id = get_term_meta($current_term->term_id, 'homey_taxonomy_img', true);
-$attachment = wp_get_attachment_image_src( $attach_id, '' );
-if(!empty( $attachment ) && isset( $attachment )){
-    echo "<img src='" . $attachment[0] . "' style='width:100%; height:400px;'";
+if( homey_option('enable_radius') && homey_option('show_radius') != 0 ) {
+    $radius_ids = apply_filters('homey_radius_filter', $args, $lat, $lng, $search_radius);
+
+    if(!empty($radius_ids)) {
+        $args['post__in'] = $radius_ids;
+    }
+}
+// if radius is enabled zahid.k
+
+$tax_query = [];
+
+if(isset($_REQUEST['city']) && !empty($_REQUEST['city'])) {
+    $tax_query[] = array(
+        'taxonomy' => 'listing_city',
+        'field' => 'slug',
+        'terms' => $_REQUEST['city']
+    );
 }
 
+$tax_count = count( $tax_query );
+
+if( $tax_count > 1 ) {
+    $args['relation'] = 'AND';
+}
+if( $tax_count > 0 ){
+    $args['tax_query'] = $tax_query;
+}
+
+$wp_query = new WP_Query( $args );
 ?>
 
 <section class="main-content-area listing-page listing-page-full-width">
@@ -62,6 +95,7 @@ if(!empty( $attachment ) && isset( $attachment )){
         <div class="row">
             <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
                 <?php get_template_part('template-parts/page-title'); ?>
+                <p><?php echo $current_term->name; ?></p>
             </div>
 
             <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 hidden-xs">
@@ -70,27 +104,6 @@ if(!empty( $attachment ) && isset( $attachment )){
         </div><!-- .row -->
     </div><!-- .container -->
 
-    <!-- Custom code to create search bar in common taxonomy by Ahmad Raza -->
-    <div class="container" style="margin-bottom: 10px;">
-        <?php 
-            get_template_part('template-parts/search/banner-horizontal-daily'); 
-        ?>
-    </div>
-
-    <div class="container" style="margin-bottom: 10px;">
-        <?php 
-        if( !empty($current_term->description) && isset($current_term->description) )
-        {
-            ?>
-            <div class="container">
-                <div class="read-more" style="overflow:hidden; height:50px; text-align: justify; text-justify: inter-word;"> <?php echo $current_term->description;?> </div>
-                <input type="button" class="btn btn-primary btn-sm less-it" id="read-more" value="подробнее"/>
-            </div>
-        <?php 
-        }
-        ?>
-    </div><!-- End -->
-    
     <div class="container">
         <div class="row">
             <div class="<?php echo esc_attr($content_classes); ?>">
@@ -129,7 +142,7 @@ if(!empty( $attachment ) && isset( $attachment )){
             </div>
 
             <?php if($taxonomy_sidebar != 'no-sidebar') { ?>
-                <div class="<?php echo esc_attr($sidebar_classes); if( $sticky_sidebar['listing_sidebar'] != 0 ){ echo ' homey_sticky'; } ?>">
+                <div class="<?php echo esc_attr($sidebar_classes); if( isset($sticky_sidebar['listing_sidebar'])){ if( @$sticky_sidebar['listing_sidebar'] != 0 ){ echo ' homey_sticky'; } } ?>">
                     <div class="sidebar <?php echo esc_attr($sec_class); ?>">
                         <?php get_sidebar('listing'); ?>
                     </div>

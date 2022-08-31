@@ -1,9 +1,19 @@
+
 <?php
 global $post, $homey_prefix, $homey_local;
 $listing_images = get_post_meta( get_the_ID(), $homey_prefix.'listing_images', false );
 $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
 $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
+$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true ); 
+
+$allow_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'allow_additional_guests', true );
+$num_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'num_additional_guests', true );
+
+if( $allow_additional_guests == 'yes' && ! empty( $num_additional_guests ) ) {
+    $guests = $guests + $num_additional_guests;
+}
+
 $beds           = get_post_meta( get_the_ID(), $homey_prefix.'beds', true );
 $baths          = get_post_meta( get_the_ID(), $homey_prefix.'baths', true );
 $night_price    = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
@@ -11,14 +21,7 @@ $listing_author = homey_get_author();
 $enable_host = homey_option('enable_host');
 $compare_favorite = homey_option('compare_favorite');
 
-if(isset($args['arrive']) && isset($args['depart'])){
-    $listing_price = homey_calculate_booking_cost_ajax_nightly(get_the_ID(), $args['arrive'], $args['depart'], $args['guests'], null, 1);
-}else{
-    $listing_price = homey_get_price();
-
-}
-
-
+$listing_price = homey_get_price();
 $cgl_meta = homey_option('cgl_meta');
 $cgl_beds = homey_option('cgl_beds');
 $cgl_baths = homey_option('cgl_baths');
@@ -31,7 +34,6 @@ $bedrooms_icon = homey_option('lgc_bedroom_icon');
 $bathroom_icon = homey_option('lgc_bathroom_icon'); 
 $guests_icon = homey_option('lgc_guests_icon');
 $price_separator = homey_option('currency_separator');
-
 if(!empty($bedrooms_icon)) {
     $bedrooms_icon = '<i class="'.esc_attr($bedrooms_icon).'"></i>';
 }
@@ -50,24 +52,31 @@ $homey_permalink = homey_listing_permalink();
                 
                 <?php homey_listing_featured(get_the_ID()); ?>
 
-                <!--<a class="hover-effect" href="<?php echo esc_url($homey_permalink); ?>">-->
+                <a class="hover-effect" href="<?php echo esc_url($homey_permalink); ?>">
                 <?php
                 if( has_post_thumbnail( $post->ID ) ) {
-                     get_template_part('single-listing/my-gallery'); 
-                    //the_post_thumbnail( 'homey-listing-thumb',  array('class' => 'img-responsive' ) );
+                    the_post_thumbnail( 'homey-listing-thumb',  array('class' => 'img-responsive' ) );
                 }else{
                     homey_image_placeholder( 'homey-listing-thumb' );
                 }
                 ?>
-                <!--</a>-->
+                </a>
+                
+                <?php 
+                if(!empty($price_no))
+                {?>
+                    <div class="item-media-price">
+                        <span class="item-price">
+                            <h3>On Request</h3>
+                        </span>
+                    </div>
+                       
+                <?php }
 
-                <?php if(!empty($listing_price)) { ?>
+               else if(!empty($listing_price)) { ?>
                 <div class="item-media-price">
-                    <span class="item-price sa-listing-item-price">
-                        <?php 
-                        $number_of_nights = isset($args['sa_nights_in_diff']) ? $args['sa_nights_in_diff'] : false;
-                        $is_show_from = $number_of_nights > 0 ? false : true;
-                         echo homey_formatted_price($listing_price, false, true, $is_show_from); ?><sub><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label($number_of_nights, $number_of_nights);?></sub>
+                    <span class="item-price">
+                    <sub><?php echo 'From'?><?php echo esc_attr($price_separator); ?></sub> <?php echo homey_formatted_price($listing_price, false, true); ?><sub><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label();?></sub>
                     </span>
                 </div>
                 <?php } ?>
@@ -82,21 +91,11 @@ $homey_permalink = homey_listing_permalink();
         <div class="media-body item-body clearfix">
             <div class="item-title-head table-block">
                 <div class="title-head-left">
-                    <h2 class="title"><a target="_blank" href="<?php echo esc_url($homey_permalink); ?>">
+                    <h2 class="title"><a href="<?php echo esc_url($homey_permalink); ?>">
                     <?php the_title(); ?></a></h2>
                     <?php 
                     if(!empty($address)) {
-                        $address_tax_separator = ''; $city_tax_html ='';
-                        if(!empty(trim(homey_get_taxonomy_title( get_the_ID(), 'listing_country' ))) && !empty(trim(homey_get_taxonomy_title( get_the_ID(), 'listing_city' )))){
-                            $address_tax_separator = ' > ';
-                        }
-
-                        if(!empty(trim(homey_get_taxonomy_title( get_the_ID(), 'listing_city' )))){
-                            $city_tax_html = '<a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_city' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_city' ).'</a>';
-                        }
-                        // echo '<address class="item-address">'.esc_attr($address).'</address>';
-                        echo '<address class="item-address"><a href="'.esc_url(homey_get_taxonomy_meta_link( get_the_ID(), 'listing_country' )).'">'.homey_get_taxonomy_title( get_the_ID(), 'listing_country' ).'</a> '.$address_tax_separator.$city_tax_html.'</address>';
-                        
+                        echo '<address class="item-address">'.esc_attr($address).'</address>';
                     }
                     ?>
                 </div>

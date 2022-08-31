@@ -3,7 +3,7 @@ global $post, $current_user, $homey_prefix, $homey_local;
 wp_get_current_user();
 
 $listing_id = $post->ID;
-$price_per_night = get_post_meta($listing_id, $homey_prefix.'night_price', true);
+$price_per_night = homey_get_price_by_id($listing_id); //get_post_meta($listing_id, $homey_prefix.'night_price', true);
 $instant_booking = get_post_meta($listing_id, $homey_prefix.'instant_booking', true);
 $offsite_payment = homey_option('off-site-payment');
 
@@ -43,19 +43,17 @@ if(empty($booking_or_contact)) {
     $what_to_show = $booking_or_contact;
 }
 
-$is_txt_from = true;
-$sa_nights_in_diff = 1;
+$no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
 
-if(isset($_GET['arrive']) && $_GET['depart']){
-	$sa_guests = isset($_GET['guest']) ? $_GET['guest'] : 1;
-	$price_per_night = homey_calculate_booking_cost_ajax_nightly($listing_id, $_GET['arrive'], $_GET['depart'], $sa_guests, null, 1);
-	$is_txt_from = false;
-	$diff = strtotime($_GET['arrive']) - strtotime($_GET['depart']);
-	$sa_nights_in_diff = ceil(abs($diff / 86400)) < 1 ? 1 : ceil(abs($diff / 86400));
-}
 ?>
 <div id="overlay-booking-module" class="overlay-booking-module overlay-contentscale">
-	<div class="overlay-search-title"><?php echo esc_html__('Request to book', 'homey'); ?></div>
+	<div class="overlay-search-title">
+        <?php if($instant_booking && $offsite_payment == 0 ) {
+            echo esc_html__('Request to book', 'homey');
+        } else {
+            echo esc_html__('Instant Book', 'homey');
+        } ?>
+    </div>
 	<button type="button" class="overlay-booking-module-close btn-blank"><i class="fa fa-times" aria-hidden="true"></i></button> 
 	<div class="sidebar-booking-module">
 		<div class="block">
@@ -96,13 +94,16 @@ if(isset($_GET['arrive']) && $_GET['depart']){
 					<div id="homey_booking_cost" class="payment-list"></div>	
 					
 					<?php if($instant_booking && $offsite_payment == 0 ) { ?>
-						<!-- <button id="instance_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Instant Booking', 'homey'); ?></button> -->
-					<?php } else { ?> 
-						<!-- <button id="request_for_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Request to Book', 'homey'); ?></button>
-						<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div> -->
+						<button id="instance_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Instant Booking', 'homey'); ?></button>
+					<?php } else { ?>
+                        <?php if(!is_user_logged_in() && $no_login_needed_for_booking == 'yes'){ ?>
+                            <div class="new_reser_request_user_email ">
+                                <input id="new_reser_request_user_email" name="new_reser_request_user_email" required="required" value="<?php echo esc_attr($prefilled['new_reser_request_user_email']); ?>" type="email" class="form-control new_reser_request_user_email" placeholder="<?php echo esc_html__('Your email', 'homey'); ?>">
+                            </div>
+                        <?php } ?>
+						<button id="request_for_reservation_mobile" type="button" class="btn btn-full-width btn-primary"><?php echo esc_html__('Request to Book', 'homey'); ?></button>
+						<div class="text-center text-small"><i class="fa fa-info-circle"></i> <?php echo esc_html__("You won't be charged yet", 'homey'); ?></div>
 					<?php } ?>
-
-					<button data-whats-app-message-body="<?php echo homey_option('homey_sa_whatsapp_message'); ?>" data-listing-title="<?php echo the_title();?>" data-listing-link="<?php echo get_permalink();?>" data-wa-number="<?php echo homey_option('homey_sa_whatsapp_number'); ?>" id="request_for_reservation_mobile_wa" type="button" class="btn btn-full-width btn-primary"><?php esc_html_e(homey_option('homey_sa_whatsapp_btn'), 'homey'); ?></button>
 
 				</div><!-- block-body-sidebar -->
 			</div><!-- sidebar-booking-module-body -->
@@ -113,7 +114,7 @@ if(isset($_GET['arrive']) && $_GET['depart']){
 <div class="overlay-booking-btn visible-sm visible-xs">
 	<div class="pull-left">
 		<div class="overlay-booking-price">
-			<?php echo homey_formatted_price($price_per_night, true, false, $is_txt_from); ?><span><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label($sa_nights_in_diff, $sa_nights_in_diff);?></span>
+			<?php echo homey_formatted_price($price_per_night, true, false); ?><span><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label();?></span>
 		</div>
 		<?php 
         if($rating && ($total_rating != '' && $total_rating != 0 ) ) { ?>

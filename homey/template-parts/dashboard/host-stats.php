@@ -19,7 +19,7 @@ if($enable_wallet != 0) {
     <div class="block-verify">
         <div class="block-col <?php echo esc_attr($block_class); ?>">
             <h3><?php echo esc_attr($homey_local['pr_listing_label']); ?></h3>
-            <p class="block-big-text"><?php echo esc_attr($author['listing_count']); ?></p>
+            <p class="block-big-text"><?php echo esc_attr(isset($author['publish_listing_count'])?$author['publish_listing_count']:0); ?></p>
             <a href="<?php echo esc_url($submission_page_link); ?>"><?php esc_html_e('Add New', 'homey'); ?></a>
         </div>
         <div class="block-col <?php echo esc_attr($block_class); ?>">

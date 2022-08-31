@@ -37,34 +37,34 @@ $cancellation_policy       = get_post_meta($listing_id, $homey_prefix.'cancellat
 
 if($smoke != 1) {
     $smoke_allow = 'fa fa-times'; 
-    $smoke_text = homey_option('sn_text_no');
+    $smoke_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $smoke_allow = 'fa fa-check';
-    $smoke_text = homey_option('sn_text_yes');
+    $smoke_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($pets != 1) {
     $pets_allow = 'fa fa-times';
-    $pets_text = homey_option('sn_text_no');
+    $pets_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $pets_allow = 'fa fa-check';
-    $pets_text = homey_option('sn_text_yes');
+    $pets_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($party != 1) {
     $party_allow = 'fa fa-times'; 
-    $party_text = homey_option('sn_text_no');
+    $party_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $party_allow = 'fa fa-check';
-    $party_text = homey_option('sn_text_yes');
+    $party_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($children != 1) {
     $children_allow = 'fa fa-times';
-    $children_text = homey_option('sn_text_no');
+    $children_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $children_allow = 'fa fa-check';
-    $children_text = homey_option('sn_text_yes');
+    $children_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 
@@ -137,7 +137,6 @@ $stripe_processor_link = homey_get_template_link('template/template-stripe-charg
                 </div>
 
                 <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 col-md-pull-5 col-lg-pull-5">
-
                     <div class="block homey-booking-block-title-1">
                         <div class="block-head table-block">
                             <h2 class="title"><span class="circle-icon">1</span> <?php echo esc_attr($homey_local['start_booking']); ?>
@@ -160,7 +159,17 @@ $stripe_processor_link = homey_get_template_link('template/template-stripe-charg
                                         <input type="text" id="last-name" class="form-control" value="<?php echo esc_attr($current_user->last_name); ?>" placeholder="<?php echo esc_attr($homey_local['lname_plac']); ?>">
                                     </div>
                                 </div>
-                                
+
+                                <?php $no_login_needed_for_booking = homey_option('no_login_needed_for_booking');
+                                if(!is_user_logged_in() && $no_login_needed_for_booking == 'yes'){ ?>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="email"><?php echo esc_attr($homey_local['email_label']); ?></label>
+                                        <input type="text" id="email" class="form-control" value="<?php echo esc_attr($current_user->email); ?>" placeholder="<?php echo esc_attr($homey_local['email_plac']); ?>">
+                                    </div>
+                                </div>
+                                <?php } ?>
+
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="phone"><?php echo esc_attr($homey_local['phone_label']); ?></label>
@@ -172,7 +181,7 @@ $stripe_processor_link = homey_get_template_link('template/template-stripe-charg
                         </div>
                         
                         <div class="block-body homey-booking-block-body-1" style="padding-top: 0">
-                            <input type="hidden" name="renter_message" value="<?php if( isset($_GET['guest_message']) ) { echo $_GET['guest_message']; }?>">
+                            <input type="hidden" id="renter_message" name="renter_message" value="<?php if( isset($_GET['guest_message']) ) { echo $_GET['guest_message']; }?>">
                             
                             <div class="continue-block-button">
                                 <button type="button" class="btn homey-booking-step-1 btn-booking btn-full-width"><?php echo esc_attr($homey_local['continue_btn']); ?></button>

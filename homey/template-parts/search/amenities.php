@@ -24,7 +24,7 @@ if( taxonomy_exists('listing_amenity') ) {
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
                     <div class="filters">
-                        <strong><?php echo esc_attr(homey_option('srh_amenities')); ?></strong>
+                        <strong><?php echo esc_html__(esc_attr(homey_option('srh_amenities')), 'homey'); ?></strong>
                     </div>
                 </div>
                 <div class="amenities-list col-xs-12 col-sm-12 col-md-9 col-lg-9">

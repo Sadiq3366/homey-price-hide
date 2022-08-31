@@ -14,6 +14,8 @@ $tabel = $wpdb->prefix . 'homey_threads';
 $thread_id = intval($_REQUEST['thread_id']);
 $user_status = 'Offline';
 
+$sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 'ASC';
+
 if ( isset( $_GET['seen'] ) && $_GET['seen'] == 1 ) {
     homey_update_message_status( $current_user_id, $thread_id );
 }
@@ -36,8 +38,7 @@ $sql_messages = $wpdb->prepare(
     SELECT * 
     FROM $homey_thread_messages 
     WHERE thread_id = %d
-    ORDER BY id ASC
-    ",
+    ORDER BY id ".$sort,
     $thread_id
 );
 
@@ -55,7 +56,7 @@ $sender_id = $homey_thread->sender_id;
 $receiver_id = $homey_thread->receiver_id;
 
 $user_can_reply = false;
-if($sender_id == $current_user_id || $receiver_id == $current_user_id) {
+if($sender_id == $current_user_id || $receiver_id == $current_user_id || homey_is_admin()) {
     $user_can_reply = true;
 }
 
@@ -67,12 +68,13 @@ if( !empty($thread_author_first_name) && !empty($thread_author_last_name) ) {
     $thread_author_display_name = $thread_author_first_name.' '.$thread_author_last_name;
 }
 
-$author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $thread_author );
-$image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
+// $author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $thread_author );
+// $image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
 
-if( $image_array ) {
-    $user_custom_picture = $image_array[0];
-} else {
+$homey_author_info = homey_get_author_by_id('60', '60', 'img-circle', $thread_author);
+$user_custom_picture = $homey_author_info['photo'];
+
+if( !$user_custom_picture ) {
     $user_custom_picture = get_template_directory_uri().'/images/profile-avatar.png';
 }
 ?>
@@ -92,13 +94,14 @@ if( $image_array ) {
 <?php } ?>
 
 <?php
-if( $user_can_reply || homey_is_admin() ) { ?>
+if( $user_can_reply || homey_is_admin() > 0 ) { ?>
 <div class="messages-area-user-info">
     <div class="messages-area-user-status">
         <div class="media">
             <div class="media-left">
                 <a class="media-object">
-                    <img src="<?php echo esc_url( $user_custom_picture ); ?>" class="img-circle" alt="<?php echo esc_attr($thread_author_display_name); ?>">
+                    <?php echo  $user_custom_picture ; ?>
+                    <!-- <img src="<?php echo esc_url( $user_custom_picture ); ?>" class="img-circle" alt="<?php echo esc_attr($thread_author_display_name); ?>"> -->
                 </a>
             </div>
             <div class="media-body media-middle">
@@ -144,13 +147,14 @@ if( $user_can_reply || homey_is_admin() ) { ?>
                 $message_class = 'msg-me';
             }
 
-            $author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $message_author );
-            $image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
+            // $author_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $message_author );
+            // $image_array = wp_get_attachment_image_src( $author_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
 
-            if ( empty( @$image_array[0] )) {
+             $message_owner_info = homey_get_author_by_id('60', '60', 'img-circle', $message_author);
+$message_author_picture = $message_owner_info['photo'];
+
+            if ( empty( @$message_author_picture )) {
                 $message_author_picture = get_template_directory_uri().'/images/profile-avatar.png';
-            }else{
-                $message_author_picture = $image_array[0];
             }
 
             if($current_user_id == $message_author) {
@@ -164,7 +168,7 @@ if( $user_can_reply || homey_is_admin() ) { ?>
             <div id="message-<?php echo intval($message_id); ?>" class="media <?php echo esc_attr($message_class); ?>">
                 <div class="media-left">
                     <a href="#" class="media-object">
-                        <img src="<?php echo esc_url($message_author_picture); ?>" class="img-circle" alt="<?php echo esc_attr($message_author_name); ?>">
+                        <?php echo $message_author_picture; ?>
                     </a>
                 </div>
 
@@ -179,7 +183,7 @@ if( $user_can_reply || homey_is_admin() ) { ?>
 
                             </div>
                         </div>
-                        <?php if($user_can_reply == 1) { ?>
+                        <?php if($user_can_reply == 1 || homey_is_admin() > 0 ) { ?>
                         <div class="custom-actions">
                             <button class="homey_delete_message btn-action" data-message-id="<?php echo intval($message_id); ?>" data-created-by="<?php echo intval($message_author); ?>" data-toggle="tooltip" data-placement="top" title="<?php esc_attr_e('Delete', 'homey'); ?>"><i class="fa fa-trash"></i></button>
                         </div>
@@ -221,22 +225,30 @@ if( $user_can_reply || homey_is_admin() ) { ?>
     <div class="media msg-send-block">
         
         <?php
-        if($user_can_reply == 1) {
+        if($user_can_reply == 1 || homey_is_admin() > 0 ) {
         if($thread_sender_delete != 1 && $thread_receiver_delete != 1) { ?>
         <div class="media-left">
             <div class="media-object">
                 <?php
-                $current_user_picture_id =  get_the_author_meta( 'homey_author_picture_id' , $current_user_id );
-                $image_array = wp_get_attachment_image_src( $current_user_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
+                // $current_user_picture_id =  intval(get_the_author_meta( 'homey_author_picture_id' , $current_user_id ));
 
-                if ( empty( @$image_array[0] )) {
-                    $current_user_picture = get_template_directory_uri().'/images/profile-avatar.png';
-                }else{
-                    $current_user_picture = $image_array[0];
+                $homey_current_user_info = homey_get_author_by_id('60', '60', 'img-circle', $current_user_id);
+                $author_photo = $homey_current_user_info['photo'];
+
+                // $image_array = wp_get_attachment_image_src( $current_user_picture_id, array('40', '40'), "", array( "class" => 'img-circle' ) );
+
+                if ( empty( @$author_photo )) {
+                    $current_user_picture = get_template_directory_uri().'/images/profile-avatar.png'; 
+                    ?>
+
+<img src="<?php echo esc_url($current_user_picture); ?>" class="img-circle" alt="<?php the_author_meta( 'display_name', $current_user_id ) ?>">
+                
+                <?php }else{
+                    echo $current_user_picture = $author_photo;
                 }
 
                 ?>
-                <img src="<?php echo esc_url($current_user_picture); ?>" class="img-circle" alt="<?php the_author_meta( 'display_name', $current_user_id ) ?>">
+                
             </div>
         </div>
         <div class="media-body">

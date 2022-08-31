@@ -20,9 +20,14 @@ $homey_booking_type = homey_booking_type();
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <a href="<?php echo esc_url($featured_img); ?>" class="swipebox property-header-gallery-btn">
+                    <a data-fancy-image-index="0" href="<?php echo esc_url($featured_img); ?>" class="fanboxTopGallery-item swipebox property-header-gallery-btn">
                         <i class="fa fa-picture-o" aria-hidden="true"></i>
                     </a>
+                    <?php
+                    $size = 'homey-gallery';
+                    $thumb_size = 'homey-gallery-thumb2';
+                    $listing_images = rwmb_meta( 'homey_listing_images', 'type=plupload_image&size='.$size, $post->ID );
+                    fancybox_gallery_html($listing_images, 'fanboxTopGallery');//hidden images for gallery fancybox 3 ?>
                 </div>
             </div>
         </div>
@@ -133,8 +138,13 @@ $homey_booking_type = homey_booking_type();
             </div>
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 homey_sticky">
                 <div class="sidebar right-sidebar">
-                    <?php 
-                    if($what_to_show == 'booking_form') {
+                    <?php
+                    if( homey_affiliate_booking_link() ) { ?>
+
+                        <a href="<?php echo homey_affiliate_booking_link(); ?>" target="_blank" class="btn btn-full-width btn-primary"><?php echo esc_html__('Book Now', 'homey'); ?></a>
+
+                        <?php
+                    }elseif($what_to_show == 'booking_form') {
                         if( $homey_booking_type == 'per_hour') {
                             get_template_part('single-listing/booking/sidebar-booking-hourly');
                         } else {

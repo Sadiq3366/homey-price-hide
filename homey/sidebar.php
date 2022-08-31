@@ -13,7 +13,7 @@ if( homey_postid_needed() ) {
 ?>
 
 <?php
-if( $sidebar_meta['homey_sidebar'] == 'yes' && !empty($sidebar_meta['selected_sidebar']) ) {
+if( isset($sidebar_meta['homey_sidebar']) && $sidebar_meta['homey_sidebar'] == 'yes' && !empty($sidebar_meta['selected_sidebar']) ) {
     if( is_active_sidebar( $sidebar_meta['selected_sidebar'] ) ) {
         dynamic_sidebar( $sidebar_meta['selected_sidebar'] );
     }

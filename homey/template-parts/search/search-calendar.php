@@ -105,9 +105,8 @@ if(!function_exists('homeySearchGenerateMonth')) {
 		}
 
 		foreach ( $weekArray as $weekDay ) {
-			//$dayName = (true == $weekDayInitial) ? $wp_locale->get_weekday_initial($weekDay) : $wp_locale->get_weekday_abbrev($weekDay);
-			$dayName = $wp_locale->get_weekday_abbrev($weekDay);
-			$weekDays .= '<li data-dayName = "'.esc_attr($weekDay).'">'. esc_html__(esc_attr($dayName), 'homey') .'</li>';
+			$dayName = (true == $weekDayInitial) ? $wp_locale->get_weekday_initial($weekDay) : $wp_locale->get_weekday_abbrev($weekDay);
+			$weekDays .= '<li data-dayName = "'.esc_attr($weekDay).'">'.esc_attr($dayName).'</li>';
 		}
 
 
@@ -150,7 +149,7 @@ if(!function_exists('homeySearchGenerateMonth')) {
         $output = '<div class="'.esc_attr($main_search_calendar_wrap_class).' '.esc_attr($main_class).'" data-month = "'.esc_attr($numberOfMonths).'" '.$style.'>';
 
         	$output .= '<div class="month clearfix">';
-            	$output .= '<h4>'. esc_html__(date_i18n("F", mktime(0, 0, 0, $currentMonth, 10)), 'homey') .' <span>'.esc_attr($currentYear).'</span></h4>';
+            	$output .= '<h4>'.date_i18n("F", mktime(0, 0, 0, $currentMonth, 10)).' <span>'.esc_attr($currentYear).'</span></h4>';
             $output .= '</div>';
 
 
@@ -183,20 +182,16 @@ if($homey_search_type == 'per_hour') {
 }
 ?>
 
-<div class="search-calendar <?php echo esc_attr($search_calendar_main); ?> sa-search-calendar clearfix">
+<div class="search-calendar <?php echo esc_attr($search_calendar_main); ?> clearfix">
 	<div class="calendar-arrow"></div>
+	<?php homeySearchCalendar(); ?>
+
+	<button type="button" style="z-index: 99;" class="btn-link btn-clear-calendar"><?php echo esc_html__('Clear', 'homey'); ?></button>
 
 	<div class="calendar-navigation custom-actions">
 		<button class="search-cal-prev btn btn-action pull-left disabled"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
 		<button class="search-cal-next btn btn-action pull-right"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
 	</div><!-- calendar-navigation -->
-
-	<div style="margin-top: 50px;">
-		<?php homeySearchCalendar(); ?>
-	</div>
-
-	<button type="button" style="z-index: 99;" class="btn-link btn-clear-calendar"><?php echo esc_html__('Clear', 'homey'); ?></button>
-
 </div>
 <!-- On mobile: display this button below when  the user selected arrival and depart dates -->
 <button style="display: none;" class="btn btn-primary search-calendar-btn"><?php echo esc_html__('Done', 'homey'); ?></button>

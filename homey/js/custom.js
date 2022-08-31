@@ -11,7 +11,7 @@
     /*  GLOBAL VARIABLES
     /* ------------------------------------------------------------------------ */
     var current_month = 1;
-    var stickySidebarTop = 30;
+    var stickySidebarTop = 0;
     var adminBarHeight = 20;
     var searchCalClick = 0;
     var fromTimestamp, toTimestamp = 0; // init start and end timestamps
@@ -95,32 +95,7 @@
     }
     console.log(homey_is_android);
 
-    // open every listing link into new tab
-    var sa_listing_rewrite_base = '/'+$("#sa_listing_rewrite_base").data('url')+'/';
-    $(document).click(function(e){
-        var clickedHref = $(e.target).attr('href');
-        console.log("yeh"+clickedHref);
-        if(clickedHref != "undefined"){
-             if(typeof clickedHref != "undefined"){
-                if(   clickedHref  != "#" 
-                    && !$(e.target).hasClass('swipebox') 
-                    && clickedHref !="javascript:void(0);" 
-                    && clickedHref !="javascript:void(0)"
-                    && clickedHref !=""
-                    && clickedHref !=" "
-                    ){
-                    e.preventDefault();
-                    if($(e.target).attr('href').indexOf(sa_listing_rewrite_base) > -1){
-                       window.open(clickedHref, '_blank');
-                    }else{
-                        window.location.href = clickedHref;
-                    }
-                }  
-             }
-        }       
-              
-    });
-    //open every listing link into new tab
+
 
     var only_nav_sticky = homey_nav_sticky.data('sticky');
     var only_search_sticky = homey_main_search.data('sticky');
@@ -704,6 +679,7 @@
             }
             return false;
         });
+
         $.fancybox.defaults.loop = true;
 
         $(".fanboxTopGalleryVar-item").on('click', function(e) {
@@ -732,12 +708,12 @@
     });
 
     $(document).ready(function(){
-        if(is_tansparent) {
-            if($('.homey_logo img').attr('src') != simple_logo){
-                $('.homey_logo img').attr('src', simple_logo);
-                $('.mobile-logo img').attr('src', mobile_logo );
-            }
-        }
+        // if(is_tansparent) {
+        //     if($('.homey_logo img').attr('src') != simple_logo){
+        //         $('.homey_logo img').attr('src', simple_logo);
+        //         $('.mobile-logo img').attr('src', mobile_logo );
+        //     }
+        // }
 
         $('.listing-slider').slick({
             rtl: homey_is_rtl,
@@ -748,6 +724,7 @@
             fade: false,
             asNavFor: '.listing-slider-nav',
         });
+
         $('.listing-slider-nav').slick({
             rtl: homey_is_rtl,
             lazyLoad: 'ondemand',
@@ -759,10 +736,34 @@
             variableWidth: true,
             arrows: false,
         });
+
+        //experiences slider
+        $('.experience-slider').slick({
+            rtl: homey_is_rtl,
+            lazyLoad: 'ondemand',
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            fade: false,
+            asNavFor: '.experience-slider-nav',
+        });
+
+        $('.experience-slider-nav').slick({
+            rtl: homey_is_rtl,
+            lazyLoad: 'ondemand',
+            slidesToShow: 6,
+            slidesToScroll: 1,
+            asNavFor: '.experience-slider',
+            dots: false,
+            focusOnSelect: true,
+            variableWidth: true,
+            arrows: false,
+        });
+        //experiences slider
     });
 
     $(document).ready(function(){
-        $('.listing-slider-variable-width').slick({
+        $('.listing-slider-variable-width, .experience-slider-variable-width').slick({
             rtl: homey_is_rtl,
             lazyLoad: 'ondemand',
             infinite: true,
@@ -780,32 +781,10 @@
             rtl: homey_is_rtl,
             lazyLoad: 'ondemand',
             infinite: true,
-            dots: true,
             speed: 300,
             slidesToShow: 1,
             arrows: true,
-            prevArrow: '<button type="button" class="slick-prev">  <  </button>',
-            nextArrow: '<button type="button" class="slick-next">  > </button>',
-            responsive: [
-                {
-                    breakpoint: 992,
-                    settings: {
-                        slidesToShow: 2,
-                        slidesToScroll: 2,
-                        dots: true
-                    }
-                },
-                {
-                    breakpoint: 769,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                        arrows: true,
-                        dots: true,
-                        prevArrow: '<button type="button" class="slick-prev">  <  </button>',
-                        nextArrow: '<button type="button" class="slick-next">  > </button>',
-                    }
-                }]
+            adaptiveHeight: true,
         });
     });
 
@@ -1166,26 +1145,26 @@
                 if(current_month == next_prev_m) {
                     $(this).addClass('disabled');
                 } else {
-                    $('.homey-next-month, .listing-cal-next, .search-cal-next').removeClass('disabled');
+                    $('.homey-next-month, .experience-cal-next, .listing-cal-next, .search-cal-next').removeClass('disabled');
                 }
 
                 if(current_month == 1) {
                     $(this).addClass('disabled');
                 } else {
-                    $('.homey-prev-month, .listing-cal-prev, .search-cal-prev').removeClass('disabled');
+                    $('.homey-prev-month, .prev, .listing-cal-prev, .search-cal-prev').removeClass('disabled');
                 }
             } else {
 
                 if(current_month2 == next_prev_m1) {
                     $(this).addClass('disabled');
                 } else {
-                    $('.homey-next-month, .listing-cal-next, .search-cal-next').removeClass('disabled');
+                    $('.homey-next-month, .experience-cal-next, .listing-cal-next, .search-cal-next').removeClass('disabled');
                 }
 
                 if(current_month2 == 2) {
                     $(this).addClass('disabled');
                 } else {
-                    $('.homey-prev-month, .listing-cal-prev, .search-cal-prev').removeClass('disabled');
+                    $('.homey-prev-month, .experience-cal-prev, .listing-cal-prev, .search-cal-prev').removeClass('disabled');
                 }
             }
 
@@ -1202,6 +1181,14 @@
 
     calendar_next_prev('single-listing-hourly-calendar-wrap', 'listing-cal-next', true, true);
     calendar_next_prev('single-listing-hourly-calendar-wrap', 'listing-cal-prev', false, true);
+
+    // experiences calendar
+    calendar_next_prev('single-experience-calendar-wrap', 'experience-cal-next', true, true);
+    calendar_next_prev('single-experience-calendar-wrap', 'experience-cal-prev', false, true);
+
+    calendar_next_prev('single-experience-hourly-calendar-wrap', 'experience-cal-next', true, true);
+    calendar_next_prev('single-experience-hourly-calendar-wrap', 'experience-cal-prev', false, true);
+    // experiences calendar
 
     calendar_next_prev('main-search-calendar-wrap', 'search-cal-next', true, false);
     calendar_next_prev('main-search-calendar-wrap', 'search-cal-prev', false, false);
@@ -1323,12 +1310,13 @@
 
         });
 
-        if(!homey_is_mobile) {
+        if( ! homey_is_mobile ) {
             var box = document.querySelector('.search-date-range input');
             document.addEventListener('click', function (e) {
                 if (!e.target.closest('.search-date-range input') && !e.target.closest('.search-calendar')) {
                     $('.search-calendar-main').css("display", "none");
-                    $('.single-listing-booking-calendar-js').css("display", "none");
+                    //below line was commented by zahid, because on iPhone was not working
+                    //$('.single-listing-booking-calendar-js').css("display", "none");
                 }
             });
         }
@@ -1554,7 +1542,21 @@
         value = encodeURI(value);
 
         // get querystring , remove (?) and covernt into array
-        var qrp = document.location.search.substr(1).split('&');
+        var qrp = "";
+        console.log(' amazing'+  value);
+        var variable_url = '';
+
+        // if(value != 'x_price'){
+            qrp = document.location.search.substr(1).split('&');
+        //     alert('inn');
+        // }else{
+        //     var qrp_remove_qry = document.location.search.substr(document.location.search.indexOf('?'));
+        //     variable_url = document.location.search.replace("sortby="+value, "");
+        //     alert(variable_url);
+        //     window.location.href = variable_url;
+        //     alert(' outt ');
+        //     return false;
+        // }
 
         // get qrp array length
         var i = qrp.length;
@@ -1637,7 +1639,10 @@
     homey_period_checkin_checkout('period_start_date', 'period_end_date');
     homey_period_checkin_checkout('cus_start_date', 'cus_end_date');
 
-
+    jQuery("#calendar-cross-btn, #calendar-cross-btn-i").on('click', function(){
+         jQuery(".single-listing-booking-calendar-js").css("display", "none");
+         jQuery(".single-experience-booking-calendar-js").css("display", "none");
+     });
 
 })(jQuery); // End Document ready
 
@@ -1680,11 +1685,30 @@ function homey_init_add_favorite(ajaxurl, userID, is_singular_listing) {
     });
 }
 
+function homey_init_add_exp_favorite(ajaxurl, userID, is_singular_experience) {
+    jQuery(".add_exp_fav").on('click', function (e) {
+        e.preventDefault();
+        var curnt = jQuery(this);
+        var expID = jQuery(this).attr('data-exp-id');
+        add_to_exp_favorite( ajaxurl, expID, curnt, userID, is_singular_experience );
+        return false;
+    });
+}
+
 function homey_init_remove_favorite(ajaxurl, userID, is_singular_listing) {
     jQuery(".remove_fav").on('click', function () {
         var curnt = jQuery(this);
         var listID = jQuery(this).attr('data-listid');
         add_to_favorite( ajaxurl, listID, curnt, userID, is_singular_listing );
+        var itemWrap = curnt.parents('tr').remove();
+    });
+}
+
+function homey_init_remove_exp_favorite(ajaxurl, userID, is_singular_experience) {
+    jQuery(".remove_exp_fav").on('click', function () {
+        var curnt = jQuery(this);
+        var expID = jQuery(this).attr('data-exp-id');
+        add_to_exp_favorite( ajaxurl, expID, curnt, userID, is_singular_experience );
         var itemWrap = curnt.parents('tr').remove();
     });
 }
@@ -1715,6 +1739,48 @@ function add_to_favorite( ajaxurl, listID, curnt, userID, is_singular_listing ) 
                     curnt.children('i').remove();
                     curnt.text(data.response);
                     if(is_singular_listing == 'yes') {
+                        curnt.prepend('<i class="fa fa-heart-o" aria-hidden="true"></i> ');
+                    }
+                }
+
+            },
+            complete: function(){
+
+            },
+            error: function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                console.log(err.Message);
+            }
+        });
+    } // End else
+}
+
+function add_to_exp_favorite( ajaxurl, expID, curnt, userID, is_singular_experience ) {
+    if( parseInt( userID, 10 ) === 0 || userID == undefined) {
+        jQuery('#modal-login').modal('show');
+    } else {
+        jQuery.ajax({
+            type: 'post',
+            url: ajaxurl,
+            dataType: 'json',
+            data: {
+                'action': 'homey_add_to_exp_favorite',
+                'experience_id': expID
+            },
+            beforeSend: function( ) {
+                curnt.append('<i class="fa fa-spinner fa-pulse fa-fw"></i>');
+            },
+            success: function( data ) {
+                if( data.added ) {
+                    curnt.children('i').remove();
+                    curnt.text(data.response);
+                    if(is_singular_experience == 'yes') {
+                        curnt.prepend('<i class="fa fa-heart" aria-hidden="true"></i> ');
+                    }
+                } else {
+                    curnt.children('i').remove();
+                    curnt.text(data.response);
+                    if(is_singular_experience == 'yes') {
                         curnt.prepend('<i class="fa fa-heart-o" aria-hidden="true"></i> ');
                     }
                 }
@@ -1813,6 +1879,86 @@ function add_to_compare(compare_url, add_compare, remove_compare, compare_limit,
     });
 }
 
+function add_to_compare_exp(compare_url, add_compare, remove_compare, compare_limit, experiences_compare, limit_item_compare) {
+    jQuery('a.compare-btn').attr('href', compare_url + '?ids=' + homeyGetCookie('homey_compare_experiences'));
+
+    var experiences_compare = homeyGetCookie('homey_compare_experiences');
+
+    if (experiences_compare.length > 0) {
+        jQuery('.compare-property-label').fadeIn(1000);
+    }
+
+    if(experiences_compare && experiences_compare.length){
+        experiences_compare = experiences_compare.split(',');
+        if(experiences_compare.length){
+            for(var i = 0 ; i < experiences_compare.length; i++){
+                jQuery( '.homey_compare[data-experience_id="'+experiences_compare[i]+'"]' ).text(remove_compare);
+            }
+            jQuery('.compare-property-label').find('.compare-count').html(experiences_compare.length);
+        }
+    }else{
+        experiences_compare = [];
+    }
+
+
+    jQuery( '.homey_compare' ).on('click', function(e) {
+        e.preventDefault();
+
+        var experiences_compare = homeyGetCookie('homey_compare_experiences');
+
+        if(experiences_compare && experiences_compare.length) {
+            experiences_compare = experiences_compare.split(',');
+        } else {
+            experiences_compare = [];
+        }
+
+        var experience_id = jQuery( this ).data( 'experience_id' );
+        var index = experiences_compare.indexOf( experience_id.toString() );
+        var image_div = jQuery(this).parents('.item-wrap');
+        var thumb_url = image_div.find('.item-media-thumb img').attr('src');
+
+
+        if( index == -1 ){
+            if(experiences_compare.length >= limit_item_compare){
+                alert(compare_limit);
+            }else{
+
+                jQuery('.compare-wrap').append('<div class="compare-item remove-'+experience_id+'"><a href="" class="remove-compare remove-icon" data-experience_id="'+experience_id+'"><i class="fa fa-trash-o" aria-hidden="true"></i></a><img class="img-responsive" src="'+thumb_url+'" width="450" height="300" alt="Thumb"></div>');
+
+                jQuery(this).text(remove_compare);
+                experiences_compare.push(experience_id.toString());
+                homeySetCookie('homey_compare_experiences', experiences_compare.join(','), 30);
+                jQuery('.compare-property-label').find('.compare-count').html(experiences_compare.length);
+                jQuery('a.compare-btn').attr('href', compare_url + '?ids=' + homeyGetCookie('homey_compare_experiences'));
+                jQuery('.compare-property-label').fadeIn(1000);
+                jQuery(this).toggleClass('active');
+                jQuery('.compare-property-active').addClass('compare-property-active-push-toleft' );
+                jQuery('#compare-property-panel').addClass('compare-property-panel-open');
+
+                remove_from_compare_exp(experiences_compare, add_compare, remove_compare);
+            }
+        }else{
+
+            jQuery('div.remove-'+experience_id).remove();
+            jQuery(this).text(add_compare);
+            experiences_compare.splice(index, 1);
+            homeySetCookie('homey_compare_experiences', experiences_compare.join(','), 30);
+            jQuery('.compare-property-label').find('.compare-count').html(experiences_compare.length);
+            jQuery('a.compare-btn').attr('href', compare_url + '?ids=' + homeyGetCookie('homey_compare_experiences'));
+
+            if (experiences_compare.length > 0) {
+                jQuery('.compare-property-label').fadeIn(1000);
+                jQuery(this).toggleClass('active');
+                jQuery('.compare-property-active').addClass('compare-property-active-push-toleft' );
+                jQuery('#compare-property-panel').addClass('compare-property-panel-open');
+            } else {
+                jQuery('.compare-property-label').fadeOut(1000);
+            }
+        }
+        return false;
+
+    });
+}
 
 function remove_from_compare(listings_compare, add_compare, remove_compare) {
     jQuery('.remove-compare').on('click', function(e){
@@ -1846,6 +1992,38 @@ function remove_from_compare(listings_compare, add_compare, remove_compare) {
     });
 }
 
+function remove_from_compare_exp(experiences_compare, add_compare, remove_compare) {
+    jQuery('.remove-compare').on('click', function(e){
+        e.preventDefault();
+
+        if(typeof experiences_compare == 'object') {
+
+            experiences_compare = experiences_compare.toString();
+        }
+
+        if(experiences_compare && experiences_compare.length){
+            experiences_compare = experiences_compare.split(',');
+            if(experiences_compare.length){
+                for(var i = 0 ; i < experiences_compare.length; i++){
+                    jQuery( '.homey_compare[data-experience_id="'+experiences_compare[i]+'"]' ).text(remove_compare);
+                }
+                jQuery('.compare-property-label').find('.compare-count').html(experiences_compare.length);
+            }
+        }else{
+            experiences_compare = [];
+        }
+
+        var experience_id = jQuery( this ).data( 'experience_id' );
+        var index = experiences_compare.indexOf( experience_id.toString() );
+        experiences_compare.splice(index, 1);
+        homeySetCookie('homey_compare_experiences', experiences_compare.join(','), 30);
+        jQuery('.compare-property-label').find('.compare-count').html(experiences_compare.length);
+
+        jQuery('.compare-'+experience_id).text(add_compare);
+        jQuery(this).parents('.compare-item').remove();
+    });
+}
+
 var clearVidPlayCounter = setInterval(function(){
     if(typeof jQuery('#video-background').data('vide') != "undefined"){
         jQuery('#video-background').data('vide').getVideoObject().play();
@@ -1854,46 +2032,52 @@ var clearVidPlayCounter = setInterval(function(){
     }
 }, 500);
 
+jQuery('.delete_user_account').click(function(){
+    jQuery("#delete_account_warning").css("display", "block");
+    jQuery("#delete_account_warning").css("margin-left", "30%");
+});
 
-/*
-    before search form submit to correct querry parameters
-*/
-(function($) {
-$('#sa_search_form').submit(function(e) {
-            e.preventDefault();
-            
-            var brands = $('#sa_city_selectpicker option:selected');
-        var selected = [];
-        $(brands).each(function(index, brand){
-            selected.push([$(this).val()]);
-        });
+jQuery('#hide_delete_confirmation_wrap').click(function(){
+    jQuery("#delete_account_warning").css("display", "none");
+});
 
-        $('#sa_city_selectpicker').attr("disabled", "disabled");
-           var newInput = $("<input id='city_inp' name='city' type='text' style='display:none'>");
-           if(selected.length !== 0)
-           newInput.val(selected);
-           else
-            newInput.val();
-           $('#sa_search_form').append(newInput);
-           $('#sa_search_form').unbind('submit').submit();
-        });
+// var modal = document.getElementById("myModal");
+// var btns = document.getElementsByClassName("mycoupon");
+// var span = document.getElementsByClassName("close-coupon")[0];
+// var modalText = document.getElementById('modal-text');
 
-$('#sa_search_form_mobile').submit(function(e) {
-            e.preventDefault();
 
-            var brands = $('select[name=city] option:selected');
-        var selected = [];
-        $(brands).each(function(index, brand){
-            selected.push([$(this).val()]);
-        });
+// // When the user clicks the button, open the modal 
+// for (var i = 0; i < btns.length; i++) {
+    
+//   btns[i].onclick = function(event) {
+    
+   
+//     modal.style.display = "block";
+//   }
+// }
+//   span.onclick = function() {
+//     modal.style.display = "none";
+//   }
+//   window.onclick = function(event) {
+//     if (event.target == modal) {
+//       modal.style.display = "none";
+//     }
+//   }  
+function openModal(modal)
+{
+  var modal = document.getElementById(modal);
+    modal.style.display = "block";
+    //var span = document.querySelector("#"+modal.id+" .close");
+    var span = document.getElementsByClassName("close-coupon")[0];
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+}
+  
 
-        $('#sa_city_selectpicker').attr("disabled", "disabled");
-           var newInput = $("<input id='city_inp_mobile' name='city' type='text' style='display:none'>");
-           if(selected.length !== 0)
-           newInput.val(selected);
-           else
-            newInput.val();
-           $('#sa_search_form_mobile').append(newInput);
-           $('#sa_search_form_mobile').unbind('submit').submit();
-        });
-})( jQuery );

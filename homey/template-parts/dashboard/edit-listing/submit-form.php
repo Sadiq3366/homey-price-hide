@@ -76,7 +76,18 @@ if ( ! empty( $listing_data ) && ( $listing_data->post_type == 'listing' ) ) {
 
                     <?php if($featured != 1 && $make_featured != 0) { ?>
                         <div class="block-right">
-                            <a class="btn btn-secondary btn-slim upgrade-button" href="<?php echo esc_url($upgrade_link); ?>"><?php echo esc_attr($homey_local['upgrade_btn']); ?></a>
+                            <?php if( homey_is_woocommerce() ) { ?>
+                                <a data-listid="<?php echo intval($edit_listing_id); ?>" data-featured="1" class="homey-woocommerce-featured-pay btn btn-secondary btn-slim" href="<?php echo esc_url($upgrade_link); ?>"><?php echo esc_attr($homey_local['upgrade_btn']); ?></a>
+                            <?php }
+                            else if( in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))) { ?>
+
+                                <a href="javascript:void(0);" class="membership-listing-featured-js btn-action" data-id="<?php echo intval($edit_listing_id); ?>" data-nonce="<?php echo wp_create_nonce('featured_listing_nonce') ?>" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo esc_attr($homey_local['upgrade_btn']); ?>"><i class="fa fa-star-o"></i></a>
+
+                                <?php
+                            }
+                            else{ ?>
+                                <a class="btn btn-secondary btn-slim " href="<?php echo esc_url($upgrade_link); ?>"><?php echo esc_attr($homey_local['upgrade_btn']); ?></a>
+                            <?php }?>
                         </div>
                     <?php } ?>
                 </div>
@@ -91,7 +102,8 @@ if ( ! empty( $listing_data ) && ( $listing_data->post_type == 'listing' ) ) {
                             <button class="btn btn-dark-grey btn-save-listing"><?php echo esc_attr($homey_local['update_btn']); ?></button>
                         <?php }
                     }else{ ?>
-                        <button title="<?php echo esc_attr(ucwords($post_status)); ?>" disabled="disabled" class="btn btn-dark-grey disabled"><?php echo esc_attr($homey_local['update_btn']); ?></button>
+<!--                        <button title="--><?php //echo esc_attr(ucwords($post_status)); ?><!--" disabled="disabled" class="btn btn-dark-grey disabled">--><?php //echo esc_attr($homey_local['update_btn']); ?><!--</button>-->
+                        <button title="<?php echo esc_attr(ucwords($post_status)); ?>" class="btn btn-dark-grey"><?php echo esc_attr($homey_local['update_btn']); ?></button>
                     <?php } ?>
                 </div>
             </div>
@@ -137,7 +149,7 @@ if ( ! empty( $listing_data ) && ( $listing_data->post_type == 'listing' ) ) {
 
                                 case 'location':
                                     ?>
-                                    <li role="presentation" data-tab="location" class="<?php echo esc_attr($location_class); ?>">
+                                    <li role="presentation" data-tab="location" class="<?php echo esc_attr($location_class); ?> homey_find_address_osm">
                                         <a href="#location-tab" aria-controls="location-tab" role="tab" data-toggle="tab"><?php echo esc_attr(homey_option('ad_location')); ?></a>
                                     </li>
                                     <?php

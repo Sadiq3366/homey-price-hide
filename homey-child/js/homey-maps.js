@@ -316,8 +316,8 @@
 
                 var prop_title = prop.data ? prop.data.post_title : prop.title;
                   
-                var price_pins = '<div class="gm-marker-price">'+map_properties[i].price+'</div>';
-                    if (map_properties[i].price_no == 'no') {
+                var price_pins = '<div class="gm-marker-price">'+props.price+'</div>';
+                    if (props.price_no == 'no') {
                         price_pins = '<div class="gm-marker-price">On Request</div>';
                     }
 
@@ -378,8 +378,8 @@
                 }
 
 
-                var price_span = '<span class="item-price">'+map_properties[i].price+'</span>';
-                    if (map_properties[i].price_no == 'no') {
+                var price_span = '<span class="item-price">'+props.price+'</span>';
+                    if (props.price_no == 'no') {
                         price_span = '<span class="item-price">On Request</span>';
                     }
 

@@ -51,6 +51,7 @@ if ( is_page_template( array('template/dashboard.php') ) ) {
     </td>
     <td data-label="<?php echo esc_attr($homey_local['id_label']); ?>">
         <?php echo '#'.get_the_ID(); ?>
+        <?php $wc_order_id = get_wc_order_id(get_the_ID()); if($wc_order_id > 0) echo 'wc#'.$wc_order_id; ?>
     </td>
     <td data-label="<?php echo esc_attr($homey_local['status_label']); ?>">
         <?php homey_reservation_label($reservation_status); ?>
@@ -76,7 +77,7 @@ if ( is_page_template( array('template/dashboard.php') ) ) {
         <?php echo esc_html__('at', 'homey'); ?>
         <?php echo date(homey_time_format() ,strtotime($item_meta['end_hour'])); ?>
     </td>
-    <?php if($booking_hide_fields['guests'] != 1) {?>
+    <?php if($booking_hide_fields['guests'] != 1 && 0 != homey_option('cgl_guests')) {?>
     <td data-label="<?php echo homey_option('glc_guests_label');?>">
         <?php echo esc_attr($reservation_guests); ?>
         <!-- 3 Adults<br>

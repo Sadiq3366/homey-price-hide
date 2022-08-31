@@ -178,6 +178,42 @@ function Homey_Import_Files() {
       'preview_url'                  => 'http://demo10.gethomey.io',
     ),
 
+    array(
+      'import_file_name'             => 'Demo 11',
+      'categories'                   => array(),
+      'local_import_file'            => HOMEY_PLUGIN_PATH.'/demos/homey11/content.xml',
+      'local_import_widget_file'     => HOMEY_PLUGIN_PATH.'/demos/homey11/widgets.json',
+      'local_import_customizer_file' => '',
+      'local_import_redux'           => array(
+        array(
+          'file_path'   => HOMEY_PLUGIN_PATH.'/demos/homey11/redux.json',
+          'option_name' => 'homey_options',
+        ),
+      ),
+
+      'import_preview_image_url'     => HOMEY_PLUGIN_URL.'/demos/homey11/demo11.jpg',
+      'import_notice'                => __( 'After you import this demo, you will have to setup the slider separately.', 'homey' ),
+      'preview_url'                  => 'http://demo11.gethomey.io',
+    ),
+
+    array(
+      'import_file_name'             => 'Demo 12',
+      'categories'                   => array(),
+      'local_import_file'            => HOMEY_PLUGIN_PATH.'/demos/homey12/content.xml',
+      'local_import_widget_file'     => HOMEY_PLUGIN_PATH.'/demos/homey12/widgets.json',
+      'local_import_customizer_file' => '',
+      'local_import_redux'           => array(
+        array(
+          'file_path'   => HOMEY_PLUGIN_PATH.'/demos/homey12/redux.json',
+          'option_name' => 'homey_options',
+        ),
+      ),
+
+      'import_preview_image_url'     => HOMEY_PLUGIN_URL.'/demos/homey12/demo12.jpg',
+      'import_notice'                => __( 'After you import this demo, you will have to setup the slider separately.', 'homey' ),
+      'preview_url'                  => 'http://demo12.gethomey.io',
+    ),
+
   );
 }
 add_filter( 'pt-ocdi/import_files', 'Homey_Import_Files' );
@@ -253,6 +289,11 @@ function ocdi_after_import_setup($selected_import) {
         $blog_page_id  = get_page_by_title( 'Press' );
 
     } elseif( 'STORES' === $demo_name ) {
+        $main_menu = get_term_by( 'name', 'Main Menu', 'nav_menu' );
+        $front_page_id = get_page_by_title( 'Homepage' );
+        $blog_page_id  = get_page_by_title( 'Blog' );
+
+    } elseif( 'Demo 11' === $demo_name || 'Demo 12' === $demo_name ) {
         $main_menu = get_term_by( 'name', 'Main Menu', 'nav_menu' );
         $front_page_id = get_page_by_title( 'Homepage' );
         $blog_page_id  = get_page_by_title( 'Blog' );

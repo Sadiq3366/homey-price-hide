@@ -7,6 +7,8 @@ if(homey_is_halfmap_page()) {
 }
 if( isset( $_GET['sortby'] ) ) {
     $sortby = $_GET['sortby'];
+}else{
+    $sortby = 'x_price';
 }
 ?>
 <div class="sort-wrap clearfix">
@@ -19,7 +21,7 @@ if( isset( $_GET['sortby'] ) ) {
             <li><strong><?php echo esc_attr($homey_local['sort_by']); ?>:</strong></li>
             <li>
                 <select id="sort_listings_halfmap" class="selectpicker bs-select-hidden" title="<?php esc_attr_e( 'Default Order', 'homey' ); ?>" data-live-search-style="begins" data-live-search="false">
-                <option value=""><?php esc_html_e( 'Default Order', 'homey' ); ?></option>
+                <option <?php if( $sortby == 'x_price' ) { echo "selected"; } ?> value="x_price"><?php esc_html_e( 'Default Order', 'homey' ); ?></option>
                 <option <?php if( $sortby == 'a_price' ) { echo "selected"; } ?> value="a_price"><?php esc_html_e( 'Price (Low to High)', 'homey' ); ?></option>
                 <option <?php if( $sortby == 'd_price' ) { echo "selected"; } ?> value="d_price"><?php esc_html_e( 'Price (High to Low)', 'homey' ); ?></option>
 

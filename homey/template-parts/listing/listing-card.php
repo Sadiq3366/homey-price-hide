@@ -4,6 +4,16 @@ $listing_images = get_post_meta( get_the_ID(), $homey_prefix.'listing_images', f
 $address        = get_post_meta( get_the_ID(), $homey_prefix.'listing_address', true );
 $bedrooms       = get_post_meta( get_the_ID(), $homey_prefix.'listing_bedrooms', true );
 $guests         = get_post_meta( get_the_ID(), $homey_prefix.'guests', true );
+$price_no       = get_post_meta( get_the_ID(), $homey_prefix.'yes_no', true ); 
+
+$allow_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'allow_additional_guests', true );
+$num_additional_guests = get_post_meta( get_the_ID(), $homey_prefix.'num_additional_guests', true );
+
+if( $allow_additional_guests == 'yes' && ! empty( $num_additional_guests ) ) {
+    $guests = $guests + $num_additional_guests;
+}
+
+
 $beds           = get_post_meta( get_the_ID(), $homey_prefix.'beds', true );
 $baths          = get_post_meta( get_the_ID(), $homey_prefix.'baths', true );
 $night_price    = get_post_meta( get_the_ID(), $homey_prefix.'night_price', true );
@@ -58,8 +68,20 @@ $homey_permalink = homey_listing_permalink();
 
                 <div class="title-head">
 
-                    <?php if(!empty($listing_price)) { ?>
-                    <span class="item-price sa-listing-item-price">
+                    <?php 
+
+                    if(!empty($price_no))
+                    {?>
+                        
+                            <span class="item-price">
+                                <h3>On Request</h3>
+                            </span>
+                       
+                           
+                    <?php }
+
+                   else if(!empty($listing_price)) { ?>
+                    <span class="item-price">
                         <?php echo homey_formatted_price($listing_price, false, true); ?><sub><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label();?></sub>
                     </span>
                     <?php } ?>

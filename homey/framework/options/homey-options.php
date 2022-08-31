@@ -174,7 +174,7 @@ $args = array(
 // ADMIN BAR LINKS -> Setup custom links in the admin bar menu as external items.
 $args['admin_bar_links'][] = array(
     'id'    => 'homey-support',
-    'href'  => 'https://favethemes.ticksy.com',
+    'href'  => 'https://favethemes.zendesk.com/hc/en-us/requests/new',
     'title' => esc_html__( 'Support', 'homey' ),
 );
 
@@ -467,7 +467,7 @@ Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Booking Mode', 'homey' ),
     'id'     => 'site-mode',
     'desc'   => '',
-    'icon'   => 'el-icon-home el-icon-small',
+     'icon'   => 'el-icon-home el-icon-small',
     'fields'        => array(
         
         array(
@@ -478,10 +478,11 @@ Redux::setSection( $opt_name, array(
             'subtitle' => esc_html__('Choose how you want to use your site.', 'homey'),
             'options'  => array(
                 'per_day' => esc_html__('Per Night', 'homey'),
+                'per_day_date' => esc_html__('Per Day', 'homey'),
                 'per_week' => esc_html__('Per Week', 'homey'),
                 'per_month' => esc_html__('Per Month', 'homey'),
                 'per_hour' => esc_html__('Per Hour', 'homey'),
-                'both' => esc_html__('All in One (Night, Week, Month, Hour). Owner choose while add listing.', 'homey')
+                'both' => esc_html__('All in One (Night, Day, Week, Month, Hour). Owner choose while add listing.', 'homey')
             ),
             'default' => 'per_day'
         ),
@@ -494,41 +495,6 @@ Redux::setSection( $opt_name, array(
     'desc'   => '',
     'icon'   => 'el-icon-home el-icon-small',
     'fields'        => array(
-        array(
-            'id'       => 'homey_sa_unit_of_measure',
-            'type'     => 'text',
-            'title'    => esc_html__('Unit Of Measure', 'homey'),
-            'subtitle' => esc_html__('Type anything to show by default Unit Of Measure.', 'homey'),
-            'desc'     => '',
-            'default' => 'M2'
-        ),
-        array(
-            'id'       => 'homey_sa_whatsapp_number',
-            'type'     => 'text',
-            'title'    => esc_html__('WhatsApp Number', 'homey'),
-            'subtitle' => esc_html__('Choose whatsapp number for booking requests.', 'homey'),
-            'desc'     => '',
-            'default' => '11111111111111',
-            'validate' => 'numeric'
-        ),
-        array(
-            'id'       => 'homey_sa_whatsapp_btn',
-            'type'     => 'text',
-            'title'    => esc_html__('Text for WhatsApp button', 'homey'),
-            'subtitle' => esc_html__('Type text for whatsapp button.', 'homey'),
-            'desc'     => '',
-            'default' => 'Send WhatsApp Message',
-        ),
-         array(
-            'id'       => 'homey_sa_whatsapp_message',
-            'type'     => 'textarea',
-            'title'    => esc_html__('WhatsApp Message', 'homey'),
-            'subtitle' => esc_html__('While creating message, you can put line break using %0D%0A and [check-in], [check-out], [guests], [listing_name], [listing_link], [guest_message] and [website_link] variables in the message body.', 'homey'),
-            'desc'     => '',
-            'default' => 'Hello [website_link], I want to rent a [listing_name] ([listing_link]) from [check-in] to [check-out]. With [number-of-guests] number of people.
-The property is available for my dates and what is the current price?
-Notes: [guest_message]',
-        ),
         array(
             'id'       => 'homey_calendar_months',
             'type'     => 'text',
@@ -652,6 +618,7 @@ Redux::setSection( $opt_name, array(
         
     )
 ));
+
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Common', 'homey' ),
     'id'     => 'common-labels',
@@ -659,6 +626,21 @@ Redux::setSection( $opt_name, array(
     'subsection'   => true,
     'fields'        => array(
         array(
+            'id'       => 'glc_day_date_label',
+            'type'     => 'text',
+            'title'    => $homey_local['day_date_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['day_date_label'],
+        ),
+        array(
+            'id'       => 'glc_day_dates_label',
+            'type'     => 'text',
+            'title'    => $homey_local['day_dates_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['day_dates_label'],
+        ),array(
             'id'       => 'glc_day_night_label',
             'type'     => 'text',
             'title'    => $homey_local['night_label'],
@@ -884,6 +866,7 @@ Redux::setSection( $opt_name, array(
         ),
     )
 ));
+
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Add New Listing', 'homey' ),
     'id'     => 'listing-add-trans',
@@ -944,6 +927,14 @@ Redux::setSection( $opt_name, array(
             'default' => 'Monthly'
         ),
         array(
+            'id'       => 'ad_day_date_text',
+            'type'     => 'text',
+            'title'    => esc_html__( 'One Day Label', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['daily_date_text']
+        ),
+        array(
             'id'       => 'ad_hourly_text',
             'type'     => 'text',
             'title'    => esc_html__( 'Hourly Label', 'homey' ),
@@ -985,6 +976,33 @@ Redux::setSection( $opt_name, array(
             'desc'     => '',
             'subtitle' => esc_html__('Enter title for information section', 'homey'),
             'default' => $homey_local['information']
+        ),
+
+        array(
+            'id'       => 'ad_section_price_terms',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Terms', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for terms section', 'homey'),
+            'default' => esc_html__('Terms', 'homey')
+        ),
+
+        array(
+            'id'       => 'ad_section_time',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Time', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for time section', 'homey'),
+            'default' => esc_html__('Time', 'homey')
+        ),
+
+        array(
+            'id'       => 'ad_section_what_is_provided',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Providing', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for what is provided section', 'homey'),
+            'default' => esc_html__('Providing', 'homey')
         ),
 
         array(
@@ -1260,6 +1278,24 @@ Redux::setSection( $opt_name, array(
         ),
 
         array(
+            'id'       => 'ad_day_date_daily_label',
+            'type'     => 'text',
+            'title'    => esc_html__($homey_local['day_daily_label'], 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' =>  $homey_local['day_daily_label']
+        ),
+
+        array(
+            'id'       => 'ad_day_date_daily_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Daily Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['day_daily_plac']
+        ),
+
+        array(
             'id'       => 'ad_nightly_label',
             'type'     => 'text',
             'title'    => $homey_local['nightly_label'],
@@ -1382,6 +1418,23 @@ Redux::setSection( $opt_name, array(
         ),
         
         array(
+            'id'       => 'ad_weekly7DayDates',
+            'type'     => 'text',
+            'title'    => esc_html__('Weekly - 7+ days', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['weekly7DayDates']
+        ),
+
+        array(
+            'id'       => 'ad_weekly7DayDates_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Weekly - 7+ days Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['weekly7DayDates_plac']
+        ),
+        array(
             'id'       => 'ad_weekly7nights',
             'type'     => 'text',
             'title'    => esc_html__('Weekly - 7+ nights', 'homey'),
@@ -1399,6 +1452,23 @@ Redux::setSection( $opt_name, array(
             'default' => $homey_local['weekly7nights_plac']
         ),
 
+        array(
+            'id'       => 'ad_monthly30DayDates',
+            'type'     => 'text',
+            'title'    => esc_html__('Monthly - 30+ days', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['monthly30DayDates']
+        ),
+
+        array(
+            'id'       => 'ad_monthly30DayDates_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Monthly - 30+ days Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['monthly30DayDates_plac']
+        ),
         array(
             'id'       => 'ad_monthly30nights',
             'type'     => 'text',
@@ -1432,6 +1502,7 @@ Redux::setSection( $opt_name, array(
             'subtitle' => esc_html__('Enter title for additional costs section', 'homey'),
             'default' => $homey_local['add_costs_label']
         ),
+        
         array(
             'id'       => 'add_addi_cost_section-start',
             'type'     => 'section',
@@ -2382,7 +2453,6 @@ Redux::setSection( $opt_name, array(
         ),
     )
 ));
-
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Listing Detail Page', 'homey' ),
     'id'     => 'detail-page-labels',
@@ -2398,6 +2468,10 @@ Redux::setSection( $opt_name, array(
             'subtitle' => '',
             'default' => $homey_local['type_label'],
         ),
+
+
+       
+
 
         array(
             'id'       => 'sn_accom_label',
@@ -2959,6 +3033,7 @@ Redux::setSection( $opt_name, array(
 
     )
 ));
+
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Grid, List & Card', 'homey' ),
     'id'     => 'grid-list-card-labels',
@@ -2991,6 +3066,1620 @@ Redux::setSection( $opt_name, array(
         )
     )
 ));
+
+//experiences labels
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Add New Experience', 'homey' ),
+    'id'     => 'experience-add-trans',
+    'desc'   => esc_html__( 'Manage add new experience section and fields titles.', 'homey' ),
+    'subsection' => true,
+    'fields' => array(
+
+        // Information section
+        array(
+            'id'       => 'experience_ad_text_yes',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Yes Label', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['text_yes']
+        ),
+
+        array(
+            'id'       => 'experience_ad_text_no',
+            'type'     => 'text',
+            'title'    => esc_html__( 'No Label', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['text_no']
+        ),
+
+        array(
+            'id'       => 'experience_ad_perstay_text',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Per Stay Label', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['perstay_text']
+        ),
+
+        array(
+            'id'       => 'experience_ad_close',
+            'type'     => 'text',
+            'title'    => esc_html__('Close', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__('Closed', 'homey'),
+        ),
+        array(
+            'id'       => 'experience_ad_text_select',
+            'type'     => 'text',
+            'title'    => esc_html__('Select', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['text_select'],
+        ),
+
+        // Information
+        array(
+            'id'       => 'experience_ad_section_mode',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Mode', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => 'Mode'
+        ),
+
+        array(
+            'id'       => 'experience_ad_section_info',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Information', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for information section', 'homey'),
+            'default' => $homey_local['information']
+        ),
+
+        array(
+            'id'       => 'experience_add_info_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+        array(
+            'id'       => 'experience_ad_what_bring_item_type',
+            'type'     => 'text',
+            'title'    => esc_html__( 'What Bring Item Type', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'What Bring Item Type', 'homey' ),
+        ),
+
+        array(
+            'id'       => 'experience_ad_title',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Title', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['experience_title']
+        ),
+
+        array(
+            'id'       => 'experience_describe_yourself',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Describe yourself and your qualifications', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Describe yourself and your qualifications', 'homey' )
+        ),
+
+        array(
+            'id'       => 'experience_language',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Select Language', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Select Language', 'homey' )
+        ),
+        array(
+            'id'       => 'experience_language_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Language Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Language Placeholder', 'homey' )
+        ),
+
+        array(
+            'id'       => 'experience_ad_des',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Description', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['experience_des']
+        ),
+
+        array(
+            'id'       => 'experience_ad_no_of_guests',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Number of Guests', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['no_of_guests']
+        ),
+
+        array(
+            'id'       => 'experience_ad_no_of_guests_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Number of Guests Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['no_of_guests_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_experience_type',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Experience Type', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Experience Type', 'homey' )
+        ),
+
+        array(
+            'id'       => 'experience_ad_experience_type_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Experience Type Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Experience Type Placeholder', 'homey' )
+        ),
+
+        array(
+            'id'       => 'experience_ad_is_featured_label',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Make Featured', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['is_featured_label']
+        ),
+
+        array(
+            'id'       => 'experience_add_info_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Pricing
+        array(
+            'id'       => 'experience_ad_pricing_label',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Pricing', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for pricing section', 'homey'),
+            'default' => $homey_local['pricing_label']
+        ),
+
+        array(
+            'id'       => 'experience_add_pricing_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_ins_booking_label',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Instant Booking', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['ins_booking_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_ins_booking_des',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Instant Booking Placeholder', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['ins_booking_des']
+        ),
+
+        array(
+            'id'       => 'experience_ad_nightly_label',
+            'type'     => 'text',
+            'title'    => esc_html__("Price", "homey"),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__("Price", "homey")
+        ),
+
+        array(
+            'id'       => 'ad_nightly_plac',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Enter the price.', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__( 'Enter the price.', 'homey' )
+        ),
+
+        array(
+            'id'       => 'experience_ad_price_postfix_label',
+            'type'     => 'text',
+            'title'    => esc_html__('After Price Label', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => 'After Price Label'
+        ),
+
+        array(
+            'id'       => 'experience_ad_price_postfix_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('After Price Label Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => 'Enter after price label. Eg: Price/Person'
+        ),
+
+        // Additional Costs
+        array(
+            'id'       => 'experience_ad_add_costs_label',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Additional costs', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for additional costs section', 'homey'),
+            'default' => $homey_local['add_costs_label']
+        ),
+        array(
+            'id'       => 'experience_add_addi_cost_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_allow_additional_guests',
+            'type'     => 'text',
+            'title'    => $homey_local['allow_additional_guests'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['allow_additional_guests']
+        ),
+
+        array(
+            'id'       => 'experience_ad_addinal_guests_label',
+            'type'     => 'text',
+            'title'    => $homey_local['addinal_guests_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['addinal_guests_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_addinal_guests_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Additional Guests Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['addinal_guests_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_cleaning_fee',
+            'type'     => 'text',
+            'title'    => $homey_local['cleaning_fee'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cleaning_fee']
+        ),
+
+        array(
+            'id'       => 'experience_ad_cleaning_fee_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Cleaning Fee Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cleaning_fee_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_cleaning_fee_type_label',
+            'type'     => 'text',
+            'title'    => esc_html__('Cleaning Fee Type', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cleaning_fee_type_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_city_fee',
+            'type'     => 'text',
+            'title'    => $homey_local['city_fee'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city_fee']
+        ),
+
+        array(
+            'id'       => 'experience_ad_city_fee_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('City Fee Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city_fee_plac']
+        ),
+        array(
+            'id'       => 'experience_ad_city_fee_type_label',
+            'type'     => 'text',
+            'title'    => esc_html__('City Fee Type', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city_fee_type_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_security_deposit_label',
+            'type'     => 'text',
+            'title'    => $homey_local['security_deposit_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['security_deposit_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_security_deposit_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Security Deposit Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['security_deposit_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_tax_rate_label',
+            'type'     => 'text',
+            'title'    => $homey_local['tax_rate_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['tax_rate_label']
+        ),
+
+        array(
+            'id'       => 'experience_ad_tax_rate_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Tax Field Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['tax_rate_plac']
+        ),
+
+        array(
+            'id'       => 'experience_add_addi_cost_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Features
+        array(
+            'id'       => 'experience_ad_features',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Features', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for features section', 'homey'),
+            'default' => $homey_local['features']
+        ),
+        array(
+            'id'       => 'experience_add_features_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_amenities',
+            'type'     => 'text',
+            'title'    => $homey_local['amenities'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['amenities']
+        ),
+        array(
+            'id'       => 'experience_ad_facilities',
+            'type'     => 'text',
+            'title'    => $homey_local['facilities'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['facilities']
+        ),
+
+        array(
+            'id'       => 'experience_add_features_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Image Gallery
+        array(
+            'id'       => 'experience_ad_section_media',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Media', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for Media section', 'homey'),
+            'default' => esc_html__('Media', 'homey'),
+        ),
+        array(
+            'id'       => 'experience_add_media_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_drag_drop_img',
+            'type'     => 'text',
+            'title'    => esc_html__('Drag & Drop', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['drag_drop_img']
+        ),
+
+        array(
+            'id'       => 'experience_ad_image_size_text',
+            'type'     => 'text',
+            'title'    => esc_html__('Image Size', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['image_size_text']
+        ),
+
+        array(
+            'id'       => 'experience_ad_upload_btn',
+            'type'     => 'text',
+            'title'    => esc_html__('Upload Button', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['upload_btn']
+        ),
+
+        array(
+            'id'       => 'experience_ad_video_section',
+            'type'     => 'text',
+            'title'    => esc_html__('Video', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['video_heading']
+        ),
+
+        array(
+            'id'       => 'experience_ad_video_url',
+            'type'     => 'text',
+            'title'    => esc_html__('Video Url', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['video_url']
+        ),
+
+        array(
+            'id'       => 'experience_ad_video_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('Video Url Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['video_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_add_media_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Location
+        array(
+            'id'       => 'experience_ad_location',
+            'type'     => 'text',
+            'title'    => $homey_local['location'],
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for location section', 'homey'),
+            'default' => $homey_local['location']
+        ),
+
+        array(
+            'id'       => 'experience_add_location_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_address',
+            'type'     => 'text',
+            'title'    => $homey_local['address'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['address']
+        ),
+        array(
+            'id'       => 'experience_ad_address_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('Address Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['address_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_aptSuit',
+            'type'     => 'text',
+            'title'    => $homey_local['aptSuit'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['aptSuit']
+        ),
+        array(
+            'id'       => 'experience_ad_aptSuit_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('AptSuit Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['aptSuit_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_country',
+            'type'     => 'text',
+            'title'    => $homey_local['country'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['country']
+        ),
+        array(
+            'id'       => 'experience_ad_country_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('Country Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['country_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_state',
+            'type'     => 'text',
+            'title'    => $homey_local['state'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['state']
+        ),
+        array(
+            'id'       => 'experience_ad_state_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('State Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['state_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_city',
+            'type'     => 'text',
+            'title'    => $homey_local['city'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city']
+        ),
+        array(
+            'id'       => 'experience_ad_city_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('City Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_area',
+            'type'     => 'text',
+            'title'    => $homey_local['area'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['area']
+        ),
+        array(
+            'id'       => 'experience_ad_area_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('Area Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['area_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_zipcode',
+            'type'     => 'text',
+            'title'    => $homey_local['zipcode'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['zipcode']
+        ),
+
+        array(
+            'id'       => 'experience_ad_zipcode_placeholder',
+            'type'     => 'text',
+            'title'    => esc_html__('Zipcode Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['zipcode_placeholder']
+        ),
+
+        array(
+            'id'       => 'experience_ad_drag_pin',
+            'type'     => 'text',
+            'title'    => esc_html__('Map Drag Title', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['drag_pin']
+        ),
+
+        array(
+            'id'       => 'experience_ad_find_address',
+            'type'     => 'text',
+            'title'    => esc_html__('Find Address', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['find_address']
+        ),
+
+        array(
+            'id'       => 'experience_ad_lat',
+            'type'     => 'text',
+            'title'    => $homey_local['lat'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['lat']
+        ),
+
+        array(
+            'id'       => 'experience_ad_long',
+            'type'     => 'text',
+            'title'    => $homey_local['long'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['long']
+        ),
+
+        array(
+            'id'       => 'experience_ad_find_address_btn',
+            'type'     => 'text',
+            'title'    => esc_html__('Find Address Button', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['find_address_btn']
+        ),
+
+        array(
+            'id'       => 'experience_add_location_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_guests',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_guests'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guests']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_guests_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Number of Guests Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guests_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_btn_add_other',
+            'type'     => 'text',
+            'title'    => esc_html__('Button Add More', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_btn_add_other']
+        ),
+
+        array(
+            'id'       => 'experience_add_bedroom_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // What is Provided
+
+        array(
+            'id'       => 'experience_ad_what_provides_text',
+            'type'     => 'text',
+            'title'    => $homey_local['what_provides_text'],
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for what_provides section', 'homey'),
+            'default' => $homey_local['what_provides_text'],
+        ),
+
+        array(
+            'id'       => 'experience_add_what_provide_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_what_provide_name',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_what_provide_name'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_provide_name']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_what_provide_name_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('What Provide Name Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_provide_name_plac']
+        ),
+
+        array(
+            'id'       => 'experience_what_bring_name',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_what_bring_name'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_bring_name']
+        ),
+
+        array(
+            'id'       => 'experience_what_bring_name_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('What To Bring Name Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_bring_name_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_guests',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_guests'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guests']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_guests_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Number of Guests Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guests_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_no_of_items',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_no_of_items'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_no_of_items']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_no_of_items_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Number of items Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_no_of_items_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_what_provide_type',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_what_provide_type'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_provide_type']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_what_provide_type_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Item type Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_what_provide_type_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_btn_remove_item',
+            'type'     => 'text',
+            'title'    => esc_html__('Button Remove', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_btn_remove_item']
+        ),
+
+        array(
+            'id'       => 'experience_ad_acc_btn_add_other',
+            'type'     => 'text',
+            'title'    => esc_html__('Button Add More', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_btn_add_other']
+        ),
+
+        array(
+            'id'       => 'experience_add_what_provide_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Services
+        array(
+            'id'       => 'experience_ad_services_text',
+            'type'     => 'text',
+            'title'    => $homey_local['services_text'],
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for services section', 'homey'),
+            'default' => $homey_local['services_text'],
+        ),
+
+        array(
+            'id'       => 'experience_add_services_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_name',
+            'type'     => 'text',
+            'title'    => $homey_local['service_name'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_name']
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_name_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Service Name Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_name_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_price',
+            'type'     => 'text',
+            'title'    => $homey_local['service_price'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_price']
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_price_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Service price Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_price_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_des',
+            'type'     => 'text',
+            'title'    => $homey_local['service_des'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_des']
+        ),
+
+        array(
+            'id'       => 'experience_ad_service_des_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Service description Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['service_des_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_btn_remove_service',
+            'type'     => 'text',
+            'title'    => esc_html__('Button Remove', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['btn_remove_service']
+        ),
+
+        array(
+            'id'       => 'experience_ad_btn_add_service',
+            'type'     => 'text',
+            'title'    => esc_html__('Button Add More', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['btn_add_service']
+        ),
+
+        array(
+            'id'       => 'experience_add_services_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Terms & Rules
+        array(
+            'id'       => 'experience_ad_terms_rules',
+            'type'     => 'text',
+            'title'    => $homey_local['terms_rules'],
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for terms & rules section', 'homey'),
+            'default' => $homey_local['terms_rules'],
+        ),
+
+        array(
+            'id'       => 'experience_add_terms_rules_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_cancel_policy',
+            'type'     => 'text',
+            'title'    => $homey_local['cancel_policy'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cancel_policy']
+        ),
+
+        array(
+            'id'       => 'experience_ad_cancel_policy_plac',
+            'type'     => 'text',
+            'title'    => esc_html__('Policy Placeholder', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cancel_policy_plac']
+        ),
+
+        array(
+            'id'       => 'experience_ad_check_in_after',
+            'type'     => 'text',
+            'title'    => $homey_local['check_in_after'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['check_in_after']
+        ),
+
+        array(
+            'id'       => 'experience_ad_smoking_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['smoking_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['smoking_allowed']
+        ),
+
+        array(
+            'id'       => 'experience_ad_pets_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['pets_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pets_allowed']
+        ),
+        array(
+            'id'       => 'experience_ad_party_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['party_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['party_allowed']
+        ),
+
+        array(
+            'id'       => 'experience_ad_children_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['children_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['children_allowed']
+        ),
+
+        array(
+            'id'       => 'experience_ad_add_rules_info_optional',
+            'type'     => 'text',
+            'title'    => $homey_local['add_rules_info_optional'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['add_rules_info_optional']
+        ),
+
+        array(
+            'id'       => 'experience_add_terms_rules_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+
+        // Openning Hours
+        array(
+            'id'       => 'experience_ad_section_openning',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Openning Hours', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Enter title for openning hours section', 'homey'),
+            'default' =>  esc_html__( 'Openning Hours', 'homey' ),
+        ),
+
+        array(
+            'id'       => 'experience_add_openning_hours_section-start',
+            'type'     => 'section',
+            'title'    => '',
+            'subtitle' => '',
+            'indent'   => true,
+        ),
+
+        array(
+            'id'       => 'experience_ad_start_end',
+            'type'     => 'text',
+            'title'    => esc_html__('Start - End', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__('Start - End', 'homey'),
+        ),
+
+        array(
+            'id'       => 'experience_add_openning_hours_section-end',
+            'type'     => 'section',
+            'indent'   => false,
+        ),
+    )
+));
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Experience Detail Page', 'homey' ),
+    'id'     => 'experience_detail-page-labels',
+    'desc'   => esc_html__('Manage experience detail page labels.', 'homey'),
+    'subsection' => true,
+    'fields' => array(
+
+        array(
+            'id'       => 'experience_sn_type_label',
+            'type'     => 'text',
+            'title'    => $homey_local['type_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['type_label'],
+        ),
+
+        array(
+            'id'       => 'experience_sn_accom_label',
+            'type'     => 'text',
+            'title'    => $homey_local['accom_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['accom_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_guests_label',
+            'type'     => 'text',
+            'title'    => $homey_local['guests_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['guests_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_id_label',
+            'type'     => 'text',
+            'title'    => esc_html__('ID', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => 'ID',
+        ),
+        array(
+            'id'       => 'experience_sn_language_label',
+            'type'     => 'text',
+            'title'    => $homey_local['experience_language_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['experience_language_label'],
+        ),
+
+        array(
+            'id'       => 'experience_sn_closed_label',
+            'type'     => 'text',
+            'title'    => $homey_local['closed_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['closed_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_about_title',
+            'type'     => 'text',
+            'title'    => $homey_local['about_experience_title'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['about_experience_title'],
+        ),
+        array(
+            'id'       => 'experience_sn_about_host_title',
+            'type'     => 'text',
+            'title'    => $homey_local['about_host_experience_title'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['about_host_experience_title'],
+        ),
+        array(
+            'id'       => 'experience_sn_accommodates_label',
+            'type'     => 'text',
+            'title'    => $homey_local['accommodates_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['accommodates_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_opening_hours_label',
+            'type'     => 'text',
+            'title'    => $homey_local['opening_hours_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['opening_hours_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_mon_fri_label',
+            'type'     => 'text',
+            'title'    => $homey_local['mon_fri_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['mon_fri_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_sat_label',
+            'type'     => 'text',
+            'title'    => $homey_local['sat_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['sat_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_sun_label',
+            'type'     => 'text',
+            'title'    => $homey_local['sun_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['sun_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_size_label',
+            'type'     => 'text',
+            'title'    => $homey_local['size_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['size_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_check_out_before',
+            'type'     => 'text',
+            'title'    => $homey_local['check_out_before'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['check_out_before'],
+        ),
+        array(
+            'id'       => 'experience_sn_nightly_label',
+            'type'     => 'text',
+            'title'    => esc_html__("Price", 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__("Price", 'homey'),
+        ),
+        array(
+            'id'       => 'experience_sn_security_deposit_label',
+            'type'     => 'text',
+            'title'    => $homey_local['security_deposit_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['security_deposit_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_tax_rate_label',
+            'type'     => 'text',
+            'title'    => $homey_local['tax_rate_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['tax_rate_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_addinal_guests_label',
+            'type'     => 'text',
+            'title'    => $homey_local['addinal_guests_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['addinal_guests_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_allow_additional_guests',
+            'type'     => 'text',
+            'title'    => $homey_local['allow_additional_guests'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['allow_additional_guests'],
+        ),
+        array(
+            'id'       => 'experience_sn_cleaning_fee',
+            'type'     => 'text',
+            'title'    => $homey_local['cleaning_fee'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['cleaning_fee'],
+        ),
+        array(
+            'id'       => 'experience_sn_city_fee',
+            'type'     => 'text',
+            'title'    => $homey_local['city_fee'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['city_fee'],
+        ),
+        array(
+            'id'       => 'experience_sn_min_no_of_days',
+            'type'     => 'text',
+            'title'    => $homey_local['min_no_of_days'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['min_no_of_days'],
+        ),
+        array(
+            'id'       => 'experience_sn_max_no_of_days',
+            'type'     => 'text',
+            'title'    => $homey_local['max_no_of_days'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['max_no_of_days'],
+        ),
+        array(
+            'id'       => 'experience_sn_min_no_of_hours',
+            'type'     => 'text',
+            'title'    => esc_html__('Minimum number of hours', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => 'Minimum number of hours',
+        ),
+        array(
+            'id'       => 'experience_sn_smoking_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['smoking_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['smoking_allowed'],
+        ),
+        array(
+            'id'       => 'experience_sn_pets_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['pets_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pets_allowed'],
+        ),
+        array(
+            'id'       => 'experience_sn_party_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['party_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['party_allowed'],
+        ),
+        array(
+            'id'       => 'experience_sn_children_allowed',
+            'type'     => 'text',
+            'title'    => $homey_local['children_allowed'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['children_allowed'],
+        ),
+        array(
+            'id'       => 'experience_sn_add_rules_info',
+            'type'     => 'text',
+            'title'    => $homey_local['add_rules_info'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['add_rules_info'],
+        ),
+        array(
+            'id'       => 'experience_sn_night_label',
+            'type'     => 'text',
+            'title'    => esc_html__('Person', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__('Person', 'homey'),
+        ),
+        array(
+            'id'       => 'experience_sn_nights_label',
+            'type'     => 'text',
+            'title'    => esc_html__('Persons', 'homey'),
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => esc_html__('Persons', 'homey'),
+        ),
+        array(
+            'id'       => 'experience_sn_min_stay_is',
+            'type'     => 'text',
+            'title'    => $homey_local['min_stay_is'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['min_stay_is'],
+        ),
+        array(
+            'id'       => 'sn_max_stay_is',
+            'type'     => 'text',
+            'title'    => $homey_local['max_stay_is'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['max_stay_is'],
+        ),
+        array(
+            'id'       => 'sn_avail_label',
+            'type'     => 'text',
+            'title'    => $homey_local['avail_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['avail_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_pending_label',
+            'type'     => 'text',
+            'title'    => $homey_local['pending_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pending_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_booked_label',
+            'type'     => 'text',
+            'title'    => $homey_local['booked_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['booked_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_acc_guests_label',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_guests_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guests_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_acc_guest_label',
+            'type'     => 'text',
+            'title'    => $homey_local['acc_guest_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['acc_guest_label'],
+        ),
+
+
+        array(
+            'id'       => 'experience_sn_hosted_by',
+            'type'     => 'text',
+            'title'    => $homey_local['hosted_by'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['hosted_by'],
+        ),
+        array(
+            'id'       => 'experience_sn_pr_lang',
+            'type'     => 'text',
+            'title'    => $homey_local['pr_lang'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pr_lang'],
+        ),
+        array(
+            'id'       => 'experience_sn_pr_profile_status',
+            'type'     => 'text',
+            'title'    => $homey_local['pr_profile_status'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pr_profile_status'],
+        ),
+        array(
+            'id'       => 'experience_sn_pr_verified',
+            'type'     => 'text',
+            'title'    => $homey_local['pr_verified'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pr_verified'],
+        ),
+        array(
+            'id'       => 'experience_sn_pr_h_rating',
+            'type'     => 'text',
+            'title'    => $homey_local['pr_h_rating'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pr_h_rating'],
+        ),
+        array(
+            'id'       => 'experience_sn_pr_cont_host',
+            'type'     => 'text',
+            'title'    => $homey_local['pr_cont_host'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['pr_cont_host'],
+        ),
+        array(
+            'id'       => 'experience_sn_view_profile',
+            'type'     => 'text',
+            'title'    => $homey_local['view_profile'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['view_profile'],
+        ),
+        array(
+            'id'       => 'experience_sn_text_no',
+            'type'     => 'text',
+            'title'    => $homey_local['text_no'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['text_no'],
+        ),
+        array(
+            'id'       => 'experience_sn_text_yes',
+            'type'     => 'text',
+            'title'    => $homey_local['text_yes'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['text_yes'],
+        ),
+
+        //Headings
+        array(
+            'id'     => 'experience_single-experience-titles-info',
+            'type'   => 'info',
+            'notice' => false,
+            'style'  => 'info',
+            'title'  => wp_kses(__( '<span class="font24">Section Titles</span>', 'homey' ), $allowed_html_array),
+            'subtitle' => '',
+            'desc'   => ''
+        ),
+        array(
+            'id'       => 'experience_sn_detail_heading',
+            'type'     => 'text',
+            'title'    => $homey_local['detail_heading'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['detail_heading'],
+        ),
+        array(
+            'id'       => 'experience_sn_prices_heading',
+            'type'     => 'text',
+            'title'    => $homey_local['prices_heading'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['prices_heading'],
+        ),
+        array(
+            'id'       => 'experience_sn_accomodation_text',
+            'type'     => 'text',
+            'title'    => $homey_local['accomodation_text'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['accomodation_text'],
+        ),
+        array(
+            'id'       => 'experience_sn_terms_rules',
+            'type'     => 'text',
+            'title'    => $homey_local['terms_rules'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['terms_rules'],
+        ),
+        array(
+            'id'       => 'experience_sn_video_heading',
+            'type'     => 'text',
+            'title'    => $homey_local['video_heading'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['video_heading'],
+        ),
+        array(
+            'id'       => 'experience_sn_availability_label',
+            'type'     => 'text',
+            'title'    => $homey_local['availability_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['availability_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_features',
+            'type'     => 'text',
+            'title'    => $homey_local['features'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['features'],
+        ),
+        array(
+            'id'       => 'experience_sn_amenities',
+            'type'     => 'text',
+            'title'    => $homey_local['amenities'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['amenities'],
+        ),
+        array(
+            'id'       => 'experience_sn_facilities',
+            'type'     => 'text',
+            'title'    => $homey_local['facilities'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['facilities'],
+        ),
+        array(
+            'id'       => 'experience_sn_services_text',
+            'type'     => 'text',
+            'title'    => $homey_local['services_text'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['services_text'],
+        ),
+        array(
+            'id'       => 'experience_sn_similar_label',
+            'type'     => 'text',
+            'title'    => $homey_local['similar_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['similar_label'],
+        ),
+        array(
+            'id'       => 'experience_sn_nearby_label',
+            'type'     => 'text',
+            'title'    => $homey_local['nearby_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['nearby_label'],
+        ),
+
+    )
+));
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Grid, List & Card For Experiences', 'homey' ),
+    'id'     => 'experiences-grid-list-card-labels',
+    'desc'   => esc_html__( 'Manage titles for Grid, List & Card for experiences', 'homey' ),
+    'subsection'   => true,
+    'fields'        => array(
+        array(
+            'id'       => 'experience_glc_guests_label',
+            'type'     => 'text',
+            'title'    => $homey_local['guests_label'],
+            'desc'     => '',
+            'subtitle' => '',
+            'default' => $homey_local['guests_label'],
+        )
+    )
+));
+// end of experience
 
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Logos & Favicon', 'homey' ),
@@ -3532,7 +5221,7 @@ Redux::setSection( $opt_name, array(
             'title'    => esc_html__( 'Host Role', 'homey' ),
             'subtitle' => esc_html__( 'Name for host role', 'homey' ),
             'desc'     => esc_html__( 'Default: I want to host', 'homey' ),
-            'default'  => 'I want to host',
+            'default'  => esc_html__( 'I want to host', 'homey')
         ),
         array(
             'id'       => 'renter_role',
@@ -3540,7 +5229,7 @@ Redux::setSection( $opt_name, array(
             'title'    => esc_html__( 'Renter Role', 'homey' ),
             'subtitle' => esc_html__( 'Name for renter role', 'homey' ),
             'desc'     => esc_html__( 'Default: I want to book', 'homey' ),
-            'default'  => 'I want to book',
+            'default'  => esc_html__( 'I want to book', 'homey')
         )
     )
 ) );
@@ -4066,6 +5755,18 @@ Redux::setSection( $opt_name, array(
             'default' => 'percent',
         ),
         array(
+            'id'       => 'no_login_needed_for_booking',
+            'type'     => 'select',
+            'title'    => esc_html__('No Login Need For Booking', 'homey' ),
+            'subtitle' => '',
+            'desc' => esc_html__('If you want users to make reservations without login?', 'homey' ),
+            'options'   => array(
+                'yes' => esc_html__('Yes', 'homey'),
+                'no' => esc_html__('No', 'homey'),
+            ),
+            'default' => 'no',
+        ),
+        array(
             'id'       => 'booking_percent',
             'type'     => 'text',
             'title'    => esc_html__('Percent', 'homey' ),
@@ -4099,7 +5800,7 @@ Redux::setSection( $opt_name, array(
 ));
 
 /* -----------------------------------------------
- * Services Fee
+ * Instant Booking
  * ----------------------------------------------*/
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Instant Booking', 'homey' ),
@@ -4134,7 +5835,6 @@ Redux::setSection( $opt_name, array(
         
     ),
 ));
-
 
 /* -----------------------------------------------
  * Services Fee
@@ -4203,7 +5903,6 @@ Redux::setSection( $opt_name, array(
     ),
 ));
 
-
 /* -----------------------------------------------
  * Taxes Fee
  * ----------------------------------------------*/
@@ -4252,7 +5951,7 @@ according to the law in their country)', 'homey'),
 ));
 
 /* -----------------------------------------------
- * Taxes Fee
+ * Show/Hide Booking Form Fields
  * ----------------------------------------------*/
 Redux::setSection( $opt_name, array(
     'title'  => esc_html__( 'Show/Hide Booking Form Fields', 'homey' ),
@@ -4269,12 +5968,295 @@ Redux::setSection( $opt_name, array(
             'subtitle' => esc_html__('Choose which fields you want to hide for booking form', 'homey'),
             'options'  => array(
                 'guests' => esc_html__('Guests', 'homey'),
-                'children' => esc_html__('Children', 'homey')
+                'children' => esc_html__('Children', 'homey'),
             ),
             'default' => array(
                 'guests' => '0',
                 'children' => '0',
-                
+
+            )
+        ),
+
+        array(
+            'id'       => 'booking_detail_hide_fields',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Hide Fields', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Choose which fields you want to hide for booking detail page', 'homey'),
+            'options'  => array(
+                'renter_information_on_detail' => esc_html__('Renter information on detail', 'homey')
+            ),
+            'default' => array(
+                'renter_information_on_detail' => '0',
+
+            )
+        ),
+
+    ),
+));
+
+
+/* **********************************************************************
+ * Experiences Reservation
+ * **********************************************************************/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Experiences Reservation', 'homey' ),
+    'id'     => 'exp-reservation-section',
+    'desc'   => '',
+    'icon'   => 'el-icon-usd el-icon-small',
+    'fields'        => array(
+
+        array(
+            'id'       => 'exp_reservation_payment',
+            'type'     => 'select',
+            'title'    => esc_html__('Payment while booking', 'homey' ),
+            'subtitle' => '',
+            'desc' => esc_html__('Check how much initial payment you want the client to deposit while booking', 'homey' ),
+            'options'   => array(
+                'percent' => esc_html__('Percentage(%)', 'homey'),
+                'full' => esc_html__('Full Payment', 'homey'),
+                'only_security' => esc_html__('Security Deposit (It can be add while add/edit listing)', 'homey'),
+                'only_services' => esc_html__('Only Services Fee', 'homey'),
+                'services_security' => esc_html__('Services fee + Security deposit', 'homey'),
+                'no_upfront' => esc_html__('No upfront, Take full payment locally', 'homey'),
+            ),
+            'default' => 'percent',
+        ),
+        array(
+            'id'       => 'no_login_needed_for_exp_booking',
+            'type'     => 'select',
+            'title'    => esc_html__('No Login Need For Booking', 'homey' ),
+            'subtitle' => '',
+            'desc' => esc_html__('If you want users to make reservations without login?', 'homey' ),
+            'options'   => array(
+                'yes' => esc_html__('Yes', 'homey'),
+                'no' => esc_html__('No', 'homey'),
+            ),
+            'default' => 'no',
+        ),
+        array(
+            'id'       => 'exp_booking_percent',
+            'type'     => 'text',
+            'title'    => esc_html__('Percent', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__('Enter how many % payment required while booking.', 'homey'),
+            'required' => array('exp_reservation_payment', '=', 'percent'),
+            'default' => '',
+            'validate' => 'numeric'
+        ),
+
+        array(
+            'id'       => 'num_0f_hours_to_remove_pending_exp_resrv',
+            'type'     => 'text',
+            'title'    => esc_html__('After how many hours the reservation must be cancel?', 'homey' ),
+            'subtitle'     => esc_html__('IE: 1, 2, 4, 5', 'homey'),
+            'desc' => esc_html__('Insert the number of hours a pending reservation must be canceled if the customer does not make the payment after the listing author has confirmed the availability.', 'homey'),
+            'default' => '24',
+            'validate' => 'numeric'
+        ),
+        array(
+            'id'       => 'num_0f_hours_before_checkin_remove_exp_resrv',
+            'type'     => 'text',
+            'title'    => esc_html__('Before checkin how many hours the reservation must be cancel?', 'homey' ),
+            'subtitle'     => esc_html__('IE: 1, 2, 4, 5', 'homey'),
+            'desc' => esc_html__('Insert the number of hours a reservation must be canceled if the customer does not want to checkin.', 'homey'),
+            'default' => '24',
+            'validate' => 'numeric'
+        ),
+
+    ),
+));
+
+/* -----------------------------------------------
+ * Experiences Instant Booking
+ * ----------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Instant Booking', 'homey' ),
+    'id'     => 'exp-instance-booking',
+    'desc'   => '',
+    'subsection'   => true,
+    'fields'        => array(
+        array(
+            'id'       => 'ins_exp_page_title',
+            'type'     => 'text',
+            'title'    => esc_html__('Page Title', 'homey' ),
+            'subtitle' => esc_html__('Enter Instant booking page title.', 'homey'),
+            'desc' =>'',
+            'default' => $homey_local['ins_page_title'],
+        ),
+        array(
+            'id'       => 'ins_exp_page_subtitle',
+            'type'     => 'text',
+            'title'    => esc_html__('Subtitle', 'homey' ),
+            'subtitle' => esc_html__('Enter Instant booking page subtitle.', 'homey'),
+            'desc' =>'',
+            'default' => $homey_local['ins_page_subtitle'],
+        ),
+        array(
+            'id'       => 'ins_exp_learnmore',
+            'type'     => 'text',
+            'title'    => esc_html__('Learn More link', 'homey' ),
+            'subtitle' => esc_html__('Enter link for learn more.', 'homey'),
+            'desc' =>'',
+            'default' => '',
+        ),
+
+    ),
+));
+
+/* -----------------------------------------------
+ * Experiences Services Fee
+ * ----------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Services Fee', 'homey' ),
+    'id'     => 'exp-services-fee',
+    'desc'   => '',
+    'subsection'   => true,
+    'fields'        => array(
+
+        array(
+            'id'       => 'enable_exp_services_fee',
+            'type'     => 'switch',
+            'title'    => esc_html__('Services Fee', 'homey' ),
+            'desc'     => esc_html__( 'Enable/Disable the services fee for booking.', 'homey' ),
+            'default'  => 0,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'services_exp_fee_type',
+            'type'     => 'select',
+            'title'    => esc_html__( 'Type', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'required' => array('enable_exp_services_fee', '=', '1'),
+            'options'   => array(
+                'fixed' => esc_html__('Fixed', 'homey'),
+                'percent' => esc_html__('Percent(%)', 'homey'),
+            ),
+            'default' => 'fixed',
+        ),
+        array(
+            'id'       => 'exp_services_fee',
+            'type'     => 'text',
+            'title'    => esc_html__('Amount', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__('Enter the service fee amount. Only number', 'homey'),
+            'required' => array('enable_exp_services_fee', '=', '1'),
+            'default' => '',
+        ),
+
+    ),
+));
+
+/* -----------------------------------------------
+ * Experiences Host Fee
+ * ----------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Host Fee', 'homey' ),
+    'id'     => 'exp-host-fee',
+    'desc'   => '',
+    'subsection'   => true,
+    'fields'        => array(
+        array(
+            'id'       => 'exp_host_fee',
+            'type'     => 'text',
+            'title'    => esc_html__('Host Fee', 'homey' ),
+            'subtitle'     => esc_html__('Host Fee in %', 'homey' ),
+            'desc' => esc_html__('Enter the host fee in %. Only number', 'homey'),
+            'validate' => 'numeric',
+            'default' => '5',
+        ),
+
+    ),
+));
+
+/* -----------------------------------------------
+ * Experiences Taxes Fee
+ * ----------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Taxes', 'homey' ),
+    'id'     => 'exp-taxes-fee',
+    'desc'   => '',
+    'subsection'   => true,
+    'fields'        => array(
+
+        array(
+            'id'       => 'enable_exp_taxes',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Taxes', 'homey' ),
+            'desc'     => esc_html__( 'Enable/Disable the taxes for booking.', 'homey' ),
+            'default'  => 0,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'exp_tax_type',
+            'type'     => 'select',
+            'title'    => esc_html__( 'Type', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'required' => array('enable_exp_taxes', '=', '1'),
+            'options'   => array(
+                'global_tax' => esc_html__('Global tax (all listings will have same tax percentage as set in below field)', 'homey'),
+                'single_tax' => esc_html__('Single listing tax (each listing will have a tax field where to add different tax percentage
+according to the law in their country)', 'homey'),
+            ),
+            'default' => 'exp_global_tax',
+        ),
+        array(
+            'id'       => 'exp_taxes_percent',
+            'type'     => 'text',
+            'title'    => esc_html__('Tax fees', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__('Enter the tax fees in percentage. Only number', 'homey'),
+            'required' => array('exp_tax_type', '=', 'global_tax'),
+            'default' => '',
+            'validate' => 'numeric',
+        )
+
+    ),
+));
+
+/* -----------------------------------------------
+ * Experiences Show/Hide Booking Form Fields
+ * ----------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Show/Hide Booking Form Fields', 'homey' ),
+    'id'     => 'showhide-exp-booking-form-fields',
+    'desc'   => '',
+    'subsection'   => true,
+    'fields'        => array(
+
+        array(
+            'id'       => 'exp_booking_hide_fields',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Hide Fields', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Choose which fields you want to hide for booking form', 'homey'),
+            'options'  => array(
+                'guests' => esc_html__('Guests', 'homey'),
+                'children' => esc_html__('Children', 'homey'),
+            ),
+            'default' => array(
+                'guests' => '0',
+                'children' => '0',
+
+            )
+        ),
+
+        array(
+            'id'       => 'exp_booking_detail_hide_fields',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Hide Fields', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Choose which fields you want to hide for booking detail page', 'homey'),
+            'options'  => array(
+                'exp_renter_information_on_detail' => esc_html__('Renter information on detail', 'homey')
+            ),
+            'default' => array(
+                'exp_renter_information_on_detail' => '0',
+
             )
         ),
 
@@ -4602,8 +6584,8 @@ Redux::setSection( $opt_name, array(
         array(
             'id'       => 'beds_baths_rooms_search',
             'type'     => 'select',
-            'title'    => esc_html__( 'Bedrooms, Rooms', 'homey' ),
-            'subtitle'    => esc_html__( 'Search criteria for bedrooms and rooms', 'homey' ),
+            'title'    => esc_html__( 'Guest, Bedrooms, Rooms', 'homey' ),
+            'subtitle'    => esc_html__( 'Search criteria for guest, bedrooms and rooms', 'homey' ),
             'desc'     => '',
             'options'  => array(
                 'equal' => esc_html__('Equal', 'homey'),
@@ -4824,6 +6806,53 @@ Redux::setSection( $opt_name, array(
             'desc'     => esc_html__('No of days until a featured listings will expire. It starts from the moment the listing is published on the website. Enter -1 for unlimited', 'homey'),
             'default'  => '30',
         ),
+
+        //experiences featured options
+        array(
+            'id'       => 'experience_make_featured',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Make Featured', 'homey' ),
+            'desc'     => esc_html__( 'Allow user to pay for featuring their experiences', 'homey' ),
+            'subtitle' => '',
+            'default'  => 0,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'price_featured_experience',
+            'type'     => 'text',
+            'title'    => esc_html__('Featured Price', 'homey'),
+            'desc' => esc_html__('Enter the price to make a experience featured. Only numbers', 'homey'),
+            'required' => array('experience_make_featured', '=', '1'),
+            'default'  => '0',
+        ),
+        array(
+            'id'       => 'featured_experience_expire',
+            'type'     => 'text',
+            'required' => array('experience_make_featured', '=', '1'),
+            'title'    => esc_html__('Number of Expire Days', 'homey'),
+            'subtitle' => '',
+            'desc'     => esc_html__('No of days until a featured experiences will expire. It starts from the moment the experienc is published on the website. Enter -1 for unlimited', 'homey'),
+            'default'  => '30',
+        ),
+        array(
+            'id'       => 'exp_payment_terms_condition',
+            'type'     => 'select',
+            'data'     => 'pages',
+            'title'    => esc_html__( 'Experiences Terms & Conditions', 'homey' ),
+            'desc' => esc_html__( 'Select the page to use for the terms & conditions', 'homey' ),
+            'subtitle'     => '',
+        ),
+        array(
+            'id'       => 'exp_payment_privacy_policy',
+            'type'     => 'select',
+            'data'     => 'pages',
+            'title'    => esc_html__( 'Experiences Privacy Policy', 'homey' ),
+            'desc' => esc_html__( 'Select the page to use for the privacy policy', 'homey' ),
+            'subtitle'     => '',
+        ),
+        //experiences featured options
+
         array(
             'id'       => 'payment_terms_condition',
             'type'     => 'select',
@@ -4955,6 +6984,16 @@ Redux::setSection( $opt_name, array(
             'type'     => 'text',
             'required' => array( 'enable_stripe', '=', '1' ),
             'title'    => esc_html__('Stripe Webhook Secret Key', 'homey'),
+            'desc' => esc_html__('The information is taken from your account at https://dashboard.stripe.com/login', 'homey'),
+            'subtitle'     => '',
+            'default'  => '',
+        ),
+
+        array(
+            'id'       => 'stripe_exp_webhook_secret',
+            'type'     => 'text',
+            'required' => array( 'enable_stripe', '=', '1' ),
+            'title'    => esc_html__('Stripe Experience Webhook Secret Key', 'homey'),
             'desc' => esc_html__('The information is taken from your account at https://dashboard.stripe.com/login', 'homey'),
             'subtitle'     => '',
             'default'  => '',
@@ -6197,6 +8236,7 @@ Redux::setSection( $opt_name, array(
 
 $listing_detail_showhide = array(
     'sn_type_label' => $homey_local['type_label'],
+    'sn_name_label' => $homey_local['name_label'],
     'sn_accom_label' => $homey_local['accom_label'],
     'sn_bedrooms_label' => $homey_local['bedrooms_label'],
     'sn_bathrooms_label' => $homey_local['bathrooms_label'],
@@ -6249,6 +8289,7 @@ Redux::setSection( $opt_name, array(
             'options'  => $listing_detail_showhide,
             'default' => array(
                 'sn_type_label' => '0',
+                'sn_name_label' => '0',
                 'sn_size_label' => '0',
                 'sn_accom_label' => '0',
                 'sn_bedrooms_label' => '0',
@@ -6960,6 +9001,1137 @@ Redux::setSection( $opt_name, array(
 ));
 
 /* **********************************************************************
+ * Add New experience
+ * **********************************************************************/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Add New Experience', 'homey' ),
+    'id'     => 'add-experience-page',
+    'desc'   => '',
+    'icon'   => 'el-icon-cog el-icon-small',
+    'fields'        => array(
+        array(
+            'id'       => 'experiences_admin_approved',
+            'type'     => 'switch',
+            'title'    => esc_html__('Submitted Experiences Should be Approved by Admin?', 'homey'),
+            'subtitle' => '',
+            'desc'     => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'edit_experiences_admin_approved',
+            'type'     => 'switch',
+            'title'    => esc_html__('Edit Experiences Should be Approved by Admin?', 'homey'),
+            'subtitle' => '',
+            'desc'     => '',
+            'default'  => 0,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'      => 'experience_form_sections',
+            'type'    => 'sorter',
+            'title'   => 'Submission Form Layout Manager',
+            'desc'    => 'Drag and drop layout manager, to quickly organize your experience submission form layout.',
+            'options' => array(
+                'enabled'  => array(
+                    'information'    => esc_html__('Information', 'homey'),
+                    'pricing'        => esc_html__('Pricing', 'homey'),
+                    'media'          => esc_html__('Media', 'homey'),
+                    'location'       => esc_html__('Location', 'homey'),
+                    'price_terms'    => esc_html__('Terms', 'homey'),
+                    'time'           => esc_html__('Open/Close Time', 'homey'),
+                    'features'       => esc_html__('Features', 'homey'),
+                    'what_provided'  => esc_html__('What will be provided', 'homey')
+                ),
+                'disabled' => array( )
+            ),
+        ),
+
+        array(
+            'id'       => 'experience_upload_image_min_dimensions',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Gallery Images Minimum Dimensions', 'homey' ),
+            'desc' => esc_html__('Enter default minimum dimensions for gallery images uploads (e.g: 1440x900).', 'homey'),
+            'default'  => '1440x900',
+        ),
+        array(
+            'id'       => 'experience_add_location_lat',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Latitudes', 'homey' ),
+            'desc' => esc_html__('Enter default latitudes for add new experience map.', 'homey'),
+            'default'  => '25.761681',
+        ),
+
+        array(
+            'id'       => 'experience_add_location_lat',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Latitudes', 'homey' ),
+            'desc' => esc_html__('Enter default latitudes for add new experience map.', 'homey'),
+            'default'  => '25.761681',
+        ),
+        array(
+            'id'       => 'experience_add_location_long',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Longitudes', 'homey' ),
+            'desc' => esc_html__('Enter default longitudes for add new experience map.', 'homey'),
+            'default'  => '-80.191788',
+        ),
+
+        array(
+            'id'        => 'experience_openning_hours_list',
+            'type'      => 'textarea',
+            'title'     => esc_html__( 'Opening Hours list', 'homey' ),
+            'readonly' => false,
+            'default'   => '8:00 AM, 8:30 AM, 9:00 AM, 9:30 AM, 10:00 AM, 10:30 AM, 11:00 AM, 11:30 AM, 12:00 PM, 12:30 PM, 1:00 PM, 1:30 PM, 2:00 PM, 2:30 PM, 3:00 PM, 3:30 PM, 4:00 PM, 4:30 PM, 5:00 PM, 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, 8:30 PM, 9:00 PM',
+            'desc'  => esc_html__( 'Only provide hours comma separated. Do not add decimal points, dashes or spaces', 'homey' )
+        ),
+
+        array(
+            'id'        => 'experience_checkin_after_before',
+            'type'      => 'textarea',
+            'title'     => esc_html__( 'Check-in After & Check-out Before', 'homey' ),
+            'readonly' => false,
+            'default'   => '8:00 AM, 8:30 AM, 9:00 AM, 9:30 AM, 10:00 AM, 10:30 AM, 11:00 AM, 11:30 AM, 12:00 PM, 12:30 PM, 1:00 PM, 1:30 PM, 2:00 PM, 2:30 PM, 3:00 PM, 3:30 PM, 4:00 PM, 4:30 PM, 5:00 PM, 5:30 PM, 6:00 PM, 6:30 PM, 7:00 PM, 7:30 PM, 8:00 PM, 8:30 PM, 9:00 PM',
+            'desc'  => esc_html__( 'Only provide hours comma separated. Do not add decimal points, dashes or spaces', 'homey' )
+        ),
+    )
+));
+
+$submit_form_fields = array(
+    'experience_language' => esc_html__('Select Langage', 'homey'),
+    'experience_title' => $homey_local['experience_title'],
+    'experience_describe_yourself' => esc_html__("Describe Yourself", "homey"),
+    'experience_description' => $homey_local['experience_des'],
+    'experience_guests' => $homey_local['experience_no_of_guests'],
+    'experience_type' => $homey_local['experience_type'],
+    'experience_instant_booking' => $homey_local['experience_ins_booking_label'],
+    'experience_night_price' => esc_html__("Price", "homey"),
+    'experience_price_postfix' => esc_html__('After Price Label For Experience', 'homey'),
+    'experience_allow_additional_guests' => $homey_local['experience_allow_additional_guests'],
+    'experience_city_fee' => $homey_local['experience_city_fee'],
+    'security_deposit' => $homey_local['security_deposit_label'],
+    'experience_tax_rate' => $homey_local['experience_tax_rate_label'],
+    'experience_address' => $homey_local['experience_address'],
+    'experience_aptSuit' => $homey_local['experience_aptSuit'],
+    'experience_country' => $homey_local['experience_country'],
+    'experience_state' => $homey_local['experience_state'],
+    'experience_city' => $homey_local['experience_city'],
+    'experience_area' => $homey_local['experience_area'],
+    'experience_zipcode' => $homey_local['experience_zipcode'],
+    'experience_video_url' => $homey_local['experience_video_heading'],
+    'experience_cancel_policy' => $homey_local['experience_cancel_policy'],
+
+    'experience_smoking_allowed' => $homey_local['smoking_allowed'],
+    'experience_pets_allowed' => $homey_local['pets_allowed'],
+    'experience_party_allowed' => $homey_local['party_allowed'],
+    'experience_children_allowed' => $homey_local['children_allowed'],
+    'experience_additional_rules' => $homey_local['add_rules_info_optional'],
+
+    'experience_min_book_days' => $homey_local['experience_min_days_booking'],
+    'experience_max_book_days' => $homey_local['experience_max_days_booking'],
+    'experience_checkin_after' => $homey_local['experience_check_in_after'],
+    'experience_additional_rules' => $homey_local['experience_add_rules_info_optional'],
+    'experience_section_openning' => $homey_local['experience_openning_hours_label'],
+    'experience_extra_prices' => esc_html__('Extra Services Prices Of Experience', 'homey'),
+    'experience_facilities' => esc_html__('Facilities', 'homey'),
+    'experience_amenities' => esc_html__('Amenities', 'homey'),
+);
+
+$submit_form_fields = array_merge($submit_form_fields, $custom_fields_array);
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Show/Hide Fields', 'homey' ),
+    'id'     => 'experience-showhide',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_add_hide_fields',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Submit Form Fields For Experience', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Choose which fields you want to hide from the add new experience page', 'homey'),
+            'options'  => $submit_form_fields,
+            'default' => array(
+                'experience_section_openning' => '1',
+                'experience_extra_prices' => '1'
+            )
+        ),
+    )
+));
+
+$submit_form_required_fields = array(
+    'experience_language' => $homey_local['experience_language'],
+    'experience_title' => $homey_local['experience_title'],
+    'experience_describe_yourself' => esc_html__("Describe Yourself", "homey"),
+    'experience_guests' => $homey_local['experience_no_of_guests'],
+    'experience_type' => $homey_local['experience_type'],
+    'experience_size' => $homey_local['experience_size'],
+    'experience_night_price' => $homey_local['experience_nightly_label'],
+    'experience_address' => $homey_local['experience_address'],
+    'experience_aptSuit' => $homey_local['experience_aptSuit'],
+    'experience_country' => $homey_local['experience_country'],
+    'experience_state' => $homey_local['experience_state'],
+    'experience_city' => $homey_local['experience_city'],
+    'experience_area' => $homey_local['experience_area'],
+    'experience_zip' => $homey_local['experience_zipcode'],
+    'experience_cancellation_policy' => $homey_local['experience_cancel_policy'],
+    'experience_checkin_after' => $homey_local['experience_check_in_after'],
+    'experience_start_hour' => esc_html__('Start Hour Of Experience', 'homey'),
+    'experience_end_hour' => esc_html__('End Hour Of Experience', 'homey'),
+);
+$submit_form_required_fields = array_merge($submit_form_required_fields, $custom_fields_array);
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Required Fields', 'homey' ),
+    'id'     => 'experience-required-fields',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'add_experience_required_fields',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Required Fields', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Make add experience fields required.', 'homey'),
+            'options'  => $submit_form_required_fields,
+            'default' => array(
+                'experience_title' => '1',
+                'experience_night_price' => '1',
+                'experience_address' => '1',
+                'experience_priceWeek' => '0',
+            )
+        ),
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Submitted / Success', 'homey' ),
+    'id'     => 'experience-submitted-success',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_update_cal_section-start',
+            'type'     => 'section',
+            'title'    => esc_html__( 'Update Calendar Of Experience', 'homey' ),
+            'subtitle' => '',
+            'indent'   => true, // Indent all options below until the next 'section' option is set.
+        ),
+
+        array(
+            'id'       => 'experience_update_cal_title',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Title', 'homey' ),
+            'desc' => esc_html__('Enter the title for the update calendar section of experience', 'homey'),
+            'default'  => 'Update Calendar',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'       => 'experience_update_cal_des',
+            'type'     => 'textarea',
+            'title'    => esc_html__( 'Description for experience', 'homey' ),
+            'desc' => esc_html__('Enter a description for update calendar section of experience', 'homey'),
+            'default'  => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vehicula eget turpis laoreet pulvinar',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'     => 'experience_update_cal_section-end',
+            'type'   => 'section',
+            'indent' => false, // Indent all options below until the next 'section' option is set.
+        ),
+
+        array(
+            'id'       => 'experience_custom_prices_section-start',
+            'type'     => 'section',
+            'title'    => esc_html__( 'Custom Prices Of Experience', 'homey' ),
+            'subtitle' => '',
+            'indent'   => true, // Indent all options below until the next 'section' option is set.
+        ),
+
+        array(
+            'id'       => 'experience_custom_prices_title',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Title Of Experience', 'homey' ),
+            'desc' => esc_html__('Enter the title for the custom prices section of experience', 'homey'),
+            'default'  => 'Setup Custom Prices',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'       => 'experience_custom_prices_des',
+            'type'     => 'textarea',
+            'title'    => esc_html__( 'Description', 'homey' ),
+            'desc' => esc_html__('Enter a description for the custom prices section of experience', 'homey'),
+            'default'  => 'Set up custom prices for selected periods.',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'     => 'experience_custom_prices_section-end',
+            'type'   => 'section',
+            'indent' => false, // Indent all options below until the next 'section' option is set.
+        ),
+
+        array(
+            'id'       => 'experience_update_featured_section-start',
+            'type'     => 'section',
+            'title'    => esc_html__( 'Upgrade to featured experience', 'homey' ),
+            'subtitle' => '',
+            'indent'   => true, // Indent all options below until the next 'section' option is set.
+        ),
+
+        array(
+            'id'       => 'experience_update_featured_title',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Title', 'homey' ),
+            'desc' => esc_html__('Enter the title for the upgrade to featured section of experience', 'homey'),
+            'default'  => 'Upgrade to featured',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'       => 'experience_update_featured_des',
+            'type'     => 'textarea',
+            'title'    => esc_html__( 'Description', 'homey' ),
+            'desc' => esc_html__('Enter a description for the upgrade to featured section of experience', 'homey'),
+            'default'  => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vehicula eget turpis laoreet pulvinar',
+            'transparent' => false,
+        ),
+
+        array(
+            'id'     => 'experience_update_featured_section-end',
+            'type'   => 'section',
+            'indent' => false, // Indent all options below until the next 'section' option is set.
+        ),
+    )
+));
+
+/* **********************************************************************
+ * experience detail page
+ * **********************************************************************/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Experience Detail Page', 'homey' ),
+    'id'     => 'experience-details-page',
+    'desc'   => '',
+    'icon'   => 'el-icon-cog el-icon-small',
+    'fields'        => array(
+        array(
+            'id'       => 'experience_detail_layout',
+            'type'     => 'select',
+            'title'    => esc_html__('Experience Layout', 'homey'),
+            'desc' => esc_html__('Select the layout for the experience detail page', 'homey'),
+            'subtitle'     => '',
+            'options'  => array(
+                'v1'   => esc_html__( 'Version 1', 'homey' ),
+                'v2'   => esc_html__( 'Version 2', 'homey' ),
+                'v3'   => esc_html__( 'Version 3', 'homey' ),
+                'v4'   => esc_html__( 'Version 4', 'homey' ),
+            ),
+            'default'  => 'v1',
+        ),
+
+
+        array(
+            'id'       => 'experience-detail-nav',
+            'type'     => 'switch',
+            'title'    => esc_html__('Detail Nav', 'homey'),
+            'subtitle' => esc_html__('experience detail page sticky navigation', 'homey'),
+            'desc'     => '',
+            'default'  => 0,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+
+        array(
+            'id'       => 'experience_what_to_show',
+            'type'     => 'select',
+            'title'    => esc_html__('What to display in the sidebar for experience detail?', 'homey'),
+            'desc' => esc_html__('Select what to display in the sidebar of experience detail page', 'homey'),
+            'subtitle'     => '',
+            'options'  => array(
+                'booking_form'   => esc_html__( 'Booking form', 'homey' ),
+                'contact_form'   => esc_html__( 'Contact Form', 'homey' ),
+                'contact_form_to_guest' => esc_html__('Contact Form To Guest and Booking To User', 'homey'),
+            ),
+            'default'  => 'booking_form',
+        ),
+        array(
+            'id'       => 'experience_print_button',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Print Experience', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__( 'Enable/Disable the print button', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_detail_favorite',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Favorite Experience', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__( 'Enable/Disable the favorite button', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_detail_share',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Share buttons for experience', 'homey' ),
+            'subtitle'     => '',
+            'desc' => esc_html__( 'Enable/Disable the share button for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+
+        array(
+            'id'       => 'experience_detail_contact_form',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Contact Host Experience', 'homey' ),
+            'desc' => esc_html__( 'Enable/Disable the contact host button experience.', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        )
+    ),
+));
+
+/* Sections
+----------------------------------------------------------------*/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Layout Manager Of Experiences', 'homey' ),
+    'id'     => 'experience-section',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'      => 'experience_blocks',
+            'type'    => 'sorter',
+            'title'   => esc_html__('Layout Manager', 'homey'),
+            'desc'    => 'Drag and drop layout manager, to quickly organize your experience layout contents.',
+            'options' => array(
+                'enabled'  => array(
+                    'providing'       => esc_html__('Providing', 'homey'),
+                    'about'           => esc_html__('About Experience', 'homey'),
+                    'about_host'      => esc_html__('About The Host', 'homey'),
+                    'details'         => esc_html__('Details', 'homey'),
+                    'gallery'         => esc_html__('Gallery Of Experience', 'homey'),
+                    'prices'          => esc_html__('Prices', 'homey'),
+                    'accomodation'    => esc_html__('Accomodation', 'homey'),
+                    'features'        => esc_html__('Features', 'homey'),
+                    'map'             => esc_html__('Map', 'homey'),
+                    'nearby'          => esc_html__('Yelp Near By Places', 'homey'),
+                    'rules'           => esc_html__('Rules', 'homey'),
+                    'availability'    => esc_html__('Availability', 'homey'),
+                    'host'            => esc_html__('Host', 'homey'),
+                    'reviews'         => esc_html__('Reviews & Ratings', 'homey'),
+                    'similar-experience' => esc_html__('Similar Experience', 'homey'),
+                ),
+                'disabled' => array(
+                    'video'        => esc_html__('Video', 'homey'),
+                    'about_commercial' => esc_html__('About(commercial)', 'homey'),
+                    'services' => esc_html__('Services', 'homey'),
+                    'custom-periods' => esc_html__('Custom Periods', 'homey'),
+                )
+            ),
+        )
+    )
+));
+
+$experience_detail_showhide = array(
+    'experience_sn_language_label' => $homey_local['experience_language_label'],
+    'experience_sn_type_label' => $homey_local['experience_type_label'],
+    'experience_sn_about_title' => $homey_local['experience_about_experience_title'],
+    'experience_sn_about_host_title' => $homey_local['experience_about_host_title'],
+    'experience_sn_opening_hours_label' => $homey_local['experience_opening_hours_label'],
+    'experience_sn_guests_label' => $homey_local['experience_guests_label'],
+    'experience_sn_id_label' => esc_html__('ID', 'homey'),
+    'experience_sn_check_in_after' => $homey_local['experience_check_in_after'],
+    'experience_sn_nightly_label' => $homey_local['experience_nightly_label'],
+    'experience_sn_security_deposit_label' => $homey_local['experience_security_deposit_label'],
+    'experience_sn_tax_rate_label' => $homey_local['experience_tax_rate_label'],
+    'experience_sn_addinal_guests_label' => $homey_local['experience_addinal_guests_label'],
+    'experience_sn_allow_additional_guests' => $homey_local['experience_allow_additional_guests'],
+
+    'experience_sn_smoking_allowed' => $homey_local['smoking_allowed'],
+    'experience_sn_pets_allowed' => $homey_local['pets_allowed'],
+    'experience_sn_party_allowed' => $homey_local['party_allowed'],
+    'experience_sn_children_allowed' => $homey_local['children_allowed'],
+    'experience_sn_additional_rules' => $homey_local['add_rules_info_optional'],
+
+    'experience_sn_cleaning_fee' => $homey_local['experience_cleaning_fee'],
+    'experience_sn_city_fee' => $homey_local['experience_city_fee'],
+    'experience_sn_add_rules_info' => $homey_local['experience_add_rules_info'],
+);
+$experience_detail_showhide = array_merge($experience_detail_showhide, $custom_fields_array);
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Show/Hide Data', 'homey' ),
+    'id'     => 'single-experience-showhide',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_show_hide_labels',
+            'type'     => 'checkbox',
+            'title'    => esc_html__( 'Detail Data', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__('Check what data you want to hide from the experience detail page', 'homey'),
+            'options'  => $experience_detail_showhide,
+            'default' => array(
+                'experience_sn_language_label' => '0',
+                'experience_sn_type_label' => '0',
+                'experience_sn_size_label' => '0',
+                'experience_sn_about_title' => '0',
+                'experience_sn_about_host_title' => '0',
+                'experience_sn_opening_hours_label' => '0',
+                'experience_sn_guests_label' => '0',
+                'experience_sn_id_label' => '0',
+                'experience_sn_check_in_after' => '0',
+                'experience_sn_nightly_label' => '0',
+                'experience_sn_security_deposit_label' => '0',
+                'experience_sn_tax_rate_label' => '0',
+                'experience_sn_addinal_guests_label' => '0',
+                'experience_sn_allow_additional_guests' => '0',
+                'experience_sn_city_fee' => '0',
+                'experience_sn_children_allowed' => '0',
+                'experience_sn_add_rules_info' => '0',
+
+            )
+        ),
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Yelp Nearby Places of experience', 'homey' ),
+    'id'     => 'experience_yelp',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'homey_experience_yelp_api_key',
+            'type'     => 'text',
+            'title'    => esc_html__( 'API Key for experience', 'homey' ),
+            'subtitle' => '',
+            'desc'     => wp_kses(__('Enter the API key provided by Yelp. Get this detail after you signup here <a target="_blank" href="https://www.yelp.com/developers/v3/manage_app">https://www.yelp.com/developers/v3/manage_app</a>', 'homey'), $allowed_html_array),
+        ),
+        array(
+            'id'       => 'homey_experience_yelp_term',
+            'type'     => 'select',
+            'multi'    => true,
+            'title'    => esc_html__( 'Select Term For Experience', 'homey' ),
+            'desc' => esc_html__( "Select the Yelp terms that you want to display", 'homey' ),
+            'options'  => $yelp_categories = array (
+                'active' => 'Active Life',
+                'arts' => 'Arts & Entertainment',
+                'auto' => 'Automotive',
+                'beautysvc' => 'Beauty & Spas',
+                'education' => 'Education',
+                'eventservices' => 'Event Planning & Services',
+                'financialservices' => 'Financial Services',
+                'food' => 'Food',
+                'health' => 'Health & Medical',
+                'homeservices' => 'Home Services ',
+                'hotelstravel' => 'Hotels & Travel',
+                'localflavor' => 'Local Flavor',
+                'localservices' => 'Local Services',
+                'massmedia' => 'Mass Media',
+                'nightlife' => 'Nightlife',
+                'pets' => 'Pets',
+                'professional' => 'Professional Services',
+                'publicservicesgovt' => 'Public Services & Government',
+                'realestate' => 'Real Estate',
+                'religiousorgs' => 'Religious Organizations',
+                'restaurants' => 'Restaurants',
+                'shopping' => 'Shoppi',
+                'transport' => 'Transportation'
+            ),
+            'default' => array('food', 'health', 'education', 'realestate'),
+        ),
+        array(
+            'id'       => 'homey_experience_yelp_limit',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Result Limit', 'homey' ),
+            'desc' => esc_html__( "Enter Yelp results limit. Only numbers for experiences", 'homey' ),
+            'default' => 3
+        ),
+        array(
+            'id'       => 'homey_experience_yelp_dist_unit',
+            'type'     => 'select',
+            'multi'    => false,
+            'title'    => esc_html__( 'Distance Unit for experience', 'homey' ),
+            'desc' => esc_html__( "Select the Yelp distance unit for experience.", 'homey' ),
+            'options'  => array (
+                'miles' => 'Miles',
+                'kilometers' => 'Kilometers'
+            ),
+            'default' => 'miles',
+        )
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Reviews & Rating', 'homey' ),
+    'id'     => 'experience-reviews',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+
+        array(
+            'id'       => 'experience_num_of_review',
+            'type'     => 'text',
+            'title'    => esc_html__( 'Number of Reviews', 'homey' ),
+            'desc' => esc_html__( 'Enter the number of reviews to display per page for experience', 'homey' ),
+            'default'  => 5,
+        )
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Similar Experiences', 'homey' ),
+    'id'     => 'experience-similar-showhide',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+
+        array(
+            'id'       => 'similer_experiences_layout',
+            'type'     => 'select',
+            'title'    => esc_html__( 'Layout', 'homey' ),
+            'desc' => esc_html__( "Select the layout for the similar experiences", 'homey' ),
+            'options'  => array(
+                'list' => 'List View',
+                'grid' => 'Grid View',
+                'card' => 'Card View',
+            ),
+            'default' => 'list'
+        ),
+
+        array(
+            'id'       => 'similer_experiences_count',
+            'type'     => 'select',
+            'title'    => esc_html__( 'Number', 'homey' ),
+            'subtitle' => esc_html__( "Select how many similar Experiences you want to display", 'homey' ),
+            'options'  => array(
+                1 => 1,
+                2 => 2,
+                3 => 3,
+                4 => 4,
+                5 => 5,
+                6 => 6,
+                7 => 7,
+                8 => 8,
+                9 => 9,
+                10 => 10,
+            ),
+            'default' => 4
+        )
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Icons', 'homey' ),
+    'id'     => 'experience-detail-icons',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+
+        array(
+            'id'       => 'experience_detail_icon_type',
+            'type'     => 'select',
+            'title'    => esc_html__( 'Icon Type', 'homey' ),
+            'subtitle' => '',
+            'options'  => array(
+                'fontawesome_icon' => 'FontAwesome',
+                'custom_icon' => 'Custom Icon'
+            ),
+            'default' => 'fontawesome_icon'
+        ),
+
+        array(
+            'id'        => 'experience_de_type_icon',
+            'type'      => 'text',
+            'title'     => esc_html__( 'Type', 'homey' ),
+            'default'   => 'fa fa-home',
+            'desc'      => 'Default: fa fa-home',
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'fontawesome_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_acco_icon',
+            'type'      => 'text',
+            'title'     => esc_html__( 'Accomodation', 'homey' ),
+            'default'   => 'fa fa-user',
+            'desc'      => 'Default: fa fa-user',
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'fontawesome_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_acco_sec_icon',
+            'type'      => 'text',
+            'title'     => esc_html__( 'Accomodation Section', 'homey' ),
+            'default'   => 'fa fa-bed',
+            'desc'      => 'Default: fa fa-bed',
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'fontawesome_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_calendar_icon',
+            'type'      => 'text',
+            'title'     => esc_html__( 'Hours', 'homey' ),
+            'default'   => 'fa fa-calendar',
+            'desc'      => 'Default: fa fa-calendar',
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'fontawesome_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_language_icon',
+            'type'      => 'text',
+            'title'     => esc_html__( 'Language', 'homey' ),
+            'default'   => 'fa fa-globe',
+            'desc'      => 'Default: fa fa-globe',
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'fontawesome_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_cus_type_icon',
+            'url'       => true,
+            'type'      => 'media',
+            'title'     => esc_html__( 'Experience Type', 'homey' ),
+            'readonly' => false,
+            'default'   => array( 'url' => '' ),
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'custom_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_cus_acco_icon',
+            'url'       => true,
+            'type'      => 'media',
+            'title'     => esc_html__( 'Accomodation', 'homey' ),
+            'readonly' => false,
+            'default'   => array( 'url' => '' ),
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'custom_icon')
+        ),
+
+        array(
+            'id'        => 'experience_de_cus_acco_sec_icon',
+            'url'       => true,
+            'type'      => 'media',
+            'title'     => esc_html__( 'Accomodation Section', 'homey' ),
+            'readonly' => false,
+            'default'   => array( 'url' => '' ),
+            'subtitle'  => '',
+            'required'  => array('detail_icon_type', '=', 'custom_icon')
+        )
+    )
+));
+
+/* **********************************************************************
+ * experience Print
+ * **********************************************************************/
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Print Experience', 'homey' ),
+    'id'     => 'experience-print',
+    'desc'   => '',
+    'icon'   => 'el-icon-print el-icon-small',
+    'fields'        => array(
+        array(
+            'id'        => 'experience_print_page_logo',
+            'url'       => true,
+            'type'      => 'media',
+            'title'     => esc_html__( 'Print experience Logo', 'homey' ),
+            'readonly' => false,
+            'default'   => array( 'url' => get_template_directory_uri() .'/images/logo.png' ),
+            'desc'  => esc_html__( 'Upload your custom site logo for the print experience', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_tagline',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Tagline', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_rating',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Rating', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_qr_code',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'QR Code', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_host',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Host Info', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_description',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Description', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_details',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Expereince Details', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_pricing',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Pricing', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_accomodation',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Accomodation', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_features',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Features', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_rules',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Rules', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_availability',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Availability', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 1,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_print_gallery',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Gallery Images', 'homey' ),
+            'desc'     => '',
+            'subtitle' => '',
+            'default'  => 0,
+            'on'       => esc_html__( 'Yes', 'homey' ),
+            'off'      => esc_html__( 'No', 'homey' ),
+        ),
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Experiences', 'homey' ),
+    'id'     => 'experiences-homey',
+    'desc'   => '',
+    'icon'   => 'el-icon-cog el-icon-small',
+    'fields'        => array(
+
+    ),
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Experiences Page', 'homey' ),
+    'id'     => 'experiences-page',
+    'desc'   => '',
+    'subsection' => true,
+    'fields'        => array(
+        array(
+            'id'       => 'experience_pagination_type',
+            'type'     => 'select',
+            'title'    => esc_html__('Pagination', 'homey'),
+            'desc' => esc_html__('Select the pagination type for the experince pages', 'homey'),
+            'desc'     => '',
+            'options'  => array(
+                'number'   => esc_html__( 'Number', 'homey' ),
+                'loadmore'   => esc_html__( 'Load More', 'homey' ),
+            ),
+            'default'  => 'number',
+        )
+    ),
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Sticky Map Listings', 'homey' ),
+    'id'     => 'experience-sticky-mao',
+    'desc'   => esc_html__( 'Experience page with sticky map settings', 'homey' ),
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_sticky_map_layout',
+            'type'     => 'select',
+            'title'    => __('Experiences Layout', 'homey'),
+            'desc' => __('Select the experiences layout', 'homey'),
+            'options'  => array(
+                'list' => 'List View',
+                'grid' => 'Grid View',
+                'card' => 'Card View',
+            ),
+            'default' => 'list'
+        ),
+        /*array(
+            'id'       => 'experience_sticky_map_pagi_type',
+            'type'     => 'select',
+            'title'    => esc_html__('Pagination', 'homey'),
+            'subtitle' => esc_html__('Choose pagination type', 'homey'),
+            'desc'     => '',
+            'options'  => array(
+                'number'   => esc_html__( 'Number', 'homey' ),
+                'loadmore'   => esc_html__( 'Load More', 'homey' ),
+            ),
+            'default'  => 'loadmore',
+        ),*/
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Half Map Experiences', 'homey' ),
+    'id'     => 'experience_halfmap-listings',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_halfmap_posts_layout',
+            'type'     => 'select',
+            'title'    => esc_html__('Layout', 'homey'),
+            'desc' => esc_html__('Select the experiences layout for the half map page.', 'homey'),
+            'options'  => array(
+                'list' => 'List View',
+                'grid' => 'Grid View',
+                'card' => 'Card View',
+            ),
+            'default' => 'list'
+        ),
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Show/Hide Data', 'homey' ),
+    'id'     => 'experience-cgl-showhide',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+        array(
+            'id'       => 'experience_cgl_meta',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Data', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable experience data on grid and list view', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_hs_language',
+            'type'     => 'switch',
+            'title'    => esc_html__('Language', 'homey'),
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable language on grid and list view for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_cgl_guests',
+            'type'     => 'switch',
+            'title'    => $homey_local['experience_guests_label'],
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable guests on grid and list view for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_cgl_types',
+            'type'     => 'switch',
+            'title'    => $homey_local['experience_type'],
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable experience type on grid and list view', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_enable_host',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Host Name', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable the host name on grid and list view for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_rating',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Rating', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable the rating information on grid and list view for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        ),
+        array(
+            'id'       => 'experience_compare_favorite',
+            'type'     => 'switch',
+            'title'    => esc_html__( 'Compare & Favorite experience', 'homey' ),
+            'desc'     => '',
+            'subtitle' => esc_html__( 'Enable/Disable the photo count information on grid and list view for experience', 'homey' ),
+            'default'  => 1,
+            'on'       => esc_html__( 'Enabled', 'homey' ),
+            'off'      => esc_html__( 'Disabled', 'homey' ),
+        )
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Icons', 'homey' ),
+    'id'     => 'experiences-icons',
+    'desc'   => '',
+    'subsection' => true,
+    'fields' => array(
+
+//        array(
+//            'id'        => 'experience_lgc_dummy_icon',
+//            'type'      => 'text',
+//            'title'     => esc_html__( 'Dummy', 'homey' ),
+//            'default'   => 'fa fa-bed',
+//            'desc'      => 'Default: fa fa-dummy',
+//            'subtitle'  => '',
+//        )
+    )
+));
+
+Redux::setSection( $opt_name, array(
+    'title'  => esc_html__( 'Taxonomies Layout', 'homey' ),
+    'id'     => 'experience_taxonomies-pages',
+    'desc'   => esc_html__( 'Select taxonomies ( type, room type, city, state, country, area etc ) pages layout', 'homey' ),
+    'subsection' => false,
+    'fields' => array(
+        array(
+            'id'       => 'experience_taxonomy_layout',
+            'type'     => 'image_select',
+            'title'    => __('Page Layout', 'homey'),
+            'subtitle' => '',
+            'options'  => array(
+                'no-sidebar' => array(
+                    'alt'   => '',
+                    'img'   => ReduxFramework::$_url.'assets/img/1c.png'
+                ),
+                'left-sidebar' => array(
+                    'alt'   => '',
+                    'img'   => ReduxFramework::$_url.'assets/img/2cl.png'
+                ),
+                'right-sidebar' => array(
+                    'alt'   => '',
+                    'img'  => ReduxFramework::$_url.'assets/img/2cr.png'
+                )
+            ),
+            'default' => 'left-sidebar'
+        ),
+        array(
+            'id'       => 'experience_taxonomy_posts_layout',
+            'type'     => 'select',
+            'title'    => __('Experiences Layout', 'homey'),
+            'desc' => __('Select the experience layout for the taxonomy pages', 'homey'),
+            'options'  => array(
+                'list' => 'List View',
+                'grid' => 'Grid View',
+                'card' => 'Card View',
+            ),
+            'default' => 'list'
+        ),
+
+        array(
+            'id'       => 'experience_taxonomy_default_order',
+            'type'     => 'select',
+            'title'    => __('Default Order', 'homey'),
+            'desc' => __('Select the taxonomy page default display order for experience.', 'homey'),
+            'options'  => array(
+                'd_date' => esc_html__( 'Date New to Old for experience', 'homey' ),
+                'a_date' => esc_html__( 'Date Old to New for experience', 'homey' ),
+                'd_price' => esc_html__( 'Price (High to Low) for experience', 'homey' ),
+                'a_price' => esc_html__( 'Price (Low to High) for experience', 'homey' ),
+                'd_rating' => esc_html__( 'Rating for experience', 'homey' ),
+                'featured_top' => esc_html__( 'Show Featured experiences on Top', 'homey' ),
+            ),
+            'default' => 'd_date'
+        ),
+
+        array(
+            'id'       => 'experience_taxonomy_num_posts',
+            'type'     => 'text',
+            'title'    => esc_html__('Number of experiences to display', 'homey'),
+            'subtitle' => '',
+            'desc'     => '',
+            'default'  => '9',
+            'validate' => 'numeric'
+        ),
+    )
+));
+
+/* **********************************************************************
  * Google Map Settings
  * **********************************************************************/
 Redux::setSection( $opt_name, array(
@@ -7370,6 +10542,13 @@ Redux::setSection( $opt_name, array(
             'style'  => 'info',
             'title'  => wp_kses(__( '<span class="font24">Social Link 1</span>', 'homey' ), $allowed_html_array),
             'desc'   => ''
+        ),
+        array(
+            'id'       => 'no_reply_email_address',
+            'type'     => 'text',
+            'title'    => esc_html__('No Reply Email Address', 'homey'),
+            'desc' => esc_html__('Enter the no reply email address', 'homey'),
+            'default'  => '',
         ),
         array(
             'id'       => 'social_1_icon',

@@ -2,7 +2,10 @@
 global $homey_prefix, $homey_local, $listing_data, $homey_booking_type;
 $extra_services = get_post_meta($listing_data->ID, $homey_prefix.'extra_prices', true);
 
-if($homey_booking_type == 'per_hour') {
+if($homey_booking_type == 'per_day_date') {
+    $ex_per_night = esc_html__('Per Day', 'homey');
+    $ex_per_night_per_guest = esc_html__('Per Day Per Guest', 'homey');
+} elseif($homey_booking_type == 'per_hour') {
     $ex_per_night = esc_html__('Per Hour', 'homey');
     $ex_per_night_per_guest = esc_html__('Per Hour Per Guest', 'homey');
 } else if($homey_booking_type == 'per_week') {

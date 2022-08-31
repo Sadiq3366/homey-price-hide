@@ -11,8 +11,8 @@ $check_out_unix = strtotime($check_out);
 
 $booking_hide_fields = homey_option('booking_hide_fields');
 
-$check_in_date = date("d/m/Y", $check_in_unix);
-$check_out_date = date("d/m/Y", $check_out_unix);
+$check_in_date = date(get_homey_to_std_date_format(), $check_in_unix);
+$check_out_date = date(get_homey_to_std_date_format(), $check_out_unix);
 
 $room_type = homey_taxonomy_simple_by_ID('room_type', $listing_id);
 $listing_type = homey_taxonomy_simple_by_ID('listing_type', $listing_id);
@@ -95,6 +95,8 @@ $total_rating = get_post_meta( $listing_id, 'listing_total_rating', true );
                 get_template_part('single-listing/booking/payment-list-collapse-weekly'); 
             } else if( $booking_type == 'per_month' ) {
                 get_template_part('single-listing/booking/payment-list-collapse-monthly'); 
+            } else if( $booking_type == 'per_day_date' ) {
+                get_template_part('single-listing/booking/payment-list-collapse-daily');
             } else {
                 get_template_part('single-listing/booking/payment-list-collapse'); 
             }?>

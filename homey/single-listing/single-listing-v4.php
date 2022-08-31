@@ -110,8 +110,13 @@ $homey_booking_type = homey_booking_type();
             </div>
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 homey_sticky">
                 <div class="sidebar right-sidebar">
-                <?php 
-                if($what_to_show == 'booking_form') {
+                <?php
+                if( homey_affiliate_booking_link() ) { ?>
+
+                    <a href="<?php echo homey_affiliate_booking_link(); ?>" target="_blank" class="btn btn-full-width btn-primary"><?php echo esc_html__('Book Now', 'homey'); ?></a>
+
+                    <?php
+                }elseif($what_to_show == 'booking_form') {
                     if( $homey_booking_type == 'per_hour') {
                         get_template_part('single-listing/booking/sidebar-booking-hourly');
                     } else {

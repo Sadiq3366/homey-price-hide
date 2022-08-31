@@ -16,6 +16,8 @@ $deposit = get_post_meta(get_the_ID(), 'reservation_upfront', true);
 $total_amount = get_post_meta(get_the_ID(), 'reservation_total', true);
 $reservation_status = get_post_meta(get_the_ID(), 'reservation_status', true);
 
+$hide_labels = homey_option('show_hide_labels');
+
 if(homey_is_renter()) {
     $reservation_page_link = homey_get_template_link('template/dashboard-reservations.php');
 } else {
@@ -41,6 +43,7 @@ if($no_upfront == 'no_upfront') {
 if( empty($price) ) {
     $price = $total_amount;
 }
+$price = $total_amount;
 
 $is_read = $status_label = '';
 
@@ -70,6 +73,7 @@ if ( is_page_template( array('template/dashboard.php') ) ) {
     </td>
     <td data-label="<?php echo esc_attr($homey_local['id_label']); ?>">
         <?php echo '#'.get_the_ID(); ?>
+        <?php $wc_order_id = get_wc_order_id(get_the_ID()); if($wc_order_id > 0) echo 'wc#'.$wc_order_id; ?>
     </td>
     <td data-label="<?php echo esc_attr($homey_local['status_label']); ?>">
         <?php homey_reservation_label($reservation_status, get_the_ID()); ?>
@@ -91,17 +95,20 @@ if ( is_page_template( array('template/dashboard.php') ) ) {
     <td data-label="<?php echo esc_attr($homey_local['check_out']); ?>">
         <?php echo homey_format_date_simple($check_out); ?>
     </td>
-    <?php if($booking_hide_fields['guests'] != 1) {?>
+    <?php if($booking_hide_fields['guests'] != 1 && 0 !=  homey_option('cgl_guests')) {?>
     <td data-label="<?php echo homey_option('glc_guests_label');?>">
         <?php echo esc_attr($reservation_guests); ?>
         <!-- 3 Adults<br>
         2 Children -->
     </td>
     <?php } ?>
-    
+
+    <?php if($hide_labels['sn_pets_allowed'] != 1) { ?>
     <td data-label="<?php echo esc_attr($homey_local['pets_label']);?>">
         <?php echo esc_attr($pets_allow); ?>
     </td>
+    <?php } ?>
+
     <td data-label="<?php echo esc_attr($homey_local['subtotal_label']); ?>">
         <strong><?php echo homey_formatted_price($price); ?></strong>
     </td>
@@ -110,15 +117,15 @@ if ( is_page_template( array('template/dashboard.php') ) ) {
             <?php 
             if( homey_listing_guest(get_the_ID()) ) {
                 if($reservation_status == 'available') {
-                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-success">'.$homey_local['res_paynow_label'].'</a>';
+                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-success">'.esc_html__($homey_local['res_paynow_label'], 'homey').'</a>';
                 } else {
-                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-secondary">'.$homey_local['res_details_label'].'</a>';
+                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-secondary">'.esc_html__($homey_local['res_details_label'], 'homey').'</a>';
                 }
             } else {
                 if($reservation_status == 'under_review') {
-                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-success">'.$homey_local['res_confirm_label'].'</a>';
+                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-success">'.esc_html__($homey_local['res_confirm_label'], 'homey').'</a>';
                 } else {
-                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-secondary">'.$homey_local['res_details_label'].'</a>';
+                    echo '<a href="'.esc_url($detail_link).'" class="btn btn-secondary">'.esc_html__($homey_local['res_details_label'], 'homey').'</a>';
                 }
             }
             ?>

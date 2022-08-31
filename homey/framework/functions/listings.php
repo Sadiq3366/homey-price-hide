@@ -50,7 +50,7 @@ if( !function_exists('homey_listing_data_by_id')) {
 
 if( !function_exists('homey_listing_permalink')) {
     function homey_listing_permalink($listing_id = null) {
-        
+
         $link = esc_url(get_permalink());
 
         $homey_booking_type = homey_booking_type();
@@ -114,7 +114,8 @@ if( !function_exists('homey_get_dates_for_booking')) {
         $dates_array['guest'] = isset($_GET['guest']) ? $_GET['guest'] : '';
         $dates_array['start'] = isset($_GET['start']) ? $_GET['start'] : '';
         $dates_array['end'] = isset($_GET['end']) ? $_GET['end'] : '';
-        
+        $dates_array['new_reser_request_user_email'] = isset($_GET['new_reser_request_user_email']) ? $_GET['new_reser_request_user_email'] : '';
+
         return $dates_array;
     }
 }
@@ -351,6 +352,7 @@ if( !function_exists('homey_stripe_payment_for_featured_old') ) {
         ';
     }
 }
+
 /* --------------------------------------------------------------------------
 * Listings load more
 * --------------------------------------------------------------------------- */
@@ -927,10 +929,6 @@ if( !function_exists('listing_submission_filter')) {
             $new_listing['post_author'] = $userID;
         }
 
-        if(isset($_POST['listing_owner']) && !empty($_POST['listing_owner']) ) {
-            $new_listing['post_author'] = $_POST['listing_owner'];
-        }
-
         $submission_action = sanitize_text_field($_POST['action']);
         $listing_id = 0;
 
@@ -941,7 +939,10 @@ if( !function_exists('listing_submission_filter')) {
             $submission_action = 'update_listing';
         }
 
-        if( $submission_action == 'homey_add_listing' ) {
+        $first_owner_userID = 0;
+        if( $submission_action == 'homey_add_listing' || isset($_GET['duplication']) ) {
+            $first_owner_userID = $current_user->ID;
+
             if( ($listings_admin_approved != 0 && !homey_is_admin())) {
                 $new_listing['post_status'] = 'pending';
             } else {
@@ -956,6 +957,14 @@ if( !function_exists('listing_submission_filter')) {
             do_action( 'homey_before_listing_submit', $new_listing);
 
             $listing_id = wp_insert_post( $new_listing );
+
+            //mandatory post metas that should not be null
+            update_post_meta( $listing_id, 'homey_featured', 0 );
+
+            if(isset($_GET['dup_id'])){
+                //duplication of custom pricing
+                homey_addCustomPeriodDuplicated($listing_id, $_GET['dup_id']);
+            }
         } else if( $submission_action == 'update_listing' ) {
             if(!empty($draft_listing_id)) {
                 $new_listing['ID'] = $draft_listing_id;
@@ -964,8 +973,11 @@ if( !function_exists('listing_submission_filter')) {
             }
 
             $check_is_approved = get_post_meta( $new_listing['ID'], 'homey_firsttime_is_admin_approved', true );
+//            that is removed because was not standard but one clients request.
+//             $check_is_approved = 1;
 
             if(($check_is_approved == 0 || $edit_listings_admin_approved != 0) && !homey_is_admin()) {
+//             if(($edit_listings_admin_approved != 0) && !homey_is_admin()) {
                 $new_listing['post_status'] = 'pending';
             } else {
                 $new_listing['post_status'] = 'publish';
@@ -983,7 +995,6 @@ if( !function_exists('listing_submission_filter')) {
             $listing_id = wp_update_post( $new_listing );
 
         }
-        
 
         if( $listing_id > 0 ) {
  
@@ -1014,23 +1025,34 @@ if( !function_exists('listing_submission_filter')) {
                 update_post_meta($listing_id, 'listing_total_rating', '0');
             }
 
+            // First owner field
+            if( $first_owner_userID > 0 ) {
+                update_post_meta( $listing_id, $prefix.'first_owner_user_id', sanitize_text_field($first_owner_userID) );
+            }
+
             // Booking type
             if( isset( $_POST['booking_type'] ) ) {
                 update_post_meta( $listing_id, $prefix.'booking_type', sanitize_text_field( $_POST['booking_type'] ) );
             }
 
+            // condition yes/no
+
+            if( isset( $_POST['yes_no'] ) && $_POST['yes_no']=='no' ) {
+                update_post_meta( $listing_id, $prefix.'yes_no',sanitize_text_field( $_POST['yes_no'] ) );
+            }
+
+            
             // Instance
+            update_post_meta( $listing_id, $prefix.'instant_booking', 0 );
+
             if( isset( $_POST['instant_booking'] ) ) { 
                 $instance_bk = $_POST['instant_booking'];
                 if($instance_bk == 'on') {
                     $instance_bk = 1;
                 }
-                update_post_meta( $listing_id, $prefix.'instant_booking', sanitize_text_field( $instance_bk ) );
-            } else {
-                update_post_meta( $listing_id, $prefix.'instant_booking', 0 );
-            }
 
-            
+                update_post_meta( $listing_id, $prefix.'instant_booking', sanitize_text_field( $instance_bk ) );
+            }
 
             // Bedrooms
             if( isset( $_POST['listing_bedrooms'] ) ) {
@@ -1064,6 +1086,19 @@ if( !function_exists('listing_submission_filter')) {
                 update_post_meta( $listing_id, $prefix.'affiliate_booking_link', sanitize_text_field( $_POST['affiliate_booking_link'] ) );
             }
 
+            // Day Date Price
+            if( isset( $_POST['day_date_price'] ) ) {
+                update_post_meta( $listing_id, $prefix.'day_date_price', sanitize_text_field( $_POST['day_date_price'] ) );
+
+                // because of sorting issue
+                update_post_meta( $listing_id, $prefix.'night_price', sanitize_text_field( $_POST['day_date_price'] ) );
+            }
+
+            // Day Date Weekend Price
+            if( isset( $_POST['day_date_weekends_price'] ) ) {
+                update_post_meta( $listing_id, $prefix.'day_date_weekends_price', sanitize_text_field( $_POST['day_date_weekends_price'] ) );
+            }
+
             // Night Price
             if( isset( $_POST['night_price'] ) ) {
                 update_post_meta( $listing_id, $prefix.'night_price', sanitize_text_field( $_POST['night_price'] ) );
@@ -1077,6 +1112,9 @@ if( !function_exists('listing_submission_filter')) {
             // Hourly Price
             if( isset( $_POST['hour_price'] ) ) {
                 update_post_meta( $listing_id, $prefix.'hour_price', sanitize_text_field( $_POST['hour_price'] ) );
+
+                // because of sorting issue
+                update_post_meta( $listing_id, $prefix.'night_price', sanitize_text_field( $_POST['hour_price'] ) );
             }
 
             // After Price label
@@ -1337,7 +1375,7 @@ if( !function_exists('listing_submission_filter')) {
                 $state_id = wp_set_object_terms( $listing_id, $listing_state, 'listing_state' );
 
                 $homey_meta = array();
-                $homey_meta['parent_country'] = isset( $_POST['country'] ) ? strtolower($_POST['country']) : '';
+                $homey_meta['parent_country'] = isset( $_POST['country'] ) ? $_POST['country'] : '';
                 if( !empty( $state_id) ) {
                     update_option('_homey_listing_state_' . $state_id[0], $homey_meta);
                 }
@@ -1349,7 +1387,7 @@ if( !function_exists('listing_submission_filter')) {
                 $city_id = wp_set_object_terms( $listing_id, $listing_city, 'listing_city' );
 
                 $homey_meta = array();
-                $homey_meta['parent_state'] = isset( $_POST['administrative_area_level_1'] ) ? strtolower($_POST['administrative_area_level_1']) : '';
+                $homey_meta['parent_state'] = isset( $_POST['administrative_area_level_1'] ) ? $_POST['administrative_area_level_1'] : '';
                 if( !empty( $city_id) ) {
                     update_option('_homey_listing_city_' . $city_id[0], $homey_meta);
                 }
@@ -1361,7 +1399,7 @@ if( !function_exists('listing_submission_filter')) {
                 $area_id = wp_set_object_terms( $listing_id, $listing_area, 'listing_area' );
 
                 $homey_meta = array();
-                $homey_meta['parent_city'] = isset( $_POST['locality'] ) ? strtolower($_POST['locality']) : '';
+                $homey_meta['parent_city'] = isset( $_POST['locality'] ) ? $_POST['locality'] : '';
                 if( !empty( $area_id) ) {
                     update_option('_homey_listing_area_' . $area_id[0], $homey_meta);
                 }
@@ -1436,7 +1474,7 @@ if( !function_exists('listing_submission_filter')) {
             }
 
             // Listing Images
-            if( isset( $_POST['listing_image_ids'] ) ) {
+            if( isset( $_POST['listing_image_ids'] ) && !isset($_GET['duplication'])) {
                 if (!empty($_POST['listing_image_ids']) && is_array($_POST['listing_image_ids'])) {
                     $listing_image_ids = array();
                     foreach ($_POST['listing_image_ids'] as $img_id ) {
@@ -1456,111 +1494,12 @@ if( !function_exists('listing_submission_filter')) {
                 }
             }
 
-            // Listing Images form folder
-            if (isset($_POST['sa_folder_name'])) {
-
-                add_filter('upload_dir', 'sa_upload_dir_name');
-
-                $upload_dir = wp_upload_dir();
-                $base_to_upload = 'wp-content/uploads/';
-                $bulk_upload_to_folder = 'sa_listings';
-                $bulk_upload_from_folder = 'listing-bulk-upload/';
-                $bulk_images_folder = $_POST['sa_folder_name'];
-
-                $folder_to_find = $base_to_upload . $bulk_upload_from_folder . $bulk_images_folder;
-                $folder_to_upload = $base_to_upload . $bulk_upload_to_folder; // . $bulk_images_folder;
-
-                $files = list_files($folder_to_find);
-
-                $ajax_response_img_ids = [];
-
-                foreach ($files as $key => $file) {
-                    if (is_file($file)) {
-                        $hostName = $_SERVER['HTTP_HOST'];
-                        $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https' ? 'https' : 'http';
-                        $my_site_url = $protocol . '://' . $hostName;
-                        if (isset($file)) {
-                            $file_name          =  explode('/', $file);
-                            $file_name          =  end($file_name);
-                            $file_type          =  explode('.', $file);
-                            $file_type          =  end($file_type);
-                            //$file_to_attach     =  end(explode('wp-content/uploads/' . $bulk_upload_from_folder, $file));
-
-                            //echo $folder_to_upload . '/' . $listing_id . '/' . $file_name;
-                            // exit;
-
-                            if (!file_exists($folder_to_upload . '/' . $listing_id)) {
-                                mkdir($folder_to_upload . '/' . $listing_id);
-                            }
-
-                            rename($file, $folder_to_upload . '/' . $listing_id . '/' . $file_name);
-
-                            $file = $folder_to_upload . '/' . $listing_id . '/' . $file_name;
-                            //echo $file = 'wp-content/uploads/'. $bulk_upload_to_folder . $file_to_attach;
-
-                            // Prepare an array of post data for the attachment.
-                            $attachment_details = array(
-                                'guid'           => $my_site_url . '/' . $file,
-                                'post_mime_type' => 'image/' . $file_type,
-                                'post_title'     => preg_replace('/\.[^.]+$/', '', basename($file_name)),
-                                'post_content'   => '',
-                                'post_status'    => 'inherit'
-                            );
-                            if (!function_exists('wp_crop_image')) {
-                                include(ABSPATH . 'wp-admin/includes/image.php');
-                            }
-
-                            $file_path = $file;
-
-                            $attach_id      =   wp_insert_attachment($attachment_details, $file_path);
-                            $attach_data    =   wp_generate_attachment_metadata($attach_id, $file_path);
-                            wp_update_attachment_metadata($attach_id, $attach_data);
-
-
-                            $thumbnail_url = wp_get_attachment_image_src($attach_id, 'thumbnail');
-                            $listing_thumb = wp_get_attachment_image_src($attach_id, 'homey-listing-thumb');
-                            $feat_image_url = wp_get_attachment_url($attach_id);
-
-                            $ajax_response_img_ids[$attach_id] = array(
-                                'success'   => true,
-                                'url' => $thumbnail_url[0],
-                                'attachment_id'    => $attach_id,
-                                'full_image'    => $feat_image_url,
-                                'thumb'    => $listing_thumb[0],
-                            );
-                        }
-                    }
-                }
-
-                remove_filter('upload_dir', 'sa_upload_dir_name');
-
-
-
-                if (!empty($ajax_response_img_ids) && is_array($ajax_response_img_ids)) {
-                    $listing_image_ids = array();
-                    foreach ($ajax_response_img_ids as $img_id) {
-                        $listing_image_ids[] = intval($img_id['attachment_id']);
-                        add_post_meta($listing_id, 'homey_listing_images', $img_id['attachment_id']);
-                    }
-
-                    if (isset($_POST['featured_image_id'])) {
-                        $featured_image_id = intval($_POST['featured_image_id']);
-                        if (in_array($featured_image_id, $listing_image_ids)) {
-                            update_post_meta($listing_id, '_thumbnail_id', $featured_image_id);
-                        }
-                    } elseif (!empty($listing_image_ids)) {
-                        update_post_meta($listing_id, '_thumbnail_id', $listing_image_ids[0]);
-                    }
-                }
-            }
-            // END Listing Images form folder
-
             apply_filters('listing_submission_filter_filter', $listing_id);
 
-            if( $submission_action == 'homey_add_listing' ) {
-                $post_status_text_user = esc_html__("Your listing status is published", 'homey');
-                $post_status_text_admin = esc_html__("This listing status is published", 'homey');
+            $post_status_text_user = esc_html__("Your listing status is published", 'homey');
+            $post_status_text_admin = esc_html__("This listing status is published", 'homey');
 
+            if( $submission_action == 'homey_add_listing' ) {
                 if( ($listings_admin_approved != 0 && !homey_is_admin())) {
                     $post_status_text_user = esc_html__("Your listing status is pending for admin approval", 'homey');
                     $post_status_text_admin = esc_html__("This listing status is in need to be approved from you.", 'homey');
@@ -1575,8 +1514,10 @@ if( !function_exists('listing_submission_filter')) {
                 /*
                  * Send email
                  * */
-
-                homey_email_composer( $user_email, 'new_submission_listing', $args );
+                if( ($listings_admin_approved != 0 && !homey_is_admin())) {
+                    homey_email_composer( $user_email, 'new_submission_listing', $args );
+                }
+                
                 homey_email_composer( $admin_email, 'admin_new_submission_listing', $args );
 
                 do_action( 'homey_after_listing_submit', $listing_id );
@@ -1600,30 +1541,15 @@ if( !function_exists('listing_submission_filter')) {
                 /*
                  * Send email
                  * */
+                if($edit_listings_admin_approved != 0 && !homey_is_admin()) {
+                    homey_email_composer( $user_email, 'update_submission_listing', $args );
+                }
 
-                homey_email_composer( $user_email, 'update_submission_listing', $args );
                 homey_email_composer( $admin_email, 'admin_update_submission_listing', $args );
 
 
                 do_action( 'houmey_after_listing_update', $listing_id );
             }
-
-            //-----ical
-            if( isset($_POST['is_listing_bulk_upload']) && !empty($_POST['is_listing_bulk_upload']) )
-            {
-                if( isset($_POST['ical_feed_name']) && !empty($_POST['ical_feed_name']) )
-                {
-                    $_POST['listing_id'] = $listing_id;
-                    $names = explode(',', $_POST['ical_feed_name']);
-                    $_POST['ical_feed_name'] = $names;
-                    $urls = explode(',', $_POST['ical_feed_url']);
-                    $_POST['ical_feed_url'] = $urls;
-                    $_POST['ical_is_bulk'] = 1;
-
-                    homey_add_ical_feeds();
-                }
-            }
-            //---------
 
             return $listing_id;
         } 
@@ -1986,7 +1912,7 @@ if( !function_exists('save_listing_as_draft') ) {
                 $state_id = wp_set_object_terms( $listing_id, $listing_state, 'listing_state' );
 
                 $homey_meta = array();
-                $homey_meta['parent_country'] = isset( $_POST['country'] ) ? strtolower($_POST['country']) : '';
+                $homey_meta['parent_country'] = isset( $_POST['country'] ) ? $_POST['country'] : '';
                 if( !empty( $state_id) ) {
                     update_option('_homey_listing_state_' . $state_id[0], $homey_meta);
                 }
@@ -1998,7 +1924,7 @@ if( !function_exists('save_listing_as_draft') ) {
                 $city_id = wp_set_object_terms( $listing_id, $listing_city, 'listing_city' );
 
                 $homey_meta = array();
-                $homey_meta['parent_state'] = isset( $_POST['administrative_area_level_1'] ) ? strtolower($_POST['administrative_area_level_1']) : '';
+                $homey_meta['parent_state'] = isset( $_POST['administrative_area_level_1'] ) ? $_POST['administrative_area_level_1'] : '';
                 if( !empty( $city_id) ) {
                     update_option('_homey_listing_city_' . $city_id[0], $homey_meta);
                 }
@@ -2010,7 +1936,7 @@ if( !function_exists('save_listing_as_draft') ) {
                 $area_id = wp_set_object_terms( $listing_id, $listing_area, 'listing_area' );
 
                 $homey_meta = array();
-                $homey_meta['parent_city'] = isset( $_POST['locality'] ) ? strtolower($_POST['locality']) : '';
+                $homey_meta['parent_city'] = isset( $_POST['locality'] ) ? $_POST['locality'] : '';
                 if( !empty( $area_id) ) {
                     update_option('_homey_listing_area_' . $area_id[0], $homey_meta);
                 }
@@ -2084,7 +2010,7 @@ if( !function_exists('save_listing_as_draft') ) {
             }
 
             // Listing Images
-            if( isset( $_POST['listing_image_ids'] ) ) {
+            if( isset( $_POST['listing_image_ids'] ) && !isset($_GET['duplication'])) {
                 if (!empty($_POST['listing_image_ids']) && is_array($_POST['listing_image_ids'])) {
                     $listing_image_ids = array();
                     foreach ($_POST['listing_image_ids'] as $img_id ) {
@@ -2154,7 +2080,68 @@ if(!function_exists('homey_update_lat_long')) {
     }
 }
 
+/* --------------------------------------------------------------------------
+* Make listing featured for membership
+* --------------------------------------------------------------------------- */
+add_action( 'wp_ajax_homey_membership_featured_listing', 'homey_membership_featured_listing' );
+if( ! function_exists( 'homey_membership_featured_listing' ) ) {
+    function homey_membership_featured_listing() {
+        $nonce = $_REQUEST['security'];
+        if ( ! wp_verify_nonce( $nonce, 'featured_listing_nonce' ) ) {
+            $ajax_response = array( 'success' => false , 'reason' => esc_html__( 'Security check failed!', 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        }
 
+        if ( !isset( $_REQUEST['listing_id'] ) ) {
+            $ajax_response = array( 'success' => false , 'reason' => esc_html__( 'No listing ID found', 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        }
+
+        $listing_id = $_REQUEST['listing_id'];
+        $post_author = get_post_field( 'post_author', $listing_id );
+
+        global $current_user;
+        wp_get_current_user();
+        $userID      =   $current_user->ID;
+        $date = date( 'Y-m-d G:i:s', current_time( 'timestamp', 0 ));
+
+        $subscription_info = get_active_membership_plan();
+        $membership_package_meta = isset($subscription_info['subscriptionObj']->ID) ?  get_post_meta($subscription_info['subscriptionObj']->ID): array();
+
+        $total_available_featured_listings = isset($membership_package_meta['hm_settings_featured_listings'][0]) ? $membership_package_meta['hm_settings_featured_listings'][0] : 0;
+
+        $total_used_featured_listings = homey_featured_listing_count($userID);
+
+        if( ! homey_check_membershop_status() ) {
+            $ajax_response = array( 'success' => false , 'reason' => esc_html__( "You do not have any package or your package expired.", 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        }
+
+        if( $total_available_featured_listings ==  $total_used_featured_listings ) {
+          $ajax_response = array( 'success' => false , 'reason' => esc_html__( 'You have used all your featured listings.', 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        }
+
+        if ( ($post_author == $userID) || homey_is_admin() ) {
+            
+            update_post_meta( $listing_id, 'homey_featured', 1 );
+            update_post_meta( $listing_id, 'homey_featured_datetime', $date );
+
+            $ajax_response = array( 'success' => true , 'reason' => esc_html__( 'listing Deleted', 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        } else {
+            $ajax_response = array( 'success' => false , 'reason' => esc_html__( 'Permission denied', 'homey' ) );
+            echo json_encode( $ajax_response );
+            die;
+        }
+
+    }
+}
 
 /* --------------------------------------------------------------------------
 * Listing delete ajax
@@ -2621,7 +2608,7 @@ endif;
 /*  Homey Invoice
 /*-----------------------------------------------------------------------------------*/
 if( !function_exists('homey_generate_invoice') ):
-    function homey_generate_invoice( $billingFor, $billionType, $list_pack_resv_ID, $invoiceDate, $userID, $featured, $upgrade, $paypalTaxID, $paymentMethod ) {
+    function homey_generate_invoice( $billingFor, $billionType, $list_pack_resv_ID, $invoiceDate, $userID, $featured, $upgrade, $paypalTaxID, $paymentMethod, $amount_paid=0 ) {
         $total_price = 0;
         $listing_owner = '';
         $local = homey_get_localization();
@@ -2656,7 +2643,7 @@ if( !function_exists('homey_generate_invoice') ):
             $total_price = $price_featured_submission;
             
         } elseif($billingFor == 'package') {
-
+            $total_price = $amount_paid;
         }
 
 
@@ -2688,6 +2675,7 @@ if( !function_exists('homey_generate_invoice') ):
         update_post_meta( $inserted_post_id, 'homey_invoice_item_id', $list_pack_resv_ID );
 
         update_post_meta( $inserted_post_id, 'homey_invoice_price', $total_price );
+        update_post_meta( $inserted_post_id, 'invoice_item_price', $total_price );
         update_post_meta( $inserted_post_id, 'homey_invoice_date', $invoiceDate );
         update_post_meta( $inserted_post_id, 'homey_paypal_txn_id', $paypalTaxID );
         update_post_meta( $inserted_post_id, 'homey_invoice_payment_method', $paymentMethod );
@@ -2700,6 +2688,7 @@ if( !function_exists('homey_generate_invoice') ):
             'post_title' => 'Invoice '.$inserted_post_id,
         );
         wp_update_post( $update_post );
+//        echo '<pre>'; print_r(get_post_meta($inserted_post_id));exit;
         return $inserted_post_id;
     }
 endif;
@@ -2786,11 +2775,14 @@ if( !function_exists('homey_invoices_ajax_search') ){
             'posts_per_page' => -1,
             'meta_query' => $meta_query,
             'date_query' => $date_query,
-            
+            'order' => 'ID ASC',
+
         );
 
-
+        add_filter( 'posts_orderby', 'filter_post_sort_query' );
         $invoices = new WP_Query( $invoices_args );
+        remove_filter( 'posts_orderby', 'filter_post_sort_query' );
+
         $total_price = 0;
 
         ob_start();
@@ -2807,6 +2799,15 @@ if( !function_exists('homey_invoices_ajax_search') ){
 
         echo json_encode( array( 'success' => true, 'result' => $result, 'total_price' => '' ) );
         wp_die();
+    }
+}
+
+if(!function_exists('filter_post_sort_query')) {
+    function filter_post_sort_query( $query ) {
+        global $wpdb;
+        $query = " $wpdb->posts.ID DESC";
+        $query = " $wpdb->posts.ID DESC";
+        return $query;
     }
 }
 
@@ -2873,17 +2874,28 @@ if(!function_exists('homey_add_custom_period')) {
         }
 
         update_post_meta($listing_id, 'homey_custom_period', $current_period_meta_array );
-
-        if(!isset($_POST['ical_is_bulk'])){
-            echo json_encode(array(
-                'success' => true,
-                'message' => 'success'
-            ));
-            wp_die();
-        }
+        echo json_encode(array(
+            'success' => true,
+            'message' => 'success'
+        ));
+        wp_die();
     }
 }
 
+
+if(!function_exists('homey_addCustomPeriodDuplicated')) {
+    function homey_addCustomPeriodDuplicated($listing_id=0, $dup_listing_id=0) {
+        if($listing_id == 0 || $dup_listing_id == 0){
+            return false;
+        }
+
+        $current_period_meta_array = get_post_meta($dup_listing_id, 'homey_custom_period', true);
+
+        update_post_meta($listing_id, 'homey_custom_period', $current_period_meta_array );
+
+        return 1;
+    }
+}
 
 if(!function_exists('homey_add_custom_period_old')) {
     function homey_add_custom_period_old() {
@@ -3383,7 +3395,7 @@ if( !function_exists('homey_create_print')) {
         $prop_excerpt       = $the_post->post_content;
         $prop_excerpt       = apply_filters('the_content', $prop_excerpt);
         $author_id          = $the_post->post_author;
-    
+
         $rating = homey_option('rating');
         $total_rating = get_post_meta( $listing_id, 'listing_total_rating', true );
 
@@ -3521,7 +3533,13 @@ if( !function_exists('homey_create_print')) {
             $slash = '/';
         }
         ?>
-
+        <style>
+            @media print {
+                a[href]:after {
+                    content: none !important;
+                }
+            }
+        </style>
         <div class="print-main-wrap">
             <div class="print-wrap">
 
@@ -3698,7 +3716,7 @@ if( !function_exists('homey_create_print')) {
                                         </li>
                                         <?php } ?>
 
-                                        <?php if($booking_type == 'per_day') { ?>
+                                        <?php if($booking_type == 'per_day' || $booking_type == 'per_day_date') { ?>
                                             <?php if(!empty($checkin_after) && $hide_labels['sn_check_in_after'] != 1) { ?>
                                             <li><i class="fa fa-angle-right" aria-hidden="true"></i> 
                                                 <?php echo homey_option('sn_check_in_after'); ?>: <strong><?php echo esc_attr($checkin_after); ?></strong>
@@ -3732,7 +3750,10 @@ if( !function_exists('homey_create_print')) {
                 <?php } ?>
 
 
-                <?php if(homey_option('print_pricing')) { ?>
+                <?php 
+                
+                
+             if(homey_option('print_pricing')) { ?>
                 <div id="price-section" class="price-section">
                     <div class="block">
                         <div class="block-section">
@@ -3772,7 +3793,7 @@ if( !function_exists('homey_create_print')) {
                                         <?php } ?>
 
 
-                                        <?php if($booking_type == 'per_day') { ?>
+                                        <?php if($booking_type == 'per_day' || $booking_type == 'per_day_date') { ?>
                                             <?php if(!empty($priceWeekly)) { ?>
                                             <li>
                                                 <i class="fa fa-angle-right" aria-hidden="true"></i> 
@@ -4078,11 +4099,10 @@ if( !function_exists('homey_create_print')) {
 
 
 <?php
-        print '</body></html>';
+        print '<script>window.print();</script></body></html>';
         wp_die();
     }
 }
-
 
 
 add_action( 'wp_ajax_homey_put_hold_listing', 'homey_put_hold_listing' );

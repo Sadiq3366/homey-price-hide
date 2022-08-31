@@ -5,38 +5,40 @@ $pets             = homey_get_listing_data('pets');
 $party            = homey_get_listing_data('party');
 $children         = homey_get_listing_data('children');
 $additional_rules = homey_get_listing_data('additional_rules');
+
 $cancellation_policy = homey_get_listing_data('cancellation_policy');
+$cancellation_policy   = get_the_content( '', '',  $cancellation_policy ); // Where $cancellation_policy is the ID
 
 if($smoke != 1) {
     $smoke_allow = 'fa fa-times'; 
-    $smoke_text = homey_option('sn_text_no');
+    $smoke_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $smoke_allow = 'fa fa-check';
-    $smoke_text = homey_option('sn_text_yes');
+    $smoke_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($pets != 1) {
     $pets_allow = 'fa fa-times';
-    $pets_text = homey_option('sn_text_no');
+    $pets_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $pets_allow = 'fa fa-check';
-    $pets_text = homey_option('sn_text_yes');
+    $pets_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($party != 1) {
     $party_allow = 'fa fa-times'; 
-    $party_text = homey_option('sn_text_no');
+    $party_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $party_allow = 'fa fa-check';
-    $party_text = homey_option('sn_text_yes');
+    $party_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 
 if($children != 1) {
     $children_allow = 'fa fa-times';
-    $children_text = homey_option('sn_text_no');
+    $children_text = esc_html__(homey_option('sn_text_no'), 'homey');
 } else {
     $children_allow = 'fa fa-check';
-    $children_text = homey_option('sn_text_yes');
+    $children_text = esc_html__(homey_option('sn_text_yes'), 'homey');
 }
 ?>
 <div id="rules-section" class="rules-section">
@@ -86,7 +88,7 @@ if($children != 1) {
 
                         <?php if(!empty($cancellation_policy)) { ?>
                             <li><strong><?php echo esc_attr($homey_local['cancel_policy']); ?></strong></li>
-                            <li><?php echo esc_html($cancellation_policy); ?></li>
+                            <li><?php echo $cancellation_policy; ?></li>
                         <?php } ?>
 
                         <?php if(!empty($additional_rules) && $hide_labels['sn_add_rules_info'] != 1) { ?>

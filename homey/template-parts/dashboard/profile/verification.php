@@ -47,7 +47,7 @@ $is_doc_verified = get_the_author_meta( 'doc_verified' , $userID );
                             echo '<input type="hidden" class="profile-doc-id" id="profile-doc-id" name="profile-doc-id" value="' . esc_attr( $user_document_id ).'"/>';
                         }
                     } else {
-                        echo '<img src="http://placehold.it/100x100" width="100" height="100" alt="profile image">';
+                        echo '<img src="http://place-hold.it/100x100" width="100" height="100" alt="profile image">';
                     }
                     ?>
                 </div>

@@ -11,7 +11,7 @@
         setup_postdata($post);
         ?>
         <div class="prev-box pull-left text-left">
-            <a href="<?php the_permalink(); ?>">
+            <a class="hover-effect" href="<?php the_permalink(); ?>">
                 <div class="next-prev-block-content">
                     <p><?php esc_html_e( 'Prev Post', 'homey' ); ?></p>
                     <p><strong><?php the_title(); ?></strong></p>
@@ -40,7 +40,7 @@
         setup_postdata($post);
         ?>
         <div class="next-box pull-right text-right">
-            <a href="<?php the_permalink(); ?>">
+            <a class="hover-effect" href="<?php the_permalink(); ?>">
                 <div class="next-prev-block-content">
                     <p><?php esc_html_e( 'Next post', 'homey' ); ?></p>
                     <p><strong><?php the_title(); ?></strong></p>

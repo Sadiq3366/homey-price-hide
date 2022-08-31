@@ -318,13 +318,16 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'std' => $homey_site_mode,
                     'options' => array(
                         'per_day' => esc_html__('Nightly', 'homey'),
+                        'per_day_date' => esc_html__('Daily', 'homey'),
                         'per_week' => esc_html__('Weekly', 'homey'),
                         'per_month' => esc_html__('Monthly', 'homey'),
                         'per_hour' => esc_html__('Hourly', 'homey')
+                        
                     ),
                     'columns' => 6,
                     'tab' => 'listing_price',
                 ),
+
 
                 array(
                     'name' => homey_option('ad_ins_booking_label'),
@@ -335,7 +338,20 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                 ),
+               
+                
 
+                array(
+                    'name' => homey_option('ad_price_label', 'Price'),
+                    'id' => "{$prefix}day_date_price",
+                    'placeholder' => homey_option('ad_price_plac', 'Enter Price'),
+                    'type' => 'text',
+                    'std' => '',
+                    'columns' => 6,
+                    'tab' => 'listing_price',
+                    'class' => 'homey_daily',
+                    'visible' => array( $prefix.'booking_type', '=', 'per_day_date' ) //
+                ),
 
                 array(
                     'name' => homey_option('ad_price_label', 'Price'),
@@ -346,7 +362,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '=', 'per_hour' ) //
+                    'hidden' => array( $prefix.'booking_type', 'in', array('per_hour', 'per_day_date') ) //
                 ),
 
                 array(
@@ -393,7 +409,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' ) //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') ) //
                 ),
                 array(
                     'name' => homey_option('ad_weekend_days_label'),
@@ -406,15 +422,17 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     ),
                     'std' => '',
                     'columns' => 6,
-                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_hour' ) ), //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_hour', 'per_day_date' ) ), //
                     'tab' => 'listing_price',
                 ),
+                
+
                 array(
                     'type' => 'divider',
                     'columns' => 12,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' ) //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'type' => 'heading',
@@ -422,7 +440,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 12,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' ) //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'name' => homey_option('ad_weekly7nights'),
@@ -433,7 +451,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' ) //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'name' => homey_option('ad_monthly30nights'),
@@ -444,7 +462,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' ) //
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
 
                 array(
@@ -548,7 +566,49 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_price',
                 ),
+                array(
+                    'type' => 'heading',
+                    'name' => 'Coupen label',
+                    'columns' => 12,
+                    'tab' => 'listing_price',
+                ),
 
+                array(
+                    'name' => esc_html__('Coupen','homey'),//homey_option('ad_tax_rate_label'),
+                    'id' => "{$prefix}coupens",
+                    'placeholder' => esc_html__('Enter Coupen with percentage %','homey'),
+                    'type' => 'text',
+                    'std' => '',
+                    'columns' => 6,
+                    'tab' => 'listing_price',
+                ),
+                array(
+                    'name' => esc_html__('Coupen Code','homey'),//homey_option('ad_tax_rate_label'),
+                    'id' => "{$prefix}coupens_code",
+                    'placeholder' => esc_html__('Enter Coupen Code','homey'),
+                    'type' => 'text',
+                    'std' => '',
+                    'columns' => 6,
+                    'tab' => 'listing_price',
+                ),
+                array(
+                    'name' => esc_html__('Start Date','homey'),//homey_option('ad_tax_rate_label'),
+                    'id' => "{$prefix}start_date",
+                    'placeholder' => esc_html__('Enter Start date','homey'),
+                    'type' => 'date',
+                    'std' => '',
+                    'columns' => 6,
+                    'tab' => 'listing_price',
+                ),
+                array(
+                    'name' => esc_html__('Expiry Date','homey'),//homey_option('ad_tax_rate_label'),
+                    'id' => "{$prefix}expary_date",
+                    'placeholder' => esc_html__('Enter expiry date','homey'),
+                    'type' => 'date',
+                    'std' => '',
+                    'columns' => 6,
+                    'tab' => 'listing_price',
+                ),
                 /*--------------------------------------------------------------------------------
                 * Media
                 **-------------------------------------------------------------------------------*/
@@ -616,12 +676,13 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'id' => "{$prefix}listing_location",
                     'name' => homey_option('ad_drag_pin'),
                     'desc' => $homey_local['drag_pin_des'],
-                    'api_key' => homey_option('map_api_key'),
-                    'type' => 'map',
+                    'api_key' => homey_map_api_key(),
+                    'type' => homey_metabox_map_type(),
                     'std' => homey_option('default_lat').','.homey_option('default_lng').',15',//'25.686540,-80.431345,15',
                     'style' => 'width: 100%; height: 410px',
                     'address_field' => "{$prefix}listing_address",
                     'columns' => 12,
+                    'language' => get_locale(),
                     'tab' => 'listing_location',
                 ),
                 
@@ -726,7 +787,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_terms_rules',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' )
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'id' => "{$prefix}max_book_days",
@@ -736,7 +797,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_terms_rules',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' )
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'id' => "{$prefix}min_book_weeks",
@@ -837,7 +898,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_terms_rules',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' )
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'id' => "{$prefix}checkout_before",
@@ -848,7 +909,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'columns' => 6,
                     'tab' => 'listing_terms_rules',
                     'class' => 'homey_daily',
-                    'hidden' => array( $prefix.'booking_type', '!=', 'per_day' )
+                    'visible' => array( $prefix.'booking_type', 'in', array('per_day', 'per_day_date') )
                 ),
                 array(
                     'name' => homey_option('ad_smoking_allowed'),
@@ -955,6 +1016,345 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
             )
         );
 
+        /* ===========================================================================================
+        *   Experiences Custom Post Type Meta
+        * ============================================================================================*/
+
+        $meta_boxes[] = array(
+            'id' => 'experience-meta-box',
+            'title' => esc_html__('Experience Details', 'homey'),
+            'pages' => array('experience'),
+            'tabs' => array(
+
+                'experience_details' => array(
+                    'label' => homey_option('ad_section_info'),
+                    'icon' => 'dashicons-admin-home',
+                ),
+                'experience_price' => array(
+                    'label' => homey_option('ad_pricing_label'),
+                    'icon' => 'dashicons-money',
+                ),
+                'experience_gallery' => array(
+                    'label' => $homey_local['gallery_heading'],
+                    'icon' => 'dashicons-format-gallery',
+                ),
+                'experience_location' => array(
+                    'label' => homey_option('ad_location'),
+                    'icon' => 'dashicons-location',
+                ),
+                'experience_time' => array(
+                    'label' => homey_option('ad_section_openning'),
+                    'icon' => 'dashicons-admin-home',
+                ),
+                'experience_providing' => array(
+                    'label' => esc_html__('What Will Be Provided', 'homey'),
+                    'icon' => 'dashicons-admin-settings',
+                ),
+                'experience_bring' => array(
+                    'label' => esc_html__('What Have To Bring', 'homey'),
+                    'icon' => 'dashicons-admin-settings',
+                ),
+                'experience_terms_rules' => array(
+                    'label' => esc_html__('Terms', 'homey'),
+                    'icon' => 'dashicons-admin-settings',
+                ),
+
+            ),
+            'tab_style' => 'left',
+            'fields' => array(
+                array(
+                    'id' => "{$prefix}experience_describe_yourself",
+                    'name' => homey_option('experience_describe_yourself'),
+                    'placeholder' => homey_option('experience_describe_yourself'),
+                    'type' => 'textarea',
+                    'std' => "",
+                    'columns' => 6,
+                    'tab' => 'experience_details',
+                ),
+                array(
+                    'id' => "{$prefix}experience_description",
+                    'name' => homey_option('experience_ad_des'),
+                    'placeholder' => homey_option('experience_ad_des'),
+                    'type' => 'textarea',
+                    'std' => "",
+                    'columns' => 6,
+                    'tab' => 'experience_details',
+                ),
+                array(
+                    'id' => "{$prefix}guests",
+                    'name' => homey_option('experience_ad_no_of_guests'),
+                    'placeholder' => homey_option('experience_ad_no_of_guests_plac'),
+                    'type' => 'text',
+                    'std' => "",
+                    'columns' => 6,
+                    'tab' => 'experience_details',
+                ),
+
+                array(
+                    'id' => "{$prefix}instant_booking",
+                    'name' => homey_option('ad_ins_booking_label'),
+                    'placeholder' => homey_option('ad_ins_booking_des'),
+                    'desc' => homey_option('ad_ins_booking_des'),
+                    'type' => 'checkbox',
+                    'std' => '',
+                    'columns' => 12,
+                    'tab' => 'experience_price',
+                ),
+                array(
+                    'id' => "{$prefix}night_price",
+                    'name' => homey_option('ad_price_label'),
+                    'placeholder' => homey_option('ad_price_plac'),
+                    'desc' => homey_option('ad_price_plac'),
+                    'type' => 'text',
+                    'columns' => 6,
+                    'tab' => 'experience_price',
+                ),
+                array(
+                    'id' => "{$prefix}price_postfix",
+                    'name' => homey_option('ad_price_postfix_label'),
+                    'placeholder' => homey_option('ad_price_postfix_plac'),
+                    'desc' => homey_option('ad_price_postfix_plac'),
+                    'type' => 'text',
+                    'columns' => 6,
+                    'tab' => 'experience_price',
+                ),
+
+
+                /*--------------------------------------------------------------------------------
+                * Media
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'name' => $homey_local['gallery_heading'],
+                    'id' => "{$prefix}experience_images",
+                    'desc' => $homey_local['image_size_text'],
+                    'type' => 'image_advanced',
+                    'max_file_uploads' => 50,
+                    'columns' => 12,
+                    'tab' => 'experience_gallery',
+                ),
+                array(
+                    'name' => homey_option('ad_video_heading'),
+                    'id' => "{$prefix}video_url",
+                    'desc' => homey_option('ad_video_placeholder'),
+                    'type' => 'text',
+                    'columns' => 12,
+                    'tab' => 'experience_gallery',
+                ),
+
+                /*--------------------------------------------------------------------------------
+                * Location
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'name' => $homey_local['experience_map_label'],
+                    'id' => "{$prefix}show_map",
+                    'type' => 'radio',
+                    'std' => 1,
+                    'options' => array(
+                        1 => $homey_local['text_show'],
+                        0 => $homey_local['text_hide']
+                    ),
+                    'columns' => 12,
+                    'tab' => 'experience_location',
+                ),
+                array(
+                    'name' => homey_option('ad_aptSuit'),
+                    'id' => "{$prefix}aptSuit",
+                    'type' => 'text',
+                    'placeholder' => homey_option('ad_aptSuit_placeholder'),
+                    'columns' => 6,
+                    'tab' => 'experience_location',
+                ),
+                array(
+                    'name' => homey_option('ad_zipcode'),
+                    'id' => "{$prefix}zip",
+                    'type' => 'text',
+                    'placeholder' => homey_option('ad_zipcode_placeholder'),
+                    'columns' => 6,
+                    'tab' => 'experience_location',
+                ),
+                array(
+                    'id' => "{$prefix}experience_address",
+                    'name' => homey_option('ad_address'),
+                    'placeholder' => homey_option('ad_address_placeholder'),
+                    'desc' => $homey_local['address_des'],
+                    'type' => 'text',
+                    'std' => '',
+                    'columns' => 12,
+                    'tab' => 'experience_location',
+                ),
+                array(
+                    'id' => "{$prefix}experience_location",
+                    'name' => homey_option('ad_drag_pin'),
+                    'desc' => $homey_local['drag_pin_des'],
+                    'api_key' => homey_map_api_key(),
+                    'type' => homey_metabox_map_type(),
+                    'std' => homey_option('default_lat').','.homey_option('default_lng').',15',//'25.686540,-80.431345,15',
+                    'style' => 'width: 100%; height: 410px',
+                    'address_field' => "{$prefix}experience_address",
+                    'columns' => 12,
+                    'language' => get_locale(),
+                    'tab' => 'experience_location',
+                ),
+
+                /*--------------------------------------------------------------------------------
+                * Terms & Rules
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'id' => "{$prefix}cancellation_policy",
+                    'name' => homey_option('ad_cancel_policy'),
+                    'placeholder' => homey_option('ad_cancel_policy_plac'),
+                    'type' => 'text',
+                    'columns' => 12,
+                    'tab' => 'experience_terms_rules',
+                ),
+                array(
+                    'name' => homey_option('ad_add_rules_info_optional'),
+                    'id' => "{$prefix}additional_rules",
+                    'type' => 'textarea',
+                    'placeholder' => '',
+                    'columns' => 12,
+                    'tab' => 'experience_terms_rules',
+                ),
+
+                array(
+                    'name' => esc_html__('Start', 'homey'),
+                    'id' => "{$prefix}start_end_open",
+                    'type' => 'select',
+                    'options' => $open_hours_array,
+                    'columns' => 3,
+                    'tab' => 'experience_time',
+                ),
+                array(
+                    'name' => esc_html__('End', 'homey'),
+                    'id' => "{$prefix}start_end_close",
+                    'type' => 'select',
+                    'options' => $open_hours_array,
+                    'columns' => 3,
+                    'tab' => 'experience_time',
+                ),
+
+                array(
+                    'name' => homey_option('ad_smoking_allowed'),
+                    'id' => "{$prefix}experience_smoke",
+                    'type' => 'radio',
+                    'std' => 0,
+                    'options' => array(
+                        1 => homey_option('ad_text_yes'),
+                        0 => homey_option('ad_text_no'),
+                    ),
+                    'columns' => 6,
+                    'tab' => 'experience_terms_rules',
+                ),
+                array(
+                    'name' => homey_option('ad_pets_allowed'),
+                    'id' => "{$prefix}experience_pets",
+                    'type' => 'radio',
+                    'std' => 1,
+                    'options' => array(
+                        1 => homey_option('ad_text_yes'),
+                        0 => homey_option('ad_text_no'),
+                    ),
+                    'columns' => 6,
+                    'tab' => 'experience_terms_rules',
+                ),
+                array(
+                    'name' => homey_option('ad_party_allowed'),
+                    'id' => "{$prefix}experience_party",
+                    'type' => 'radio',
+                    'std' => 0,
+                    'options' => array(
+                        1 => homey_option('ad_text_yes'),
+                        0 => homey_option('ad_text_no'),
+                    ),
+                    'columns' => 6,
+                    'tab' => 'experience_terms_rules',
+                ),
+                array(
+                    'name' => homey_option('ad_children_allowed'),
+                    'id' => "{$prefix}experience_children",
+                    'type' => 'radio',
+                    'std' => 1,
+                    'options' => array(
+                        1 => homey_option('ad_text_yes'),
+                        0 => homey_option('ad_text_no'),
+                    ),
+                    'columns' => 6,
+                    'tab' => 'experience_terms_rules',
+                ),
+                /*--------------------------------------------------------------------------------
+                * Settings
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'name' => esc_html__('What to display in the sidebar?', 'homey'),
+                    'id' => "{$prefix}booking_or_contact",
+                    'desc' => esc_html__('Select what to display in the sidebar of experience detail page', 'homey'),
+                    'type' => 'select',
+                    'std' => '',
+                    'options' => array(
+                        '' => esc_html__('Default (Same settings as theme options)', 'homey'),
+                        'booking_form' => esc_html__('Booking Form', 'homey'),
+                        'contact_form' => esc_html__('Contact Form', 'homey'),
+                        'contact_form_to_guest' => esc_html__('Contact Form To Guest and Booking To User', 'homey'),
+                    ),
+                    'columns' => 12,
+                    'tab' => 'settings',
+                ),
+
+                /*--------------------------------------------------------------------------------
+                * Provided items
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'id'     => "{$prefix}what_to_provided",
+                    // Group field
+                    'type'   => 'group',
+                    // Clone whole group?
+                    'clone'  => true,
+                    'sort_clone' => true,
+                    'tab' => 'experience_providing',
+                    // Sub-fields
+                    'fields' => array(
+                        array(
+                            'name' => esc_html__(esc_attr(homey_option('experience_ad_what_provides_text')), 'homey'),
+                            'id'   => "name",
+                            'placeholder'   => esc_html__(esc_attr(homey_option('experience_ad_what_provides_plac')), 'homey'),
+                            'type' => 'text',
+                            'columns' => 6,
+                        ),
+                        array(
+                            'name' => esc_html__("Description", "homey"),
+                            'id'   => "desc",
+                            'placeholder'   => esc_html__("Type description here", "homey"),
+                            'type' => 'text',
+                            'columns' => 6,
+                        )
+                    ),
+                ),// providing
+
+                /*--------------------------------------------------------------------------------
+                * Bring items
+                **-------------------------------------------------------------------------------*/
+                array(
+                    'id'     => "{$prefix}what_to_bring",
+                    // Group field
+                    'type'   => 'group',
+                    // Clone whole group?
+                    'clone'  => true,
+                    'sort_clone' => true,
+                    'tab' => 'experience_bring',
+                    // Sub-fields
+                    'fields' => array(
+                        array(
+                            'name' => esc_html__(esc_attr(homey_option('experience_ad_what_bring_item_type')), 'homey'),
+                            'id'   => "name",
+                            'placeholder'   => esc_html__(esc_attr(homey_option('experience_ad_what_bring_item_type')), 'homey'),
+                            'type' => 'textarea',
+                            'columns' => 12,
+                        )
+                    ),
+                ),// bring
+            )
+        );
+
         
         /* ===========================================================================================
         *   Listing Template
@@ -989,7 +1389,6 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'template/template-listing-sticky-map.php'
                 ),
             ),
-
             'fields'    => array(
                 array(
                     'name'      => esc_html__('Order By', 'homey'),
@@ -1022,6 +1421,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'type'      => 'select',
                     'options'   => array(
                         ''  => esc_html__('All/Any', 'homey'),
+                        'per_day_date'  => esc_html__('Per Day', 'homey'),
                         'per_day'  => esc_html__('Per Night', 'homey'),
                         'per_week' => esc_html__('Per Week', 'homey'),
                         'per_month' => esc_html__('Per Month', 'homey'),
@@ -1036,7 +1436,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'name'      => homey_option('ad_listing_type'),
                     'id'        => $prefix . 'types',
                     'type'      => 'select',
-                    'options'   => $listing_types,
+                    'options'   => $s,
                     'desc'      => '',
                     'columns' => 6,
                     'multiple' => true
@@ -1156,6 +1556,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'type'      => 'select',
                     'options'   => array(
                         ''  => esc_html__('All/Any', 'homey'),
+                        'per_day_date'  => esc_html__('Per Day', 'homey'),
                         'per_day'  => esc_html__('Per Night', 'homey'),
                         'per_week' => esc_html__('Per Week', 'homey'),
                         'per_month' => esc_html__('Per Month', 'homey'),
@@ -1201,6 +1602,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                         'slider' => esc_html__('Properties Slider', 'homey' ),
                         'rev_slider' => esc_html__('Revolution Slider', 'homey' ),
                         'map' => esc_html__('Google Map with Listings', 'homey' ),
+                        'elementor' => esc_html__('Elementor', 'homey' ),
                         
                     ),
                     'std'       => array( 'none' ),
@@ -1397,7 +1799,7 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                     'off_label' => esc_html__('Disable', 'homey' ),
                     'std'       => 0,
                     'desc' => esc_html__("It's only work if the header v1 or v4 is selected", 'homey'),
-                    'visible' => array( $prefix.'header_type', 'in', array( 'parallax', 'video', 'rev_slider', 'slider' ) )
+                    'visible' => array( $prefix.'header_type', 'in', array( 'parallax', 'video', 'rev_slider', 'slider', 'elementor' ) )
                 ),
             )
         );
@@ -1540,7 +1942,6 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
             'id'        => 'homey_taxonomies_marker',
             'title'     => '',
             'taxonomies' => array( 'listing_type' ),
-            
 
             'fields'    => array(
                 array(
@@ -1553,6 +1954,29 @@ if( !function_exists( 'homey_register_metaboxes' ) ) {
                 array(
                     'name'      => esc_html__('Google Map Marker Retina Icon', 'homey' ),
                     'id'        => $prefix . 'marker_retina_icon',
+                    'type'      => 'image_advanced',
+                    'class'      => 'homey_full_width',
+                    'max_file_uploads' => 1,
+                )
+            )
+        );
+
+        $meta_boxes[] = array(
+            'id'        => 'homey_exp_taxonomies_marker',
+            'title'     => '',
+            'taxonomies' => array( 'experience_type' ),
+
+            'fields'    => array(
+                array(
+                    'name'      => esc_html__('Google Map Marker Icon', 'homey' ),
+                    'id'        => $prefix . 'exp_marker_icon',
+                    'type'      => 'image_advanced',
+                    'class'      => 'homey_full_width',
+                    'max_file_uploads' => 1,
+                ),
+                array(
+                    'name'      => esc_html__('Google Map Marker Retina Icon', 'homey' ),
+                    'id'        => $prefix . 'exp_marker_retina_icon',
                     'type'      => 'image_advanced',
                     'class'      => 'homey_full_width',
                     'max_file_uploads' => 1,

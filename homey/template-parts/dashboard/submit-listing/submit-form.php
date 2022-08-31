@@ -12,9 +12,10 @@ if( isset($_GET['mode']) && $_GET['mode'] != '' ) {
 <form autocomplete="off" id="submit_listing_form" name="new_post" method="post" action="#" enctype="multipart/form-data" class="add-frontend-property">
                                 
     <?php
+    
     if ($layout_order) { 
         foreach ($layout_order as $key=>$value) {
-            
+           
             switch($key) { 
                 case 'information':
                     get_template_part('template-parts/dashboard/submit-listing/information');

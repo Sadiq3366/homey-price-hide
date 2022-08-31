@@ -20,7 +20,7 @@
     </taxonomies>
 
     <custom-fields>
-        <custom-field action="translate">homey_listing_bedrooms</custom-field>
+        <custom-field ="translate">homey_listing_bedrooms</custom-field>
         <custom-field action="translate">homey_guests</custom-field>
         <custom-field action="translate">homey_beds</custom-field>
         <custom-field action="translate">homey_baths</custom-field>
@@ -228,6 +228,7 @@
             <key name="ad_sat" />
             <key name="ad_sun" />
             <key name="sn_type_label" />
+            <key name="sn_name_label" />
             <key name="sn_accom_label" />
             <key name="sn_guests_label" />
             <key name="sn_bedrooms_label" />

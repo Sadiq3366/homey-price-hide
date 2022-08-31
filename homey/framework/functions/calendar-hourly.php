@@ -11,6 +11,8 @@ if(!function_exists('homeyHourlyAvailabilityCalendar')) {
 	    $currentYear  = gmdate('Y', $timeNow);             
 	    $unixMonth = mktime(0, 0 , 0, $currentMonth, 1, $currentYear);
 
+        echo "<div style='position: absolute; right: 10px; top: 10px;' class='pull-right' id='calendar-cross-btn'><i id='calendar-cross-btn-i' class='fa fa-times'></i></div>";
+
         while( $numberOfMonths <= homey_calendar_months() ) {
          	
          	homeyHourlyGenerateMonth( $numberOfMonths, $unixMonth, $currentMonth, $currentYear );

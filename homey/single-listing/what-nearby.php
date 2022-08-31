@@ -49,6 +49,9 @@ $yelp_data = homey_option( 'homey_yelp_term' );
 $yelp_dist_unit = homey_option( 'homey_yelp_dist_unit' );
 $prop_location = get_post_meta( get_the_ID(), 'homey_listing_location', true );
 $prop_location = explode( ',', $prop_location );
+if(!isset($prop_location[1])){
+    return false;
+}
 $prop_location = $prop_location[0].','.$prop_location[1];
 
 
@@ -85,7 +88,17 @@ if( $hide_yelp ) {
                                 $term_id = $value;
                                 $term_name = $yelp_categories[ $term_id ]['name'];
                                 $term_icon = $yelp_categories[ $term_id ]['icon'];
-                                $response = yelp_query_api( $term_id, $prop_location );
+                                $response = yelp_query_api( $term_id, $prop_location, 0 );
+
+                                if(empty(trim($response))){
+                                    echo "<dl><dt class='alert alert-danger'> ". esc_html__('Something wrong happened, please contact administrator.', 'homey') ."</dt>";
+                                    continue;
+                                }
+
+                                if(isset($response['is_error'])){
+                                    echo "<dl><dt class='alert alert-danger'>".is_null($response['error_msg']) ? esc_html__('Something wrong happened, please contact administrator.', 'homey') : $response['error_msg'] ."</dt>";
+                                    continue;
+                                }
 
                                 if ( isset( $response->businesses ) ) {
                                     $businesses = $response->businesses;
@@ -109,7 +122,7 @@ if( $hide_yelp ) {
                                 ?>
                                 <dl>
                                     <dt><i class="<?php echo esc_attr($term_icon); ?>"></i> <?php echo esc_attr($term_name); ?></dt>
-                                    
+
                                     <?php
                                     foreach ( $businesses as $data ) :
 
@@ -129,7 +142,7 @@ if( $hide_yelp ) {
 
                                         }
                                         ?>
-                                    
+
                                         <dd>
                                             <div class="what-nearby-left">
                                                 <?php echo esc_attr($data->name); ?> <?php echo ''.($location_distance); ?>
@@ -137,7 +150,7 @@ if( $hide_yelp ) {
                                             <div class="what-nearby-right">
                                                 <div class="rating-wrap">
                                                     <div class="rating-container">
-                                                        <div class="rating">                                            
+                                                        <div class="rating">
                                                             <?php echo homey_get_review_stars($data->rating, true, true, false); ?>
                                                             <span class="time-review"><?php echo esc_attr($data->review_count); ?> <?php esc_html_e('reviews', 'homey');?></span>
                                                         </div>
@@ -160,7 +173,7 @@ if( $hide_yelp ) {
                             endforeach;
                         } //homey_yelp_api_key
                         ?>
-                        
+
                     </div>
                     <?php if( !empty( $homey_yelp_api_key ) ) { ?>
                     <div class="nearby-logo"><?php echo esc_attr($homey_local['pwb_label']); ?> <i class="fa fa-yelp" aria-hidden="true"></i> <strong><?php echo esc_attr($homey_local['yelp_label']); ?></strong></div>

@@ -24,6 +24,8 @@ if( !function_exists('homey_get_localization')) {
 			'kidding_text' => esc_html__('Are you kidding?', 'homey'),
 			'no_rights_text' => esc_html__("you don\'t have the right to see this", 'homey'),
 			'about_listing_title' => esc_html__('About this listing', 'homey'),
+			'about_experience_title' => esc_html__('About this experience', 'homey'),
+			'about_host_experience_title' => esc_html__('About the host', 'homey'),
 			'type_label'  		  => esc_html__('Type', 'homey'),
 			'accommodates_label'  		  => esc_html__('Accommodates', 'homey'),
 			'opening_hours_label'  		  => esc_html__('Opening Hours', 'homey'),
@@ -37,6 +39,8 @@ if( !function_exists('homey_get_localization')) {
 			'pets_label'  		  => esc_html__('Pets', 'homey'),
 			'subtotal_label'  		  => esc_html__('Subtotal', 'homey'),
 			'thumb_label'  		  => esc_html__('Thumbnail', 'homey'),
+			'owner_label'  		  => esc_html__('Owner Name', 'homey'),
+			'coupens'  		  => esc_html__('Coupen', 'homey'),
 			'actions_label'  		=> esc_html__('Actions', 'homey'),
 			'accom_label'  	      => esc_html__('Accomodation', 'homey'),
 			'check_In'  		=> esc_html__('Check In', 'homey'),
@@ -47,7 +51,8 @@ if( !function_exists('homey_get_localization')) {
 			'check_in_after'  		=> esc_html__('Check-in After', 'homey'),
 			'check_out_before'  		=> esc_html__('Check-out Before', 'homey'),
 			'size_label'  		=> esc_html__('Size', 'homey'),
-			'bedrooms_label'  	=> esc_html__('Bedrooms', 'homey'),
+
+            'bedrooms_label'  	=> esc_html__('Bedrooms', 'homey'),
 			'bathrooms_label' 	=> esc_html__('Bathrooms', 'homey'),
 			'rooms_label' 	=> esc_html__('Rooms', 'homey'),
 			'fullbath_label' 	=> esc_html__('Full', 'homey'),
@@ -81,10 +86,14 @@ if( !function_exists('homey_get_localization')) {
 			'room_type' => esc_html__('What kind of place do you want to list?', 'homey'),
 
 			'listing_title' => esc_html__('Title', 'homey'),
+			'experience_title' => esc_html__('Title', 'homey'),
 			'title_placeholder' => esc_html__('Enter the listing title', 'homey'),
-			
+			'title_experience_placeholder' => esc_html__('Enter the title', 'homey'),
+
 			'listing_des' => esc_html__('Description', 'homey'),
+			'experience_des' => esc_html__('Description', 'homey'),
 			'des_placeholder' => esc_html__('Enter the listing description', 'homey'),
+			'des_experience_placeholder' => esc_html__('Enter the description', 'homey'),
 
 			'no_of_bedrooms' => esc_html__('Number of bedrooms', 'homey'),
 			'no_of_bedrooms_plac' => esc_html__('Enter number of bedrooms', 'homey'),
@@ -97,11 +106,15 @@ if( !function_exists('homey_get_localization')) {
 			'no_of_bathrooms' => esc_html__('Number of bathrooms', 'homey'),
 			'no_of_bathrooms_plac' => esc_html__('Enter number of bathrooms', 'homey'),
 			'listing_type' => esc_html__('Type of listing', 'homey'),
+			'experience_type' => esc_html__('Type of experience', 'homey'),
 			'listing_type_plac' => esc_html__('Select listing Type', 'homey'),
+			'experience_type_plac' => esc_html__('Select Type', 'homey'),
 			'listing_size' => esc_html__('Size', 'homey'),
+			'experience_size' => esc_html__('Size', 'homey'),
 			'size_placeholder' => esc_html__('Enter the size. Only numbers', 'homey'),
 
 			'listing_size_unit' => esc_html__('Unit of measure', 'homey'),
+			'experience_size_unit' => esc_html__('Unit of measure', 'homey'),
 			'size_unit_placeholder' => esc_html__('Enter the unit of measure. Ex. SqFt', 'homey'),
 			'features' => esc_html__('Features', 'homey'),
 			'amenities' => esc_html__('Amenities', 'homey'),
@@ -109,14 +122,19 @@ if( !function_exists('homey_get_localization')) {
 			'location' => esc_html__('Location', 'homey'),
 
 			'address' => esc_html__('Address', 'homey'),
-			'address_placeholder' => esc_html__('Enter the listing address', 'homey'),
+			'address_placeholder' => esc_html__('Enter the address', 'homey'),
 			'address_des' => esc_html__('If you do not enter any address, then the map will not show on listing detail page.', 'homey'),
+			'address_experience_des' => esc_html__('If you do not enter any address, then the map will not show on experience detail page.', 'homey'),
 
 			'aptSuit' => esc_html__('Apt, Suite (Optional)', 'homey'),
 			'aptSuit_placeholder' => esc_html__('Ex. #123', 'homey'),
 
+			'day_daily_label' => esc_html__('Daily', 'homey'),
+			'day_daily_plac' => esc_html__('Enter price for 1 day', 'homey'),
+
 			'nightly_label' => esc_html__('Nightly', 'homey'),
 			'nightly_plac' => esc_html__('Enter price for 1 night', 'homey'),
+
 			'weekends_label' => esc_html__('Weekends', 'homey'),
 			'weekends_plac' => esc_html__('Enter the unit price for a single day', 'homey'),
 
@@ -137,6 +155,7 @@ if( !function_exists('homey_get_localization')) {
 			'city_fee_plac' => esc_html__('Enter the price for city fee', 'homey'),
 			'city_fee_type_label' => esc_html__('City fee type', 'homey'),
 			'daily_text' => esc_html__('Daily', 'homey'),
+			'daily_date_text' => esc_html__('Daily', 'homey'),
 			'hourly_text' => esc_html__('Hourly', 'homey'),
 			'perstay_text' => esc_html__('Per stay', 'homey'),
 			'min_no_of_days' => esc_html__('Minimum number of days', 'homey'),
@@ -151,6 +170,9 @@ if( !function_exists('homey_get_localization')) {
 			'max_days_booking' => esc_html__('Maximum days of a booking', 'homey'),
 			
 			'max_days_booking_plac' => esc_html__('Enter the maximum days of booking (Only number)', 'homey'),
+
+			'min_book_day_dates_error' => esc_html__('Minimum days of a booking are', 'homey'),
+			'max_book_day_dates_error' => esc_html__('Maximum days of a booking are', 'homey'),
 
 			'min_book_days_error' => esc_html__('Minimum days of a booking are', 'homey'),
 			'max_book_days_error' => esc_html__('Maximum days of a booking are', 'homey'),
@@ -171,18 +193,37 @@ if( !function_exists('homey_get_localization')) {
 			'children_allowed' => esc_html__('Children allowed', 'homey'),
 			'cancel_policy' => esc_html__('Cancellation policy', 'homey'),
 			'similar_label' => esc_html__('Similar listings', 'homey'),
+			'similar_experience_label' => esc_html__('Similar experiences', 'homey'),
 
 			'accomodation_text' => esc_html__('Accomodation', 'homey'),
-			'bedrooms_text' => esc_html__('Bedrooms', 'homey'),
+
+            'bedrooms_text' => esc_html__('Bedrooms', 'homey'),
 			'acc_bedroom_name' => esc_html__('Bedroom name', 'homey'),
 			'acc_bedroom_name_plac' => esc_html__('Ex. Master Room or Room 1', 'homey'),
-			'acc_guests' => esc_html__('Number of guests', 'homey'),
+
+            'what_provides_text' => esc_html__('What Provides', 'homey'),
+			'acc_what_provide_name' => esc_html__('What Provide name', 'homey'),
+			'acc_what_provide_name_plac' => esc_html__('Ex. Cold drinks will be free', 'homey'),
+
+            'acc_what_bring_name' => esc_html__('What Bring name', 'homey'),
+			'acc_what_bring_name_plac' => esc_html__('Ex. Your National ID card.', 'homey'),
+
+            'acc_guests' => esc_html__('Number of guests', 'homey'),
 			'acc_guests_plac' => esc_html__('Enter the number of guests for this room', 'homey'),
-			'acc_no_of_beds' => esc_html__('Number of beds', 'homey'),
+
+            'acc_no_of_beds' => esc_html__('Number of beds', 'homey'),
 			'acc_no_of_beds_plac' => esc_html__('Enter the number of beds', 'homey'),
-			'acc_bedroom_type' => esc_html__('Bed type', 'homey'),
+            'acc_bedroom_type' => esc_html__('Bed type', 'homey'),
 			'acc_bedroom_type_plac' => esc_html__('Enter the bed type', 'homey'),
-			'acc_guests_label' => esc_html__('Guests', 'homey'),
+
+            'acc_no_of_items' => esc_html__('Number of items', 'homey'),
+			'acc_no_of_items_plac' => esc_html__('Enter the number of items', 'homey'),
+            'acc_what_provide_type' => esc_html__('What Provide type', 'homey'),
+			'acc_what_provide_type_plac' => esc_html__('Enter the item type', 'homey'),
+            'acc_btn_remove_item' => esc_html__('Remove this item', 'homey'),
+
+
+            'acc_guests_label' => esc_html__('Guests', 'homey'),
 			'acc_guest_label' => esc_html__('Guest', 'homey'),
 			'acc_btn_add_other' => esc_html__('Add another room', 'homey'),
 			'acc_btn_remove_room' => esc_html__('Remove this room', 'homey'),
@@ -221,8 +262,13 @@ if( !function_exists('homey_get_localization')) {
 			'availability_label' => esc_html__('Availability', 'homey'),
 			'min_stay_is' => esc_html__('The minimum stay is', 'homey'),
 			'max_stay_is' => esc_html__('The maximum stay is', 'homey'),
+
+			'day_date_label' => esc_html__('day', 'homey'),
+			'day_dates_label' => esc_html__('days', 'homey'),
+
 			'night_label' => esc_html__('night', 'homey'),
 			'nights_label' => esc_html__('nights', 'homey'),
+
 			'hour_label' => esc_html__('hour', 'homey'),
 			'hours_label' => esc_html__('hours', 'homey'),
 			'with_weekend_label' => esc_html__('with weekend', 'homey'),
@@ -250,10 +296,17 @@ if( !function_exists('homey_get_localization')) {
 			'fri_sat_sun_label' => esc_html__('Friday, Saturday and Sunday', 'homey'),
 
 			'long_term_pricing' => esc_html__('Long-term pricing', 'homey'),
+
+			'weekly7DayDates' => esc_html__('Weekly - 7+ days', 'homey'),
+			'monthly30DayDates' => esc_html__('Monthly - 30+ days', 'homey'),
+			'weekly7DayDates_plac' => esc_html__('Enter the unit price for a single day', 'homey'),
+			'monthly30DayDates_plac' => esc_html__('Enter the unit price for a single day', 'homey'),
+
 			'weekly7nights' => esc_html__('Weekly - 7+ nights', 'homey'),
 			'monthly30nights' => esc_html__('Monthly - 30+ nights', 'homey'),
-			'weekly7nights_plac' => esc_html__('Enter the unit price for a single day', 'homey'),
-			'monthly30nights_plac' => esc_html__('Enter the unit price for a single day', 'homey'),
+			'weekly7nights_plac' => esc_html__('Enter the unit price for a single night', 'homey'),
+			'monthly30nights_plac' => esc_html__('Enter the unit price for a single night', 'homey'),
+
 			'add_costs_label' => esc_html__('Additional costs', 'homey'),
 
 
@@ -287,6 +340,7 @@ if( !function_exists('homey_get_localization')) {
 			'zipcode_placeholder' => esc_html__('Enter your Zip Code', 'homey'),
 
 			'listing_map_label' => esc_html__('Do you want to show the listing map?', 'homey'),
+			'experience_map_label' => esc_html__('Do you want to show the map?', 'homey'),
 			'drag_pin' => esc_html__('Drag and drop the pin on map to find exact location', 'homey'),
 			'drag_pin_des' => esc_html__('Drag and drop the pin on map to find exact location or use address field above.', 'homey'),
 			'find_address' => esc_html__('Find the address on the map', 'homey'),
@@ -302,11 +356,16 @@ if( !function_exists('homey_get_localization')) {
 			'video_heading' => esc_html__('Video', 'homey'),
 			'video_url' => esc_html__('Video URL', 'homey'),
 			'video_placeholder' => esc_html__('Enter the video link or URL. Supported formats: YouTube, Vimeo, SWF and MOV', 'homey'),
-			'list_submit_msg' => esc_html__('Congratulations. Your listing has been submitted for approval.', 'homey'),
+			'list_submit_msg' => esc_html__('Congratulations. Your listing has been submitted.', 'homey'),
 			'list_updated' => esc_html__('Your listing has been updated successfully.', 'homey'),
 			'list_upgrade_featured' => esc_html__('Your listing has been upgraded to featured successfully.', 'homey'),
 			'complete_list_label' => esc_html__('Complete your listing', 'homey'),
-			
+
+            'experience_submit_msg' => esc_html__('Congratulations. Your experience has been submitted for approval.', 'homey'),
+			'experience_updated' => esc_html__('Your experience has been updated successfully.', 'homey'),
+			'experience_upgrade_featured' => esc_html__('Your experience has been upgraded to featured successfully.', 'homey'),
+			'complete_experience_label' => esc_html__('Complete your experience', 'homey'),
+
 			'make_available_text' => esc_html__('Click on a date to make it unavailable. Then click on it again to make available.', 'homey'),
 
 			'are_you_sure_text' => esc_html__('Are you sure you want to do this?', 'homey'),
@@ -334,9 +393,14 @@ if( !function_exists('homey_get_localization')) {
 			'login_for_reservation' => esc_html__('You need to login in order to make a reservation', 'homey'),
 			'security_check_text' => esc_html__('Security check failed', 'homey'),
 			'reservation_text' => esc_html__('Reservation', 'homey'),
-			'listing_owner_text' => esc_html__('You are not the owner of this listing', 'homey'),
+
+            'listing_owner_text' => esc_html__('You are not the owner of this listing', 'homey'),
 			'listing_renter_text' => esc_html__('This reservation is not belong to you.', 'homey'),
-			'instance_booking_page' => esc_html__('The instant booking page has not been created. Please contact the website administrator.', 'homey'),
+
+            'experience_owner_text' => esc_html__('You are not the owner of this experience', 'homey'),
+			'experience_renter_text' => esc_html__('This reservation is not belong to you.', 'homey'),
+
+            'instance_booking_page' => esc_html__('The instant booking page has not been created. Please contact the website administrator.', 'homey'),
 
 			'first_name_req' => esc_html__('First name required', 'homey'),
 			'last_name_req' => esc_html__('Last name required', 'homey'),
@@ -346,6 +410,10 @@ if( !function_exists('homey_get_localization')) {
 
 			'listing_dont_have' => esc_html__("You don't have any listing at this moment.", 'homey'),
 			'no_more_listings' => esc_html__('There are no more listings available', 'homey'),
+
+			'experience_dont_have' => esc_html__("You don't have any experience at this moment.", 'homey'),
+			'no_more_experiences' => esc_html__('There are no more experiences available', 'homey'),
+
 			'fav_dont_have' => esc_html__("You don't have any favorite at this moment.", 'homey'),
 			'reservation_not_found' => esc_html__("You don’t have any reservation at this moment.", 'homey'),
 			'upcoming_reservation_not_found' => esc_html__("You don't have any upcoming reservation at this moment.", 'homey'),
@@ -365,8 +433,12 @@ if( !function_exists('homey_get_localization')) {
 			'choose_start_hour' => esc_html__('Please select start hour', 'homey'),
 			'choose_end_hour' => esc_html__('Please select end hour', 'homey'),
 			'choose_guests' => esc_html__('Please choose guests', 'homey'),
-			'own_listing_error' => esc_html__('Your cannot book your own listing.', 'homey'),
+
+            'own_listing_error' => esc_html__('Your cannot book your own listing.', 'homey'),
 			'host_user_cannot_book' => esc_html__('You need renter or subscriber login to book listing. ', 'homey'),
+
+            'own_experience_error' => esc_html__('Your cannot book your own experience.', 'homey'),
+			'experience_host_user_cannot_book' => esc_html__('You need renter or subscriber login to book experience. ', 'homey'),
 
 			'start_date_label' => esc_html__('Please select start date', 'homey'),
 			'end_date_label' => esc_html__('Please select end date', 'homey'),
@@ -413,8 +485,12 @@ if( !function_exists('homey_get_localization')) {
 			'pr_profile_status' => esc_html__('Profile Status', 'homey'),
 			'pr_cont_host' => esc_html__('Contact the host', 'homey'),
 			'pr_cont_me' => esc_html__('Request Information', 'homey'),
-			'pr_listing_label' => esc_html__('Listings', 'homey'),
-			'pr_posts_label' => esc_html__('Posts', 'homey'),
+
+            'pr_listing_label' => esc_html__('Listings', 'homey'),
+
+            'pr_experience_label' => esc_html__('Experiences', 'homey'),
+
+            'pr_posts_label' => esc_html__('Posts', 'homey'),
 			'pr_resv_label' => esc_html__('Reservations', 'homey'),
 			'view_all_label' => esc_html__('View All', 'homey'),
 			'upcoming_resv' => esc_html__('Upcoming Reservations', 'homey'),
@@ -425,6 +501,7 @@ if( !function_exists('homey_get_localization')) {
 
 			'view_profile' => esc_html__( 'View Profile', 'homey' ),
 			'is_featured_label' => esc_html__( 'Make this listing as featured?', 'homey' ),
+			'experience_is_featured_label' => esc_html__( 'Make this experience as featured?', 'homey' ),
 			'featured_label' => esc_html__( 'Featured', 'homey' ),
 			'rentals_label' => esc_html__( 'Rentals', 'homey' ),
 			'rental_label' => esc_html__( 'Rental', 'homey' ),
@@ -464,8 +541,11 @@ if( !function_exists('homey_get_localization')) {
 			'end_date'			=> esc_html__( 'End date', 'homey' ),
 			'end_date_plac'			=> esc_html__( 'Enter end date', 'homey' ),
 			'inv_type'			=> esc_html__( 'Type', 'homey' ),
-			'inv_listing'		=> esc_html__( 'Listing', 'homey' ),
-			'inv_package'		=> esc_html__( 'Package', 'homey' ),
+
+            'inv_listing'		=> esc_html__( 'Listing', 'homey' ),
+            'inv_experience'		=> esc_html__( 'Experience', 'homey' ),
+
+            'inv_package'		=> esc_html__( 'Package', 'homey' ),
 			'one_time_text' 	=> esc_html__( 'One Time', 'homey'),
 			'recurring_text' 	=> esc_html__( 'Recurring', 'homey'),
 			'resv_fee_text' 	=> esc_html__( 'Reservation Fee', 'homey'),
@@ -477,8 +557,11 @@ if( !function_exists('homey_get_localization')) {
 			'inv_pay_method'	=> esc_html__( 'Payment Method','homey' ),
 			'inv_btn_details'	=> esc_html__( 'Details', 'homey' ),
 			'payment_details'	=> esc_html__( 'Payment details', 'homey' ),
-			'inv_listing_title'	=> esc_html__( 'Listing Title', 'homey' ),
-			'billing_type'		=> esc_html__( 'Billing Type', 'homey' ),
+
+            'inv_listing_title'	=> esc_html__( 'Listing Title', 'homey' ),
+            'inv_experience_title'	=> esc_html__( 'Title', 'homey' ),
+
+            'billing_type'		=> esc_html__( 'Billing Type', 'homey' ),
 			'billing_for'		=> esc_html__( 'Billing For', 'homey' ),
 			'inv_total'			=> esc_html__( 'Total', 'homey' ),
 			'inv_booking_date'	=> esc_html__( 'Booking Date', 'homey' ),
@@ -501,8 +584,11 @@ if( !function_exists('homey_get_localization')) {
 			'hour_ins_unavailable' => esc_html__("We're sorry, but the hours you are trying to reserve are no longer available. Please select new stay hours and try again.", 'homey'),
 			'ins_no_checkin' => esc_html__("Please choose check in date", 'homey'),
 			'ins_no_checkout' => esc_html__("Please choose check out date", 'homey'),
-			'ins_no_listing' => esc_html__("The listing you are looking for is not available", 'homey'),
-			'ins_book_proceed' => esc_html__("Check out date must be greater then check in date", 'homey'),
+
+            'ins_no_listing' => esc_html__("The listing you are looking for is not available", 'homey'),
+            'ins_no_experience' => esc_html__("The experience you are looking for is not available", 'homey'),
+
+            'ins_book_proceed' => esc_html__("Check out date must be greater then check in date", 'homey'),
 			'ins_hourly_book_proceed' => esc_html__("Check out hour must be greater then check in hour", 'homey'),
 			'guest_allowed' => esc_html__("Maximum guests allowed are", 'homey'),
 			'learnmore' => esc_html__('Learn More', 'homey'),
@@ -550,6 +636,7 @@ if( !function_exists('homey_get_localization')) {
 			'sr_child_label' => esc_html__('Children', 'homey' ),
 			'sr_apply_label' => esc_html__('Apply', 'homey' ),
 			'sr_listing_type_label' => esc_html__('Listing Type', 'homey' ),
+			'sr_experience_type_label' => esc_html__('Experience Type', 'homey' ),
 			'sr_room_type_label' => esc_html__('Room Type', 'homey' ),
 			'search_btn' => esc_html__('Search', 'homey' ),
 			'adv_btn' => esc_html__('Advanced', 'homey' ),
@@ -573,9 +660,14 @@ if( !function_exists('homey_get_localization')) {
 			*------------------------------------------------------*/
 			'm_dashboard_label' => esc_html__('Dashboard', 'homey' ),
 			'm_profile_label' => esc_html__('Profile', 'homey' ),
-			'm_listings_label' => esc_html__('My Listings', 'homey' ),
+
+            'm_listings_label' => esc_html__('My Listings', 'homey' ),
 			'm_add_listing_label' => esc_html__('Add New Listing', 'homey' ),
-			'm_reservation_label' => esc_html__('Reservations', 'homey' ),
+
+            'm_experiences_label' => esc_html__('My Experiences', 'homey' ),
+			'm_add_experience_label' => esc_html__('Add New Experience', 'homey' ),
+
+            'm_reservation_label' => esc_html__('Reservations', 'homey' ),
 			'm_favorites_label' => esc_html__('Favorites', 'homey' ),
 			'm_invoices_label' => esc_html__('Invoices', 'homey' ),
 			'm_messages_label' => esc_html__('Messages', 'homey' ),
@@ -589,6 +681,53 @@ if( !function_exists('homey_get_localization')) {
 			'hc_pending_label' => esc_html__('Pending', 'homey' ),
 			'hc_hours_label' => esc_html__('Hours', 'homey' ),
 			'hc_today_label' => esc_html__('Today', 'homey' ),
+
+            /*--------------------------------------------
+            * Experiences
+             */
+            'experience_hours_label'  	=> esc_html__('Hours', 'homey'),
+            'experience_language_label' => esc_html__('Language', 'homey' ),
+            'experience_language' => esc_html__('Language', 'homey' ),
+			'experience_max_stay_is' => esc_html__('Maximum Stay Is', 'homey' ),
+			'experience_min_stay_is' => esc_html__('Minimum Stay Is', 'homey' ),
+			'experience_add_rules_info' => esc_html__('Add Rules Info', 'homey' ),
+			'experience_max_no_of_persons' => esc_html__('Maximum No Of Persons', 'homey' ),
+			'experience_addinal_guests_label' => esc_html__('Additional Guests Label', 'homey' ),
+			'experience_security_deposit_label' => esc_html__('Security Deposit Label', 'homey' ),
+			'experience_guests_label' => esc_html__('Guests Label', 'homey' ),
+			'experience_opening_hours_label' => esc_html__('Opening Hours Label', 'homey' ),
+			'experience_about_experience_title' => esc_html__('About Title', 'homey' ),
+			'experience_about_host_title' => esc_html__('About Host', 'homey' ),
+			'experience_accom_label' => esc_html__('Accommodation Label', 'homey' ),
+			'experience_type_label' => esc_html__('Type Label', 'homey' ),
+            'experience_no_of_guests' => esc_html__('No of guests', 'homey' ),
+            'experience_ins_booking_label' => esc_html__('Instant Booking Label', 'homey' ),
+			'experience_nightly_label' => esc_html__('Persons Label', 'homey' ),
+			'experience_price_postfix' => esc_html__('Persons Postfix', 'homey' ),
+			'experience_allow_additional_guests' => esc_html__('Allow Additional Guests', 'homey' ),
+			'experience_cleaning_fee' => esc_html__('Cleaning Fee', 'homey' ),
+			'experience_city_fee' => esc_html__('City Fee', 'homey' ),
+			'experience_tax_rate_label' => esc_html__('Tax Rate Label', 'homey' ),
+			'experience_address' => esc_html__('Address', 'homey' ),
+			'experience_aptSuit' => esc_html__('Appartment Suit', 'homey' ),
+			'experience_country' => esc_html__('Country', 'homey' ),
+			'experience_state' => esc_html__('State', 'homey' ),
+			'experience_city' => esc_html__('City', 'homey' ),
+			'experience_area' => esc_html__('Area', 'homey' ),
+			'experience_zipcode' => esc_html__('Zip Code', 'homey' ),
+			'experience_video_heading' => esc_html__('Video Heading', 'homey' ),
+			'experience_cancel_policy' => esc_html__('Cancel policy', 'homey' ),
+			'experience_min_days_booking' => esc_html__('Minimum Days', 'homey' ),
+			'experience_max_days_booking' => esc_html__('Maximum Days', 'homey' ),
+			'experience_check_in_after' => esc_html__('Checkin After', 'homey' ),
+			'experience_check_out_before' => esc_html__('Checkout Before', 'homey' ),
+			'experience_smoking_allowed' => esc_html__('Smoking Allowed', 'homey' ),
+			'experience_pets_allowed' => esc_html__('Pets Allowed', 'homey' ),
+			'experience_party_allowed' => esc_html__('Party Allowed', 'homey' ),
+			'experience_children_allowed' => esc_html__('Children Allowed', 'homey' ),
+			'experience_add_rules_info_optional' => esc_html__('Rules Info Optional', 'homey' ),
+			'experience_openning_hours_label' => esc_html__('Opening Hours', 'homey' ),
+			'experience_setup_period_prices' => esc_html__('Setup Period Prices', 'homey' ),
 
 		);
 

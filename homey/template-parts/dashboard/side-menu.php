@@ -17,11 +17,23 @@ $dashboard_profile = homey_get_template_link_dash('template/dashboard-profile.ph
 $payment_method_setup = add_query_arg( 'dpage', 'payment-method', $dashboard_profile );
 
 $dashboard_listings = homey_get_template_link_dash('template/dashboard-listings.php');
+$dashboard_coupon = homey_get_template_link_dash('template/dashboard-coupons.php');
+$dashboard_users = homey_get_template_link_dash('template/dashboard-users.php');
+$dashboard_experiences = homey_get_template_link_dash('template/dashboard-experiences.php');
+$dashboard_add_experience = homey_get_template_link_dash('template/dashboard-experience-submission.php');
+
+$dashboard_membership = homey_get_template_link_dash('template/dashboard-membership-host.php');
 $dashboard_add_listing = homey_get_template_link_dash('template/dashboard-submission.php');
 $dashboard_favorites = homey_get_template_link_dash('template/dashboard-favorites.php');
 $dashboard_search = homey_get_template_link_dash('template/dashboard-saved-searches.php');
+
 $dashboard_reservations = homey_get_template_link_dash('template/dashboard-reservations.php');
 $dashboard_host_reservations = homey_get_template_link_dash('template/dashboard-reservations2.php');
+
+
+$dashboard_exp_reservations = homey_get_template_link_dash('template/dashboard-reservations-experiences.php');
+$dashboard_exp_host_reservations = homey_get_template_link_dash('template/dashboard-reservations2-experiences.php');
+
 $dashboard_messages = homey_get_template_link_dash('template/dashboard-messages.php');
 $dashboard_invoices = homey_get_template_link_dash('template/dashboard-invoices.php');
 $dashboard_wallet = homey_get_template_link_dash('template/dashboard-wallet.php');
@@ -31,16 +43,26 @@ $all_users = add_query_arg( 'dpage', 'users', $dashboard );
 $verification_page = add_query_arg( 'dpage', 'verification', $dashboard_profile );
 $password_page = add_query_arg( 'dpage', 'password-reset', $dashboard_profile );
 
-$ac_wallet = $ac_dash = $ac_profile = $ac_fav = $ac_listings = $ac_invoices = $ac_msgs = $ac_submission = $ac_reserv = $ac_reserv_host = '';
+$ac_wallet = $ac_dash = $ac_profile = $ac_fav = $ac_experiences = $ac_experience_submission = $ac_listings = $ac_membership = $ac_invoices = $ac_msgs = $ac_submission = $ac_reserv = $ac_reserv_host = $ac_exp_reserv = $ac_exp_reserv_host = '';
 if( is_page_template( 'template/dashboard.php' ) && !isset($_GET['dpage'])) {
     $ac_dash = 'board-panel-item-active';
 } elseif ( is_page_template( 'template/dashboard-profile.php' ) ) {
     $ac_profile = 'board-panel-item-active';
-} elseif ( is_page_template( 'template/dashboard-listings.php' ) ) {
-    $ac_listings = 'board-panel-item-active';
-} elseif ( is_page_template( 'template/dashboard-submission.php' ) ) {
+} elseif ( is_page_template( 'template/dashboard-experiences.php' ) ) {
+    $ac_experiences = 'board-panel-item-active';
+}elseif ( is_page_template( 'template/dashboard-experience-submission.php' ) ) {
+    $ac_experience_submission = 'board-panel-item-active';
+}elseif ( is_page_template( 'template/dashboard-listings.php' ) ) {
+    $ac_listings = 'board-panel-item-active';   
+} elseif ( is_page_template( 'template/dashboard-coupons.php' ) ) {
+    $ac_coupon = 'board-panel-item-active';
+}elseif ( is_page_template( 'template/dashboard-submission.php' ) ) {
     $ac_submission = 'board-panel-item-active';
-} elseif ( is_page_template( 'template/dashboard-favorites.php' ) ) {
+    
+} 
+elseif ( is_page_template( 'template/dashboard-users.php' ) ) {
+    $ac_user = 'board-panel-item-active';}
+elseif ( is_page_template( 'template/dashboard-favorites.php' ) ) {
     $ac_fav = 'board-panel-item-active';
 } elseif ( is_page_template( 'template/dashboard-invoices.php' ) ) {
     $ac_invoices = 'board-panel-item-active';
@@ -50,7 +72,13 @@ if( is_page_template( 'template/dashboard.php' ) && !isset($_GET['dpage'])) {
     $ac_reserv = 'board-panel-item-active';
 } elseif ( is_page_template( 'template/dashboard-reservations2.php' ) ) {
     $ac_reserv_host = 'board-panel-item-active';
+} elseif ( is_page_template( 'template/dashboard-reservations-experiences.php' ) ) {
+    $ac_exp_reserv = 'board-panel-item-active';
+} elseif ( is_page_template( 'template/dashboard-reservations2-experiences.php' ) ) {
+    $ac_exp_reserv_host = 'board-panel-item-active';
 } elseif ( is_page_template( 'template/dashboard-wallet.php' ) ) {
+    $ac_wallet = 'board-panel-item-active';
+} elseif ( is_page_template( 'template/dashboard-membership-host.php' ) ) {
     $ac_wallet = 'board-panel-item-active';
 }
 
@@ -100,6 +128,38 @@ if( is_page_template( 'template/dashboard.php' ) && !isset($_GET['dpage'])) {
                         <a href="'.esc_url($dashboard_add_listing).'">'.$homey_local['m_add_listing_label'].'</a>
                     </li>';
                 }
+                if( !empty($dashboard_coupon) ) {
+                    echo '<li class="'.esc_attr($ac_coupon).'">
+                        <a href="'.esc_url($dashboard_coupon).'">'.esc_html__('My Coupons', 'homey').'</a>
+                    </li>';
+                }
+                if( !empty($dashboard_users) ) {
+                    echo '<li class="'.esc_attr($ac_users).'">
+                        <a href="'.esc_url($dashboard_users).'">'.esc_html__('All Users', 'homey').'</a>
+                    </li>';
+                }
+                // if( !empty($dashboard_add_listing) ) {
+                //     echo '<li class="'.esc_attr($ac_coupon).'">
+                //         <a href="'.esc_url($coupon_listings).'">'.esc_html__('Add Coupon','homey').'</a>
+                //     </li>';
+                // }
+                // experiences menu items
+                if( !empty($dashboard_experiences) ) {
+                    echo '<li class="'.esc_attr($ac_experiences).'"><a href="'.esc_url($dashboard_experiences).'">'.$homey_local['m_experiences_label'].'</a></li>';
+                }
+
+                if( !empty($dashboard_add_experience) ) {
+                    echo '<li class="'.esc_attr($ac_experience_submission).'"><a href="'.esc_url($dashboard_add_experience).'">'.$homey_local['m_add_experience_label'].' </a></li>';
+                }
+                // end experiences menu items
+            }
+
+            if(!homey_is_renter() && ! homey_is_admin() && in_array('homey-membership/homey-membership.php', apply_filters('active_plugins', get_option('active_plugins')))){
+                if( !empty($dashboard_membership) ) {
+                    echo '<li class="'.esc_attr($ac_membership).'">
+                        <a href="'.esc_url($dashboard_membership).'">'.esc_html__('Membership', 'homey').'</a>
+                    </li>';
+                }
             }
 
             if( !empty($dashboard_reservations) ) {
@@ -113,8 +173,11 @@ if( is_page_template( 'template/dashboard.php' ) && !isset($_GET['dpage'])) {
                         <a href="'.esc_url($dashboard_reservations).'">'.esc_html__('Bookings', 'homey').'</a>
                     </li>';
                 } else {
+                    $new_notification = homey_booking_notification(1);
+                    $new_notification = $new_notification > 0 ? '<span class="new-booking-alert" style="display: block;"></span>' : '<span class="new-booking-alert" style="display: none;"></span>';
+
                     echo '<li class="'.esc_attr($ac_reserv).'">
-                        <a href="'.esc_url($dashboard_reservations).'">'.esc_html__('My Bookings', 'homey').'</a>
+                        <a href="'.esc_url($dashboard_reservations).'">'.esc_html__('My Bookings', 'homey').' '.$new_notification.'</a>
                     </li>';
                 }
             }
@@ -123,6 +186,16 @@ if( is_page_template( 'template/dashboard.php' ) && !isset($_GET['dpage'])) {
                 echo '<li class="'.$ac_reserv_host.'">
                     <a href="'.esc_url($dashboard_host_reservations).'">'.esc_html__('My Reservations', 'homey').'</a>
                 </li>';
+            }
+
+            if( !empty($dashboard_exp_reservations) ) {
+                $new_notification = homey_booking_notification(1);
+                $new_notification = $new_notification > 0 ? '<span class="new-booking-alert" style="display: block;"></span>' : '<span class="new-booking-alert" style="display: none;"></span>';
+                echo '<li class="'.$ac_exp_reserv_host.'"><a href="'.esc_url($dashboard_exp_reservations).'">'.esc_html__('Experiences Bookings', 'homey').' '.$new_notification.'</a></li>';
+            }
+
+            if( !empty($dashboard_exp_host_reservations) && !homey_is_renter()) {
+                echo '<li class="'.$ac_exp_reserv.'"><a href="'.esc_url($dashboard_exp_host_reservations).'">'.esc_html__('Experiences Reservations', 'homey').'</a></li>';
             }
 
             if($enable_wallet != 0) {

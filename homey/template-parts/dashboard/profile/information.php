@@ -22,7 +22,7 @@ $is_role_settled = get_user_meta($userID, 'social_register_set_role', 1);
     </div>
     <div class="block-body">
         <div class="row">
-            <?php if ($is_role_settled == -1){ ?>
+            <?php if ($is_role_settled != 1){ ?>
             <div class="col-sm-12">
                 <div class="form-group">
                     <label for="role"><?php echo esc_attr(isset($homey_local['select_role'])?$homey_local['select_role']:'Select Role'); ?></label>

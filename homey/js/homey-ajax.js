@@ -2,11 +2,12 @@ jQuery(document).ready(function ($) {
     "use strict";
 
     if ( typeof HOMEY_ajax_vars !== "undefined" ) {
-        
+
         var ajaxurl = HOMEY_ajax_vars.admin_url+ 'admin-ajax.php';
         var login_redirect_type = HOMEY_ajax_vars.redirect_type;
         var login_redirect = HOMEY_ajax_vars.login_redirect;
         var is_singular_listing = HOMEY_ajax_vars.is_singular_listing;
+        var is_singular_experience = HOMEY_ajax_vars.is_singular_experience;
         var paypal_connecting = HOMEY_ajax_vars.paypal_connecting;
         var login_sending = HOMEY_ajax_vars.login_loading;
         var process_loader_spinner = HOMEY_ajax_vars.process_loader_spinner;
@@ -21,10 +22,6 @@ jQuery(document).ready(function ($) {
         var booking_start_hour = HOMEY_ajax_vars.booking_start_hour;
         var booking_end_hour = HOMEY_ajax_vars.booking_end_hour;
         var homey_min_book_days = HOMEY_ajax_vars.homey_min_book_days;
-
-        //
-        var sa_guest_message = HOMEY_ajax_vars.sa_guest_message;
-        var sa_datarange_message = HOMEY_ajax_vars.sa_datarange_message;
 
         if( booked_hours_array !=='' && booked_hours_array.length !== 0 ) {
             booked_hours_array   = JSON.parse (booked_hours_array);
@@ -50,7 +47,7 @@ jQuery(document).ready(function ($) {
         var focusedInput_2 = null;
 
         var allowed_guests_plus_additional = parseInt(allowed_guests_num) + parseInt(num_additional_guests);
-        
+
         var compare_url = HOMEY_ajax_vars.compare_url;
         var add_compare = HOMEY_ajax_vars.add_compare;
         var remove_compare = HOMEY_ajax_vars.remove_compare;
@@ -76,7 +73,6 @@ jQuery(document).ready(function ($) {
           return new Date(str.replace(/^(\d{2}\-)(\d{2}\-)(\d{4})$/,
             '$2$1$3')).getTime();
         };*/
-
 
         var homey_processing_modal = function ( msg ) {
             var process_modal ='<div class="modal fade" id="homey_modal" tabindex="-1" role="dialog" aria-labelledby="homeyModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-body homey_messages_modal">'+msg+'</div></div></div></div></div>';
@@ -107,7 +103,7 @@ jQuery(document).ready(function ($) {
                     $(".mobile-logo img").attr("src", retina_logo_mobile_splash);
                 }
 
-            } else { 
+            } else {
                 if(retina_logo != '') {
                     $(".homey_logo img").attr("src", retina_logo);
                 }
@@ -162,7 +158,7 @@ jQuery(document).ready(function ($) {
         }
 
         $('.homey-currency-switcher').on('change', function(e) {
-    
+
             var selectedCurrencyCode = $(this).val();
 
             if ( selectedCurrencyCode ) {
@@ -268,14 +264,95 @@ jQuery(document).ready(function ($) {
 
                 });
 
-            }); 
+            });
         }
 
+        //experiences
+        var experiences_module_section = $('#experiences_module_section');
+        if( experiences_module_section.length > 0 ) {
+
+            $("body").on('click', '.homey-loadmore a', function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                var $wrap = $this.closest('#experiences_module_section').find('#module_experiences');
+
+                var limit = $this.data('limit');
+                var paged = $this.data('paged');
+                var style = $this.data('style');
+                var type = $this.data('type');
+                var roomtype = $this.data('roomtype');
+                var country = $this.data('country');
+                var state = $this.data('state');
+                var city = $this.data('city');
+                var area = $this.data('area');
+                var featured = $this.data('featured');
+                var offset = $this.data('offset');
+                var sortby = $this.data('sortby');
+                var booking_type = $this.data('booking_type');
+                var author = $this.data('author');
+                var authorid = $this.data('authorid');
+
+                $.ajax({
+                    type: 'POST',
+                    url: ajaxurl,
+                    data: {
+                        'action': 'homey_loadmore_experiences',
+                        'limit': limit,
+                        'paged': paged,
+                        'style': style,
+                        'type': type,
+                        'roomtype': roomtype,
+                        'country': country,
+                        'state': state,
+                        'city': city,
+                        'area': area,
+                        'featured': featured,
+                        'sort_by': sortby,
+                        'offset': offset,
+                        'booking_type': booking_type,
+                        'author': author,
+                        'authorid': authorid,
+                    },
+                    beforeSend: function( ) {
+                        $this.find('i').css('display', 'inline-block');
+                    },
+                    success: function (data) {
+                        if(data == 'no_result') {
+                            $this.closest('#experiences_module_section').find('.homey-loadmore').text(no_more_experiences);
+                            return;
+                        }
+                        $wrap.append(data);
+                        $this.data("paged", paged+1);
+
+                        homey_init_add_exp_favorite(ajaxurl, userID, is_singular_experience);
+                        homey_init_remove_exp_favorite(ajaxurl, userID, is_singular_experience);
+                        compare_exp_for_ajax();
+
+                    },
+                    complete: function(){
+                        $this.find('i').css('display', 'none');
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    }
+
+                });
+
+            });
+        }
+
+        //end of experiences
         /*--------------------------------------------------------------------------
          *   Add or remove favorites
          * -------------------------------------------------------------------------*/
         homey_init_add_favorite(ajaxurl, userID, is_singular_listing);
         homey_init_remove_favorite(ajaxurl, userID, is_singular_listing);
+
+        //experiences
+        homey_init_add_exp_favorite(ajaxurl, userID, is_singular_experience);
+        homey_init_remove_exp_favorite(ajaxurl, userID, is_singular_experience);
+        //end of experiences
 
         /*--------------------------------------------------------------------------
          *   Compare for ajax
@@ -286,6 +363,15 @@ jQuery(document).ready(function ($) {
             add_to_compare(compare_url, add_compare, remove_compare, compare_limit, listings_compare, limit_item_compare );
             remove_from_compare(listings_compare, add_compare, remove_compare);
         }
+
+        //experiences
+        var compare_exp_for_ajax = function() {
+            var experiences_compare = homeyGetCookie('homey_compare_experiences');
+            var limit_item_compare = 4;
+            add_to_compare_exp(compare_url, add_compare, remove_compare, compare_limit, experiences_compare, limit_item_compare );
+            remove_from_compare_exp(experiences_compare, add_compare, remove_compare);
+        }
+        //experiences
 
         /* ------------------------------------------------------------------------ */
         /*  Paypal single listing payment
@@ -311,6 +397,28 @@ jQuery(document).ready(function ($) {
 
         });
 
+        //experiences
+        $('#homey_complete_order').on('click', function(e) {
+            e.preventDefault();
+            var hform, payment_gateway, experience_id, is_upgrade;
+
+            payment_gateway = $("input[name='homey_payment_type']:checked").val();
+            is_upgrade = $("input[name='is_upgrade']").val();
+
+            experience_id = $('#experience_id').val();
+
+            if( payment_gateway == 'paypal' ) {
+                homey_processing_modal( paypal_connecting );
+                homey_paypal_payment( experience_id, is_upgrade);
+
+            } else if ( payment_gateway == 'stripe' ) {
+                var hform = $(this).parents('.dashboard-area');
+                hform.find('.homey_stripe_simple button').trigger("click");
+            }
+            return;
+
+        });
+        //experiences
 
         /* ------------------------------------------------------------------------ */
         /*  Paypal payment function
@@ -335,6 +443,27 @@ jQuery(document).ready(function ($) {
             });
         }
 
+        //experiences
+        var homey_paypal_exp_payment = function( experience_id, is_upgrade ) {
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                data: {
+                    'action': 'homey_experience_paypal_payment',
+                    'experience_id': experience_id,
+                    'is_upgrade': is_upgrade,
+                },
+                success: function( response ) {
+                    window.location.href = response;
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                }
+            });
+        }
+        //experiences
 
         if($('#add_review').length > 0) {
             $('#add_review').on('click', function(e){
@@ -383,7 +512,7 @@ jQuery(document).ready(function ($) {
                     }
 
                 });
-                            
+
             });
         }
 
@@ -434,7 +563,7 @@ jQuery(document).ready(function ($) {
                     }
 
                 });
-                            
+
             });
         }
 
@@ -450,7 +579,7 @@ jQuery(document).ready(function ($) {
                     'paged': paged
                 },
                 beforeSend: function( ) {
-                
+
                 },
                 success: function(data) {
                     review_container.empty();
@@ -461,7 +590,7 @@ jQuery(document).ready(function ($) {
                     console.log(err.Message);
                 },
                 complete: function(){
-                    
+
                 }
 
             });
@@ -474,7 +603,7 @@ jQuery(document).ready(function ($) {
                 var paged = $('#review_paged').val();
                 listing_review_ajax(sortby, listing_id, paged);
                 return;
-            }); 
+            });
         }
 
         if($('#review_next').length > 0) {
@@ -493,7 +622,7 @@ jQuery(document).ready(function ($) {
                 }
                 listing_review_ajax(sortby, listing_id, paged);
                 return;
-            }); 
+            });
         }
 
         if($('#review_prev').length > 0) {
@@ -510,8 +639,183 @@ jQuery(document).ready(function ($) {
                 }
                 listing_review_ajax(sortby, listing_id, paged);
                 return;
-            }); 
+            });
         }
+
+        // Reviews js function for experiences
+        if($('#add_exp_review').length > 0) {
+            $('#add_exp_review').on('click', function(e){
+                e.preventDefault();
+
+                var $this = $(this);
+                var rating = $('#rating').val();
+                var review_action = $('#review_action').val();
+                var review_content = $('#review_content').val();
+                var review_reservation_id = $('#review_reservation_id').val();
+                var security = $('#review-security').val();
+                var parentDIV = $this.parents('.user-dashboard-right');
+
+                $.ajax({
+                    type: 'post',
+                    url: ajaxurl,
+                    dataType: 'json',
+                    data: {
+                        'action': 'homey_add_exp_review',
+                        'rating': rating,
+                        'review_action': review_action,
+                        'review_content': review_content,
+                        'review_reservation_id': review_reservation_id,
+                        'security': security
+                    },
+                    beforeSend: function( ) {
+                        $this.children('i').remove();
+                        $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    },
+                    success: function(data) {
+
+                        parentDIV.find('.alert').remove();
+                        if(data.success) {
+                            $this.attr("disabled", true);
+                            window.location.reload();
+                        } else {
+                            parentDIV.find('.dashboard-area').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><i class="fa fa-close"></i></button>'+data.message+'</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    },
+                    complete: function(){
+                        $this.children('i').removeClass(process_loader_spinner);
+                    }
+
+                });
+
+            });
+        }
+
+        if($('#add_guest_exp_review').length > 0) {
+            $('#add_guest_exp_review').on('click', function(e){
+                e.preventDefault();
+
+                var $this = $(this);
+                var rating = $('#rating').val();
+                var review_action = $('#review_guest_action').val();
+                var review_content = $('#review_content').val();
+                var review_guest_reservation_id = $('#review_guest_reservation_id').val();
+                var security = $('#review-security').val();
+                var parentDIV = $this.parents('.user-dashboard-right');
+
+                $.ajax({
+                    type: 'post',
+                    url: ajaxurl,
+                    dataType: 'json',
+                    data: {
+                        'action': 'homey_add_guest_exp_review',
+                        'rating': rating,
+                        'review_action': review_action,
+                        'review_content': review_content,
+                        'review_guest_reservation_id': review_guest_reservation_id,
+                        'security': security
+                    },
+                    beforeSend: function( ) {
+                        $this.children('i').remove();
+                        $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    },
+                    success: function(data) {
+
+                        parentDIV.find('.alert').remove();
+                        if(data.success) {
+                            $this.attr("disabled", true);
+                            window.location.reload();
+                        } else {
+                            parentDIV.find('.dashboard-area').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><i class="fa fa-close"></i></button>'+data.message+'</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    },
+                    complete: function(){
+                        $this.children('i').removeClass(process_loader_spinner);
+                    }
+                });
+            });
+        }
+
+        var experience_review_ajax = function(sortby, experience_id, paged) {
+            var review_container = $('#homey_reviews');
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                data: {
+                    'action': 'homey_ajax_exp_review',
+                    'sortby': sortby,
+                    'experience_id': experience_id,
+                    'paged': paged
+                },
+                beforeSend: function( ) {
+
+                },
+                success: function(data) {
+                    review_container.empty();
+                    review_container.html(data);
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                }
+            });
+        }
+
+        if($('#sort_exp_review').length > 0) {
+            $('#sort_exp_review').on('change', function() {
+                var sortby = $(this).val();
+                var experience_id = $('#review_experience_id').val();
+                var paged = $('#review_paged').val();
+                experience_review_ajax(sortby, experience_id, paged);
+                return;
+            });
+        }
+
+        if($('#review_exp_next').length > 0) {
+            $('#review_exp_next').on('click', function(e) {
+                e.preventDefault();
+                $('#review_prev').removeAttr('disabled');
+                var sortby = $('#page_sort').val();
+                var total_pages = $('#total_pages').val();
+                var experience_id = $('#review_experience_id').val();
+                var paged = $('#review_paged').val();
+                paged = Number(paged)+1;
+                $('#review_paged').val(paged);
+
+                if(paged == total_pages) {
+                    $(this).attr('disabled', true);
+                }
+                experience_review_ajax(sortby, listing_id, paged);
+                return;
+            });
+        }
+
+        if($('#review_exp_prev').length > 0) {
+            $('#review_exp_prev').on('click', function(e) {
+                e.preventDefault();
+                $('#review_next').removeAttr('disabled');
+                var sortby = $('#page_sort').val();
+                var experience_id = $('#review_experience_id').val();
+                var paged = $('#review_paged').val();
+                paged = Number(paged)-1;
+                $('#review_paged').val(paged);
+                if(paged <= 1) {
+                    $(this).attr('disabled', true);
+                }
+                experience_review_ajax(sortby, experience_id, paged);
+                return;
+            });
+        }
+        // End of Reviews js function for experiences
 
         /* ------------------------------------------------------------------------ */
         /* Set date format
@@ -521,18 +825,17 @@ jQuery(document).ready(function ($) {
             if(date == '') {
                 return '';
             }
-     
+
             var d_format, return_date;
-            
+
             d_format = homey_date_format.toUpperCase();
 
             var changed_date_format = d_format.replace("YY", "YYYY");
             var return_date = moment(date, changed_date_format).format('YYYY-MM-DD');
 
             return return_date;
-         
-        }
 
+        }
 
         var homey_calculate_booking_cost = function(check_in_date, check_out_date, guests, listing_id, security, extra_options) {
             var $this = $(this);
@@ -543,17 +846,64 @@ jQuery(document).ready(function ($) {
                 $('#homey_booking_cost, .payment-list').empty();
                 return;
             }
-
+            var coupon_code = '';
+            if($(document).find(".valid-coupon-code").length > 0){
+                coupon_code = $("#coupens_deals").val();
+            }
             $.ajax({
                 type: 'post',
                 url: ajaxurl,
                 data: {
                     'action': 'homey_calculate_booking_cost',
                     'check_in_date': check_in_date,
+                    'coupon_code':coupon_code,
                     'check_out_date': check_out_date,
                     'guests': guests,
                     'extra_options': extra_options,
                     'listing_id': listing_id,
+                    'security': security,
+                    
+                },
+                beforeSend: function( ) {
+                    $('#homey_booking_cost, .payment-list').empty();
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    notify.find('.homey_preloader').show();
+                },
+                success: function(data) {
+                    $('#homey_booking_cost, .payment-list').empty().html(data);
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                    notify.find('.homey_preloader').hide();
+                }
+
+            });
+        }
+
+        var homey_calculate_exp_booking_cost = function(check_in_date, guests, experience_id, security, extra_options) {
+            var $this = $(this);
+            var notify = $('.homey_notification');
+            notify.find('.notify').remove();
+
+            if(check_in_date === '') {
+                $('#homey_booking_cost, .payment-list').empty();
+                return;
+            }
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                data: {
+                    'action': 'homey_calculate_exp_booking_cost',
+                    'check_in_date': check_in_date,
+                    'guests': guests,
+                    'extra_options': extra_options,
+                    'experience_id': experience_id,
                     'security': security
                 },
                 beforeSend: function( ) {
@@ -621,6 +971,55 @@ jQuery(document).ready(function ($) {
             });
         }
 
+		
+
+       
+//      var check_booking_coupon_apply_code = function coupon_deals_homey_houses(security,coupens_deals,listing_id) {
+//             var $this = $(this);
+//             var notify = $('.homey_notification');
+//             notify.find('.notify').remove();
+
+//             $.ajax({
+//                 type: 'post',
+//                 url: ajaxurl,
+//                 data: {
+//                     'action': 'check_booking_coupon_apply_code',
+//                     'security': security,
+//                     'coupens_deals': coupens_deals,
+//                     'listing_id': listing_id,
+//                 },
+//                 beforeSend: function( ) {
+//                     $('#homey_booking_cost, .payment-list').empty();
+//                     notify.find('.homey_preloader').show();
+//                 },
+//                 success: function(data) {
+//                     $(".coupan-msg").remove();
+//                     $(".less-coupen-deal").append(data);
+//                 },
+//                 error: function(xhr, status, error) {
+//                     var err = eval("(" + xhr.responseText + ")");
+//                     console.log(err.Message);
+//                 },
+//                 complete: function(){
+//                     notify.find('.homey_preloader').hide();
+//                 }
+
+//             });
+            
+//         }
+       
+    
+//     $("#apply_coupon").click(function(){       
+//         var security = $('#reservation-security').val();
+//         var coupens_deals = $('#coupens_deals').val();
+//         var listing_id = $('#listing_id').val();
+
+//         check_booking_coupon_apply_code(security,coupens_deals,listing_id);
+//     });
+        
+    
+    
+
         var check_booking_availability_on_date_change = function(check_in_date, check_out_date, listing_id, security) {
             var $this = $(this);
 
@@ -630,7 +1029,7 @@ jQuery(document).ready(function ($) {
             $('.homey_extra_price input').each(function(){
                 $(this).prop("checked", false);
             });
-        
+
             $.ajax({
                 type: 'post',
                 url: ajaxurl,
@@ -668,6 +1067,55 @@ jQuery(document).ready(function ($) {
             });
         }
 
+        var check_exp_availability_on_date_change = function(check_in_date, experience_id, security) {
+            var $this = $(this);
+
+            var exp_guests = $("input[name='exp_guests']").val();
+
+            var notify = $('.homey_notification');
+            notify.find('.notify').remove();
+
+            $('.homey_exp_extra_price input').each(function(){
+                $(this).prop("checked", false);
+            });
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'check_exp_availability_on_date_change',
+                    'check_in_date': check_in_date,
+                    'experience_id': experience_id,
+                    'exp_guests': exp_guests,
+                    'security': security
+                },
+                beforeSend: function( ) {
+                    $('#homey_booking_cost, .payment-list').empty();
+                    notify.find('.homey_preloader').show();
+                },
+                success: function(data) {
+                    if( data.success ) {
+                        $('#request_for_reservation, #request_for_reservation_mobile').removeAttr("disabled");
+                        $('#instance_reservation, #instance_reservation_mobile').removeAttr("disabled");
+                        notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
+                    } else {
+                        notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
+                        $('#request_for_reservation, #request_for_reservation_mobile').attr("disabled", true);
+                        $('#instance_reservation, #instance_reservation_mobile').attr("disabled", true);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    notify.find('.homey_preloader').hide();
+                }
+
+            });
+        }
+
         var check_booking_availability_on_hour_change = function(check_in_date, start_hour, end_hour, listing_id, security) {
             var $this = $(this);
 
@@ -677,7 +1125,7 @@ jQuery(document).ready(function ($) {
             $('.homey_extra_price input').each(function(){
                 $(this).prop("checked", false);
             });
-        
+
             $.ajax({
                 type: 'post',
                 url: ajaxurl,
@@ -731,11 +1179,17 @@ jQuery(document).ready(function ($) {
             $('.single-form-guests-js').css("display", "block");
         });
 
+        $(".exp-single-guests-js input").on('focus', function() {
+            $(this).prev("label").css("display", "block");
+            $(this).addClass("on-focus");
+            $('.exp-single-form-guests-js').css("display", "block");
+        });
+
         var numClicks = 0;
         var fromTimestamp_2, toTimestamp_2 = 0; // init start and end timestamps
 
         var homey_booking_dates = function() {
-            
+
             $('.single-listing-booking-calendar-js ul li').on('click', function() {
                 var $this = $(this);
                 $this.show();
@@ -773,7 +1227,7 @@ jQuery(document).ready(function ($) {
                     if(homey_booking_type != 'per_hour') {
                         homey_calculate_price_checkin();
                     }
-                    
+
                 } else if(numClicks == 2) {
 
                     toTimestamp_2 = timestamp;
@@ -785,7 +1239,7 @@ jQuery(document).ready(function ($) {
                     check_in_date = homey_timeStamp_2(check_in_date);
                     var check_out_date = homey_timeStamp_2(vl);
 
-                    if(check_in_date >= check_out_date) {
+                    if(check_in_date >= check_out_date && homey_booking_type != 'per_day_date') {
                         fromTimestamp_2 = timestamp;
                         toTimestamp_2 = 0;
                         //day nodes
@@ -807,13 +1261,12 @@ jQuery(document).ready(function ($) {
                         }
                     }
                 }
-                if(numClicks == 2) { 
-                    numClicks = 0; 
+                if(numClicks == 2) {
+                    numClicks = 0;
                 }
 
             });
         }
-        
 
         //Run only for daily/nighty booking
 
@@ -839,7 +1292,6 @@ jQuery(document).ready(function ($) {
                     }).addClass('in-between');
             }
 
-
             var homey_calculate_price_checkin = function() {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
@@ -850,6 +1302,7 @@ jQuery(document).ready(function ($) {
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
                 var security = $('#reservation-security').val();
+               
                 homey_calculate_booking_cost(check_in_date, check_out_date, guests, listing_id, security);
             }
 
@@ -857,20 +1310,50 @@ jQuery(document).ready(function ($) {
                 homey_calculate_price_checkin();
             }
 
+            
             var homey_calculate_price_checkout = function() {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
 
                 var check_out_date = $('input[name="depart"]').val();
                 check_out_date = homey_convert_date(check_out_date);
-
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
                 var security = $('#reservation-security').val();
+                
                 homey_calculate_booking_cost(check_in_date, check_out_date, guests, listing_id, security);
                 check_booking_availability_on_date_change(check_in_date, check_out_date, listing_id, security);
             }
-            
+
+            var homey_calculate_exp_price_checkout = function() {
+                var extra_options = []; var temp_opt;
+
+                $('.homey_exp_extra_price input').each(function() {
+
+                    if( ($(this).is(":checked")) ) {
+                        var extra_name = $(this).data('name');
+                        var extra_price = $(this).data('price');
+                        var extra_type = $(this).data('type');
+                        temp_opt    =   '';
+                        temp_opt    =   extra_name;
+                        temp_opt    =   temp_opt + '|' + extra_price;
+                        temp_opt    =   temp_opt + '|' + extra_type;
+                        extra_options.push(temp_opt);
+                    }
+
+                });
+
+                var check_in_date = $('input[name="arrive"]').val();
+                check_in_date = homey_convert_date(check_in_date);
+
+                var guests = $('input[name="exp_guests"]').val();
+                var experience_id = $('#experience_id').val();
+                var security = $('#reservation-security').val();
+                
+                homey_calculate_exp_booking_cost(check_in_date, guests, experience_id, security, extra_options);
+                check_exp_availability_on_date_change(check_in_date, experience_id, security);
+            }
+
             $('.apply_guests').on('click', function () {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
@@ -881,6 +1364,7 @@ jQuery(document).ready(function ($) {
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
                 var security = $('#reservation-security').val();
+                
                 homey_calculate_booking_cost(check_in_date, check_out_date, guests, listing_id, security);
                 check_booking_availability_on_date_change(check_in_date, check_out_date, listing_id, security);
             });
@@ -900,8 +1384,8 @@ jQuery(document).ready(function ($) {
                         temp_opt    =   temp_opt + '|' + extra_type;
                         extra_options.push(temp_opt);
                     }
-                    
-                }); 
+
+                });
 
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
@@ -912,16 +1396,14 @@ jQuery(document).ready(function ($) {
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
                 var security = $('#reservation-security').val();
+                
                 homey_calculate_booking_cost(check_in_date, check_out_date, guests, listing_id, security, extra_options);
 
             });
-                
-            
-            
         }
 
         if(homey_booking_type == 'per_hour') {
-            
+
             $('.hourly-js-desktop ul li').on('click', function () {
                 var $this = $(this);
                 var vl = $this.data('formatted-date');
@@ -967,7 +1449,7 @@ jQuery(document).ready(function ($) {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
 
-                var start_hour = $('select[name="start_hour"]').val(); 
+                var start_hour = $('select[name="start_hour"]').val();
                 var end_hour = $('select[name="end_hour"]').val();
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
@@ -1021,7 +1503,7 @@ jQuery(document).ready(function ($) {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
 
-                var start_hour = $('#start_hour_overlay').val(); 
+                var start_hour = $('#start_hour_overlay').val();
                 var end_hour = $('#end_hour_overlay').val();
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
@@ -1047,7 +1529,7 @@ jQuery(document).ready(function ($) {
                 var check_in_date = $('input[name="arrive"]').val();
                 check_in_date = homey_convert_date(check_in_date);
 
-                var start_hour = $('#start_hour_overlay').val(); 
+                var start_hour = $('#start_hour_overlay').val();
                 var end_hour = $('#end_hour_overlay').val();
                 var guests = $('input[name="guests"]').val();
                 var listing_id = $('#listing_id').val();
@@ -1059,8 +1541,13 @@ jQuery(document).ready(function ($) {
 
             $('.homey_extra_price input').on('click', function(){
                 var extra_options = []; var temp_opt;
+                var items_for_checkboxes = $('.homey_extra_price input');
 
-                $('.homey_extra_price input').each(function() {
+                if($("#overlay-booking-module").hasClass("open")){
+                    items_for_checkboxes = $("#overlay-booking-module").find('.homey_extra_price input');
+                }
+
+                $(items_for_checkboxes).each(function() {
 
                     if( ($(this).is(":checked")) ) {
                         var extra_name = $(this).data('name');
@@ -1072,18 +1559,26 @@ jQuery(document).ready(function ($) {
                         temp_opt    =   temp_opt + '|' + extra_type;
                         extra_options.push(temp_opt);
                     }
-                    
-                }); 
 
-                var check_in_date = $('input[name="arrive"]').val();
+                });
+
+                if($("#overlay-booking-module").hasClass("open")){
+                    var check_in_date = $("#overlay-booking-module").find('input[name="arrive"]').val();
+                    var start_hour = $("#overlay-booking-module").find('select[name="start_hour"]').val();
+                    var end_hour = $("#overlay-booking-module").find('select[name="end_hour"]').val();
+                    var guests = $("#overlay-booking-module").find('input[name="guests"]').val();
+                    var listing_id = $("#overlay-booking-module").find('#listing_id').val();
+                    var security = $("#overlay-booking-module").find('#reservation-security').val();
+                }else{
+                    var check_in_date = $('input[name="arrive"]').val();
+                    var start_hour = $('select[name="start_hour"]').val();
+                    var end_hour = $('select[name="end_hour"]').val();
+                    var guests = $('input[name="guests"]').val();
+                    var listing_id = $('#listing_id').val();
+                    var security = $('#reservation-security').val();
+                }
+
                 check_in_date = homey_convert_date(check_in_date);
-
-                var start_hour = $('select[name="start_hour"]').val(); 
-                var end_hour = $('select[name="end_hour"]').val();
-
-                var guests = $('input[name="guests"]').val();
-                var listing_id = $('#listing_id').val();
-                var security = $('#reservation-security').val();
                 homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, listing_id, security, extra_options);
 
             });
@@ -1127,7 +1622,7 @@ jQuery(document).ready(function ($) {
                 var guests = parseInt($('input[name="guests"]').val()) || 0;
                 var adult_guest = parseInt($('input[name="adult_guest"]').val());
                 var child_guest = parseInt($('input[name="child_guest"]').val());
-                
+
                 if (adult_guest == 0) return;
                 adult_guest--;
                 $('.homey_adult').text(adult_guest);
@@ -1187,8 +1682,467 @@ jQuery(document).ready(function ($) {
 
             });
         }
+
         single_listing_guests();
 
+        // Single experience booking form
+        var experience_id = $('#experience_id').val();
+        if(typeof experience_id != 'undefined'){
+
+        $("#single-experience-date-range input").on('focus', function() {
+            $('.single-experience-booking-calendar-js').css("display", "block");
+            $('.single-experience-booking-calendar-js').addClass("arrive_active");
+            $('.single-form-guests-js').css("display", "none");
+            focusedInput_2 = $(this).attr('name');
+            $('.single-experience-booking-calendar-js').removeClass('arrive_active depart_active').addClass(focusedInput_2+'_active');
+        });
+
+        $(".single-guests-js input").on('focus', function() {
+            $(this).prev("label").css("display", "block");
+            $(this).addClass("on-focus");
+            $('.single-form-guests-js').css("display", "block");
+        });
+
+        var numClicks = 0;
+        var fromTimestamp_2, toTimestamp_2 = 0; // init start and end timestamps
+
+        var homey_experiences_booking_dates = function() {
+
+            $('.single-experience-booking-calendar-js ul li').on('click', function() {
+                var $this = $(this);
+                $this.show();
+                if($this.hasClass('past-day') || $this.hasClass('homey-not-available-for-booking')) {
+                    if(!$this.hasClass('reservation_start')) {
+                        return false;
+                    }
+                }
+
+                numClicks = 2;
+                var vl = $this.data('formatted-date');
+                var timestamp = $this.data('timestamp');
+
+                toTimestamp_2 = timestamp;
+                //day end node
+                $this.addClass('to-day selected');
+                $('.single-experience-booking-calendar-js').removeClass('depart_active').addClass('arrive_active');
+
+                var check_in_date = $('input[name="arrive"]').val();
+                check_in_date = homey_timeStamp_2(check_in_date);
+
+                $('input[name="arrive"]').val(vl);
+                var coming_guests = $('input[name="guests"]').val();
+                $('#single-booking-search-calendar, #single-overlay-booking-search-calendar').hide();
+
+                if(homey_booking_type != 'per_hour' && coming_guests > 0) {
+                    homey_calculate_exp_price_checkout();
+                }
+            });
+        }
+
+        //Run only for daily/nighty booking
+
+            if(homey_booking_type != 'per_hour') {
+
+                homey_experiences_booking_dates();
+
+                $('.single-experience-calendar-wrap ul li').on('hover', function () {
+
+                    var ts = $(this).data('timestamp');
+                    if (numClicks == 1) {
+                        setInBetween_2(fromTimestamp_2, ts);
+                    }
+                });
+                /*
+                * method to send in-between days
+                * */
+                var setInBetween_2 = function(fromTime, toTime) {
+                    $('.single-experience-calendar-wrap ul li').removeClass('in-between')
+                        .filter(function () {
+                            var currentTs = $(this).data('timestamp');
+                            return currentTs > fromTime && currentTs < toTime;
+                        }).addClass('in-between');
+                }
+
+
+                var homey_calculate_price_checkin = function() {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var check_out_date = $('input[name="depart"]').val();
+                    check_out_date = homey_convert_date(check_out_date);
+
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    
+                    homey_calculate_booking_cost(check_in_date, check_out_date, guests, experience_id, security);
+                }
+
+                if( is_singular_experience == 'yes' ) {
+                    homey_calculate_price_checkin();
+                }
+
+                var homey_calculate_price_checkout = function() {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var check_out_date = $('input[name="depart"]').val();
+                    check_out_date = homey_convert_date(check_out_date);
+
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    
+                    homey_calculate_booking_cost(check_in_date, check_out_date, guests, experience_id, security);
+                    check_booking_availability_on_date_change(check_in_date, check_out_date, experience_id, security);
+                }
+
+                $('.apply_exp_guests').on('click', function () {
+                    var extra_options = []; var temp_opt;
+                    $('.homey_exp_extra_price input').each(function() {
+
+                        if( ($(this).is(":checked")) ) {
+                            var extra_name = $(this).data('name');
+                            var extra_price = $(this).data('price');
+                            var extra_type = $(this).data('type');
+                            temp_opt    =   '';
+                            temp_opt    =   extra_name;
+                            temp_opt    =   temp_opt + '|' + extra_price;
+                            temp_opt    =   temp_opt + '|' + extra_type;
+                            extra_options.push(temp_opt);
+                        }
+
+                    });
+
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var check_out_date = $('input[name="depart"]').val();
+                    check_out_date = homey_convert_date(check_out_date);
+
+                    var guests = $('input[name="exp_guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_exp_booking_cost(check_in_date, guests, experience_id, security, extra_options);
+                    check_exp_availability_on_date_change(check_in_date, experience_id, security, extra_options);
+                });
+
+                $('.homey_exp_extra_price input').on('click', function(){
+                    var extra_options = []; var temp_opt;
+
+                    $('.homey_extra_price input').each(function() {
+
+                        if( ($(this).is(":checked")) ) {
+                            var extra_name = $(this).data('name');
+                            var extra_price = $(this).data('price');
+                            var extra_type = $(this).data('type');
+                            temp_opt    =   '';
+                            temp_opt    =   extra_name;
+                            temp_opt    =   temp_opt + '|' + extra_price;
+                            temp_opt    =   temp_opt + '|' + extra_type;
+                            extra_options.push(temp_opt);
+                        }
+
+                    });
+
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var check_out_date = $('input[name="depart"]').val();
+                    check_out_date = homey_convert_date(check_out_date);
+
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                   
+                    homey_calculate_booking_cost(check_in_date, check_out_date, guests, experience_id, security, extra_options);
+
+                });
+            }
+
+            if(homey_booking_type == 'per_hour') {
+
+                $('.hourly-js-desktop ul li').on('click', function () {
+                    var $this = $(this);
+                    var vl = $this.data('formatted-date');
+                    $('input[name="arrive"]').val(vl);
+
+                    $('.single-experience-hourly-calendar-wrap ul li').removeClass('selected');
+                    $this.addClass('selected');
+
+                    $('#single-booking-search-calendar, #single-overlay-booking-search-calendar').hide();
+
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('select[name="start_hour"]').val();
+                    var end_hour = $('select[name="end_hour"]').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+
+                    if(check_in_date === '' || start_hour === '' || end_hour === '')
+                        return;
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('#start_hour').on('change', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('select[name="start_hour"]').val();
+                    var end_hour = $('select[name="end_hour"]').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+
+                    if(check_in_date === '' || start_hour === '' || end_hour === '')
+                        return;
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('#end_hour').on('change', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('select[name="start_hour"]').val();
+                    var end_hour = $('select[name="end_hour"]').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('.hourly-js-mobile ul li').on('click', function () {
+                    var $this = $(this);
+                    var vl = $this.data('formatted-date');
+                    $('input[name="arrive"]').val(vl);
+
+                    $('.single-experience-hourly-calendar-wrap ul li').removeClass('selected');
+                    $this.addClass('selected');
+
+                    $('#single-booking-search-calendar, #single-overlay-booking-search-calendar').hide();
+
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('#start_hour_overlay').val();
+                    var end_hour = $('#end_hour_overlay').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+
+                    if(check_in_date === '' || start_hour === '' || end_hour === '')
+                        return;
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('#start_hour_overlay').on('change', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('#start_hour_overlay').val();
+                    var end_hour = $('#end_hour_overlay').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+
+                    if(check_in_date === '' || start_hour === '' || end_hour === '')
+                        return;
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('#end_hour_overlay').on('change', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('#start_hour_overlay').val();
+                    var end_hour = $('#end_hour_overlay').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('.apply_guests').on('click', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('select[name="start_hour"]').val();
+                    var end_hour = $('select[name="end_hour"]').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('#apply_guests_hourly').on('click', function () {
+                    var check_in_date = $('input[name="arrive"]').val();
+                    check_in_date = homey_convert_date(check_in_date);
+
+                    var start_hour = $('#start_hour_overlay').val();
+                    var end_hour = $('#end_hour_overlay').val();
+                    var guests = $('input[name="guests"]').val();
+                    var experience_id = $('#experience_id').val();
+                    var security = $('#reservation-security').val();
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security);
+                    check_booking_availability_on_hour_change(check_in_date, start_hour, end_hour, experience_id, security);
+                });
+
+                $('.homey_exp_extra_price input').on('click', function(){
+                    var extra_options = []; var temp_opt;
+                    var items_for_checkboxes = $('.homey_exp_extra_price input');
+
+                    if($("#overlay-booking-module").hasClass("open")){
+                        items_for_checkboxes = $("#overlay-booking-module").find('.homey_exp_extra_price input');
+                    }
+
+                    $(items_for_checkboxes).each(function() {
+
+                        if( ($(this).is(":checked")) ) {
+                            var extra_name = $(this).data('name');
+                            var extra_price = $(this).data('price');
+                            var extra_type = $(this).data('type');
+                            temp_opt    =   '';
+                            temp_opt    =   extra_name;
+                            temp_opt    =   temp_opt + '|' + extra_price;
+                            temp_opt    =   temp_opt + '|' + extra_type;
+                            extra_options.push(temp_opt);
+                        }
+
+                    });
+
+                    if($("#overlay-booking-module").hasClass("open")){
+                        var check_in_date = $("#overlay-booking-module").find('input[name="arrive"]').val();
+                        var start_hour = $("#overlay-booking-module").find('select[name="start_hour"]').val();
+                        var end_hour = $("#overlay-booking-module").find('select[name="end_hour"]').val();
+                        var guests = $("#overlay-booking-module").find('input[name="guests"]').val();
+                        var experience_id = $("#overlay-booking-module").find('#experience_id').val();
+                        var security = $("#overlay-booking-module").find('#reservation-security').val();
+                    }else{
+                        var check_in_date = $('input[name="arrive"]').val();
+                        var start_hour = $('select[name="start_hour"]').val();
+                        var end_hour = $('select[name="end_hour"]').val();
+                        var guests = $('input[name="guests"]').val();
+                        var experience_id = $('#experience_id').val();
+                        var security = $('#reservation-security').val();
+                    }
+
+                    check_in_date = homey_convert_date(check_in_date);
+                    homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, experience_id, security, extra_options);
+
+                });
+
+            }
+        }//experiences
+
+
+        /* ------------------------------------------------------------------------ */
+        /*  Guests count
+        /* ------------------------------------------------------------------------ */
+
+        var single_experience_guests = function() {
+
+            $('.exp_adult_plus').on('click', function(e) {
+                e.preventDefault();
+                var guests = parseInt($('input[name="exp_guests"]').val()) || 0;
+                var adult_guest = parseInt($('input[name="exp_adult_guest"]').val());
+                var child_guest = parseInt($('input[name="exp_child_guest"]').val());
+
+                adult_guest++;
+                $('.exp_homey_adult').text(adult_guest);
+                $('input[name="exp_adult_guest"]').val(adult_guest);
+
+                var total_guests = adult_guest + child_guest;
+
+                if( (allow_additional_guests != 'yes') && (total_guests == allowed_guests_num)) {
+                    $('.exp_adult_plus').attr("disabled", true);
+                    $('.exp_child_plus').attr("disabled", true);
+
+                } else if( (allow_additional_guests == 'yes') && (total_guests == allowed_guests_plus_additional) ) {
+                    if(num_additional_guests !== '') {
+                        $('.exp_adult_plus').attr("disabled", true);
+                        $('.exp_child_plus').attr("disabled", true);
+                    }
+                }
+
+                $('input[name="exp_guests"]').val(total_guests);
+            });
+
+            $('.exp_adult_minus').on('click', function(e) {
+                e.preventDefault();
+                var guests = parseInt($('input[name="exp_guests"]').val()) || 0;
+                var adult_guest = parseInt($('input[name="exp_adult_guest"]').val());
+                var child_guest = parseInt($('input[name="exp_child_guest"]').val());
+
+                if (adult_guest == 0) return;
+                adult_guest--;
+                $('.exp_homey_adult').text(adult_guest);
+                $('input[name="exp_adult_guest"]').val(adult_guest);
+
+                var total_guests = adult_guest + child_guest;
+                $('input[name="exp_guests"]').val(total_guests);
+
+                $('.exp_adult_plus').removeAttr("disabled");
+                $('.exp_child_plus').removeAttr("disabled");
+            });
+
+            $('.exp_child_plus').on('click', function(e) {
+                e.preventDefault();
+                var guests = parseInt($('input[name="exp_guests"]').val());
+                var child_guest = parseInt($('input[name="exp_child_guest"]').val());
+                var adult_guest = parseInt($('input[name="exp_adult_guest"]').val());
+
+                child_guest++;
+                $('.exp_homey_child').text(child_guest);
+                $('input[name="exp_child_guest"]').val(child_guest);
+
+                var total_guests = child_guest + adult_guest;
+
+                if( (allow_additional_guests != 'yes') && (total_guests == allowed_guests_num)) {
+                    $('.exp_adult_plus').attr("disabled", true);
+                    $('.exp_child_plus').attr("disabled", true);
+
+                } else if( (allow_additional_guests == 'yes') && (total_guests == allowed_guests_plus_additional) ) {
+                    if(num_additional_guests !== '') {
+                        $('.exp_adult_plus').attr("disabled", true);
+                        $('.exp_child_plus').attr("disabled", true);
+                    }
+                }
+
+                $('input[name="exp_guests"]').val(total_guests);
+
+            });
+
+            $('.exp_child_minus').on('click', function(e) {
+                e.preventDefault();
+                var guests = parseInt($('input[name="exp_guests"]').val());
+                var child_guest = parseInt($('input[name="exp_child_guest"]').val());
+                var adult_guest = parseInt($('input[name="exp_adult_guest"]').val());
+
+                if (child_guest == 0) return;
+                child_guest--;
+                $('.exp_homey_child').text(child_guest);
+                $('input[name="exp_child_guest"]').val(child_guest);
+
+                var total_guests = child_guest + adult_guest;
+
+                $('input[name="exp_guests"]').val(total_guests);
+
+                $('.exp_adult_plus').removeAttr("disabled");
+                $('.exp_child_plus').removeAttr("disabled");
+
+            });
+        }
+
+        single_experience_guests();
 
         /* ------------------------------------------------------------------------ */
         /*  Reservation Request
@@ -1197,7 +2151,7 @@ jQuery(document).ready(function ($) {
             e.preventDefault();
 
             var $this = $(this);
-            var extra_options = []; 
+            var extra_options = [];
             var temp_opt;
             var check_in_date = $('input[name="arrive"]').val();
             check_in_date = homey_convert_date(check_in_date);
@@ -1208,12 +2162,21 @@ jQuery(document).ready(function ($) {
             var guest_message = $('textarea[name="guest_message"]').val();
 
             var guests = $('input[name="guests"]').val();
+            var adult_guest = $('input[name="adult_guest"]').val();
+            var child_guest = $('input[name="child_guest"]').val();
+
             var listing_id = $('#listing_id').val();
+            var new_reser_request_user_email = $('#new_reser_request_user_email').val();
+
+            if(new_reser_request_user_email == ''){
+               new_reser_request_user_email = $('#overlay-booking-module').find('#new_reser_request_user_email').val();
+            }
+
             var security = $('#reservation-security').val();
             var notify = $this.parents('.homey_notification');
             notify.find('.notify').remove();
 
-            save_booking_details($('input[name="arrive"]').val(), $('input[name="depart"]').val(), guests, guest_message);
+            save_booking_details($('input[name="arrive"]').val(), $('input[name="depart"]').val(), guests, guest_message, adult_guest, child_guest, new_reser_request_user_email);
 
             $('.homey_extra_price input').each(function() {
                 if( ($(this).is(":checked")) ) {
@@ -1227,10 +2190,10 @@ jQuery(document).ready(function ($) {
                     extra_options.push(temp_opt);
                 }
             });
-            
-            if( parseInt( userID, 10 ) === 0 ) {
-                $('#modal-login').modal('show');
-            } else {
+
+            //if( parseInt( userID, 10 ) === 0 ) {
+               // $('#modal-login').modal('show');
+           // } else {
                 $.ajax({
                     type: 'post',
                     url: ajaxurl,
@@ -1243,6 +2206,7 @@ jQuery(document).ready(function ($) {
                         'listing_id': listing_id,
                         'extra_options': extra_options,
                         'guest_message': guest_message,
+                        'new_reser_request_user_email': new_reser_request_user_email,
                         'security': security
                     },
                     beforeSend: function( ) {
@@ -1253,10 +2217,10 @@ jQuery(document).ready(function ($) {
                         if( data.success ) {
                             $('.check_in_date, .check_out_date').val('');
                             notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         } else {
                             notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         }
                     },
                     error: function(xhr, status, error) {
@@ -1268,10 +2232,97 @@ jQuery(document).ready(function ($) {
                     }
 
                 }); //
-            }
+            //}
 
          });
 
+         /* ------------------------------------------------------------------------ */
+        /*  Experiences Reservation Request
+         /* ------------------------------------------------------------------------ */
+         $('#request_for_exp_reservation, #request_for_exp_reservation_mobile').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var extra_options = [];
+            var temp_opt;
+            var check_in_date = $('input[name="arrive"]').val();
+            check_in_date = homey_convert_date(check_in_date);
+
+            var guest_message = $('textarea[name="exp_guest_message"]').val();
+
+            var guests = $('input[name="exp_guests"]').val();
+            var adult_guest = $('input[name="exp_adult_guest"]').val();
+            var child_guest = $('input[name="exp_child_guest"]').val();
+
+            var experience_id = $('#experience_id').val();
+            var new_reser_exp_request_user_email = $('#new_reser_exp_request_user_email').val();
+
+            if(new_reser_exp_request_user_email == ''){
+               new_reser_exp_request_user_email = $('#overlay-booking-module').find('#new_reser_exp_request_user_email').val();
+            }
+
+            var security = $('#reservation-security').val();
+            var notify = $this.parents('.homey_notification');
+            notify.find('.notify').remove();
+
+            save_exp_booking_details($('input[name="arrive"]').val(), guests, guest_message, adult_guest, child_guest, new_reser_exp_request_user_email);
+
+            $('.homey_exp_extra_price input').each(function() {
+                if( ($(this).is(":checked")) ) {
+                    var extra_name = $(this).data('name');
+                    var extra_price = $(this).data('price');
+                    var extra_type = $(this).data('type');
+                    temp_opt    =   '';
+                    temp_opt    =   extra_name;
+                    temp_opt    =   temp_opt + '|' + extra_price;
+                    temp_opt    =   temp_opt + '|' + extra_type;
+                    extra_options.push(temp_opt);
+                }
+            });
+
+            //if( parseInt( userID, 10 ) === 0 ) {
+               // $('#modal-login').modal('show');
+           // } else {
+                $.ajax({
+                    type: 'post',
+                    url: ajaxurl,
+                    dataType: 'json',
+                    data: {
+                        'action': 'homey_add_exp_reservation',
+                        'check_in_date': check_in_date,
+                        'guests': guests,
+                        'experience_id': experience_id,
+                        'extra_options': extra_options,
+                        'guest_message': guest_message,
+                        'new_reser_exp_request_user_email': new_reser_exp_request_user_email,
+                        'security': security
+                    },
+                    beforeSend: function( ) {
+                        $this.children('i').remove();
+                        $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    },
+                    success: function(data) {
+                        if( data.success ) {
+                            $('.check_in_date, .check_out_date').val('');
+                            notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
+
+                        } else {
+                            notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
+
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    },
+                    complete: function(){
+                        $this.children('i').removeClass(process_loader_spinner);
+                    }
+
+                }); //
+            //}
+
+         });
 
          /* ------------------------------------------------------------------------ */
         /*  Hourly Reservation Request
@@ -1289,10 +2340,13 @@ jQuery(document).ready(function ($) {
             var end_hour = $('select[name="end_hour"]').val();
             var guests = $('input[name="guests"]').val();
             var listing_id = $('#listing_id').val();
+            var new_reser_request_user_email = $('#new_reser_request_user_email').val();
+
             var security = $('#reservation-security').val();
+
             var notify = $this.parents('.homey_notification');
             notify.find('.notify').remove();
-            var extra_options = []; 
+            var extra_options = [];
             var temp_opt;
             $('.homey_extra_price input').each(function() {
                 if( ($(this).is(":checked")) ) {
@@ -1306,10 +2360,10 @@ jQuery(document).ready(function ($) {
                     extra_options.push(temp_opt);
                 }
             });
-            
-            if( parseInt( userID, 10 ) === 0 ) {
-                $('#modal-login').modal('show');
-            } else {
+
+            // if( parseInt( userID, 10 ) === 0 ) {
+            //     $('#modal-login').modal('show');
+            // } else {
                 $.ajax({
                     type: 'post',
                     url: ajaxurl,
@@ -1323,6 +2377,7 @@ jQuery(document).ready(function ($) {
                         'extra_options': extra_options,
                         'guest_message': guest_message,
                         'listing_id': listing_id,
+                        'new_reser_request_user_email': new_reser_request_user_email,
                         'security': security
                     },
                     beforeSend: function( ) {
@@ -1333,10 +2388,10 @@ jQuery(document).ready(function ($) {
                         if( data.success ) {
                             $('.check_in_date, .check_out_date').val('');
                             notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         } else {
                             notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         }
                     },
                     error: function(xhr, status, error) {
@@ -1348,7 +2403,7 @@ jQuery(document).ready(function ($) {
                     }
 
                 }); // end ajax
-            }
+            //}
 
          });
 
@@ -1368,11 +2423,13 @@ jQuery(document).ready(function ($) {
             var end_hour = $('#end_hour_overlay').val();
             var guests = $('input[name="guests"]').val();
             var listing_id = $('#listing_id').val();
-            var security = $('#reservation-security').val();
+            var new_reser_request_user_email = $('#overlay-booking-module').find('#new_reser_request_user_email').val();
+
+             var security = $('#reservation-security').val();
             var notify = $this.parents('.homey_notification');
             notify.find('.notify').remove();
-            
-            var extra_options = []; 
+
+            var extra_options = [];
             var temp_opt;
             $('.homey_extra_price input').each(function() {
                 if( ($(this).is(":checked")) ) {
@@ -1386,10 +2443,10 @@ jQuery(document).ready(function ($) {
                     extra_options.push(temp_opt);
                 }
             });
-            
-            if( parseInt( userID, 10 ) === 0 ) {
-                $('#modal-login').modal('show');
-            } else {
+
+            //if( parseInt( userID, 10 ) === 0 ) {
+               // $('#modal-login').modal('show');
+            //} else {
                 $.ajax({
                     type: 'post',
                     url: ajaxurl,
@@ -1403,6 +2460,7 @@ jQuery(document).ready(function ($) {
                         'extra_options': extra_options,
                         'guest_message': guest_message,
                         'listing_id': listing_id,
+                        'new_reser_request_user_email': new_reser_request_user_email,
                         'security': security
                     },
                     beforeSend: function( ) {
@@ -1413,10 +2471,10 @@ jQuery(document).ready(function ($) {
                         if( data.success ) {
                             $('.check_in_date, .check_out_date').val('');
                             notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         } else {
                             notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         }
                     },
                     error: function(xhr, status, error) {
@@ -1428,66 +2486,9 @@ jQuery(document).ready(function ($) {
                     }
 
                 }); // end ajax
-            }
+            //}
 
          });
-
-         /* ------------------------------------------------------------------------ */
-        /*  Reservation Request WhatsApp
-         /* ------------------------------------------------------------------------ */
-         $('#request_for_reservation_wa, #request_for_reservation_mobile_wa').on('click', function(e){
-            e.preventDefault();
-
-            var $this = $(this);
-            var extra_options = []; 
-            var temp_opt;
-            var check_in_date = $('input[name="arrive"]').val();
-            check_in_date = homey_convert_date(check_in_date);
-
-            var check_out_date = $('input[name="depart"]').val();
-            check_out_date = homey_convert_date(check_out_date);
-
-            var guest_message = $('textarea[name="guest_message"]').val();
-
-            var guests = $('input[name="guests"]').val();
-            var listing_id = $('#listing_id').val();
-            var security = $('#reservation-security').val();
-            var notify = $this.parents('.homey_notification');
-            notify.find('.notify').remove();
-            var waNumber = $(this).data('waNumber');
-            var listingTitle = $(this).data('listingTitle');
-            var listingLink = $(this).data('listingLink');
-            if(typeof guest_message == "undefined" ){
-                guest_message = '';
-            }
-            // var messageBody = "Hello Villaport, I am interested in renting the `"+listingTitle+"` from `"+check_in_date+"` till `"+check_out_date+"`. We are `"+guests+"` people. `"+listingLink+"` Notes, `"+guest_message+"`. Can you tell me please `"+listingTitle+"` is available for this period?";
-            var messageBody = $(this).data('whatsAppMessageBody')
-                                .replace("[website_link]", window.location.hostname)
-                                .replace("[listing_link]", listingLink)
-                                .replace("[listing_name]", listingTitle)
-                                .replace("[check-in]", check_in_date)
-                                .replace("[check-out]", check_out_date)
-                                .replace("[number-of-guests]", guests)
-                                .replace("[guest_message]", guest_message);
-console.log(messageBody);
-            var whatsAppLink = "https://wa.me/"+waNumber+"?text="+messageBody;
-            
-            if(check_in_date == '' || check_out_date == ''){
-                notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+ sa_datarange_message +'</div>');
-                return false;
-            }
-
-            if(guests == ''){
-                notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+ sa_guest_message +'</div>');
-                return false;
-            }
-
-            if(check_in_date != '' && check_out_date != '' && guests != ''){
-                window.open(whatsAppLink, 'name'); 
-            }
-
-         });
-
 
          /* ------------------------------------------------------------------------ */
         /*  Reserve a period host
@@ -1507,7 +2508,7 @@ console.log(messageBody);
             var security = $('#period-security').val();
             var notify = $('.homey_notification');
             notify.find('.notify').remove();
-            
+
             $.ajax({
                 type: 'post',
                 url: ajaxurl,
@@ -1530,7 +2531,7 @@ console.log(messageBody);
                         window.location.href = calendar_link;
                     } else {
                         notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                        
+
                     }
                 },
                 error: function(xhr, status, error) {
@@ -1544,7 +2545,8 @@ console.log(messageBody);
             });
 
          });
-//alert(HOMEY_ajax_vars.homey_timezone);
+
+         //alert(HOMEY_ajax_vars.homey_timezone);
          /* ------------------------------------------------------------------------ */
         /* Per Hour availability calendar
         /* ------------------------------------------------------------------------ */
@@ -1570,7 +2572,7 @@ console.log(messageBody);
             html_booked_info += '</div>';
             $("body").append(html_booked_info);
             for (var key_pending in pending_hours_array) {
-                if (pending_hours_array.hasOwnProperty(key_pending) && key_pending!=='') { 
+                if (pending_hours_array.hasOwnProperty(key_pending) && key_pending!=='') {
                     var temp_pending=[];
                     temp_pending['title']     =   HOMEY_ajax_vars.hc_pending_label,
                     temp_pending ['start']    =   moment.unix(key_pending).utc().format(),
@@ -1594,7 +2596,7 @@ console.log(messageBody);
                 minTime: booking_start_hour,
                 maxTime: booking_end_hour,
                 events: hours_slot,
-                defaultDate: today,   
+                defaultDate: today,
                 selectHelper: true,
                 selectOverlap : false,
                 footer: false,
@@ -1723,13 +2725,16 @@ console.log(messageBody);
             check_out_date = homey_convert_date(check_out_date);
 
             var guests = $('input[name="guests"]').val();
+            var adult_guest = $('input[name="adult_guest"]').val();
+            var child_guest = $('input[name="child_guest"]').val();
+
             var guest_message = $('textarea[name="guest_message"]').val();
             var listing_id = $('#listing_id').val();
             var security = $('#reservation-security').val();
             var notify = $this.parents('.homey_notification');
             notify.find('.notify').remove();
 
-            save_booking_details($('input[name="arrive"]').val(), $('input[name="depart"]').val(), guests, guest_message);
+            save_booking_details($('input[name="arrive"]').val(), $('input[name="depart"]').val(), guests, guest_message, adult_guest, child_guest);
 
             $('.homey_extra_price input').each(function() {
                 if( ($(this).is(":checked")) ) {
@@ -1744,9 +2749,9 @@ console.log(messageBody);
                 }
             });
 
-            if( parseInt( userID, 10 ) === 0 ) {
-                $('#modal-login').modal('show');
-            } else {
+            //if( parseInt( userID, 10 ) === 0 ) {
+               // $('#modal-login').modal('show');
+           // } else {
                 $.ajax({
                     type: 'POST',
                     url: ajaxurl,
@@ -1756,6 +2761,8 @@ console.log(messageBody);
                         'check_in_date': check_in_date,
                         'check_out_date': check_out_date,
                         'guests': guests,
+                        'adult_guest': adult_guest,
+                        'child_guest': child_guest,
                         'extra_options': extra_options,
                         'guest_message': guest_message,
                         'listing_id': listing_id,
@@ -1773,7 +2780,7 @@ console.log(messageBody);
                             window.location.href = data.instance_url;
                         } else {
                             notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                            
+
                         }
                     },
                     error: function(xhr, status, error) {
@@ -1784,12 +2791,12 @@ console.log(messageBody);
                         $this.children('i').removeClass(process_loader_spinner);
                     }
                 });
-            }
+            //}
 
          });
 
          /* ------------------------------------------------------------------------ */
-        /*  Hourly instace Booking
+         /*  Hourly instace Booking
          /* ------------------------------------------------------------------------ */
          $('#instance_hourly_reservation, #instance_hourly_reservation_mobile').on('click', function(e){
             e.preventDefault();
@@ -1802,14 +2809,18 @@ console.log(messageBody);
 
             start_hour = $('select[name="start_hour"]').val();
             end_hour = $('select[name="end_hour"]').val();
+
             var guests = $('input[name="guests"]').val();
+            var adult_guest = $('input[name="adult_guest"]').val();
+            var child_guest = $('input[name="child_guest"]').val();
+
             var guest_message = $('textarea[name="guest_message"]').val();
             var listing_id = $('#listing_id').val();
             var security = $('#reservation-security').val();
             var notify = $this.parents('.homey_notification');
             notify.find('.notify').remove();
             //saving booking details and adding to referer URL
-            save_hourl_booking_details($('input[name="arrive"]').val(), start_hour, end_hour, guests, guest_message);
+            save_hourl_booking_details($('input[name="arrive"]').val(), start_hour, end_hour, guests, guest_message, adult_guest, child_guest);
             if(homey_is_mobile || homey_window_width < 991) {
                 start_hour = $('#start_hour_overlay').val();
                 end_hour = $('#end_hour_overlay').val();
@@ -1857,7 +2868,7 @@ console.log(messageBody);
                         window.location.href = data.instance_url;
                     } else {
                         notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
-                        
+
                     }
                 },
                 error: function(xhr, status, error) {
@@ -1872,7 +2883,88 @@ console.log(messageBody);
          });
 
          /* ------------------------------------------------------------------------ */
-        /*  Confirm Reservation
+         /*  Experiences instance Booking
+         /* ------------------------------------------------------------------------ */
+         $('#instance_exp_reservation, #instance_exp_reservation_mobile').on('click', function(e) {
+            e.preventDefault();
+
+            var $this = $(this);
+            var check_in_date = $('input[name="arrive"]').val();
+            check_in_date = homey_convert_date(check_in_date);
+
+            var guests = $('input[name="exp_guests"]').val();
+            var adult_guest = $('input[name="exp_adult_guest"]').val();
+            var child_guest = $('input[name="exp_child_guest"]').val();
+
+            var guest_message = $('textarea[name="exp_guest_message"]').val();
+            var experience_id = $('#experience_id').val();
+            var security = $('#reservation-security').val();
+            var notify = $this.parents('.homey_notification');
+            notify.find('.notify').remove();
+            //saving booking details and adding to referer URL
+            save_exp_booking_details($('input[name="arrive"]').val(), guests, guest_message, adult_guest, child_guest);
+
+            if( homey_is_mobile || homey_window_width < 991 ) {
+                start_hour  = $('#start_hour_overlay').val();
+                end_hour    = $('#end_hour_overlay').val();
+            }
+
+            var extra_options = [];
+            var temp_opt;
+            $('.homey_exp_extra_price input').each(function() {
+                if( ($(this).is(":checked")) ) {
+                    var extra_name = $(this).data('name');
+                    var extra_price = $(this).data('price');
+                    var extra_type = $(this).data('type');
+                    temp_opt    =   '';
+                    temp_opt    =   extra_name;
+                    temp_opt    =   temp_opt + '|' + extra_price;
+                    temp_opt    =   temp_opt + '|' + extra_type;
+                    extra_options.push(temp_opt);
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_instant_exp_booking',
+                    'check_in_date': check_in_date,
+                    'guests': guests,
+                    'extra_options': extra_options,
+                    'experience_id': experience_id,
+                    'guest_message': guest_message,
+                    'security': security
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function (data) {
+
+                    if( data.success ) {
+                        $('.check_in_date').val('');
+                        notify.prepend('<div class="notify text-success text-center btn-success-outlined btn btn-full-width">'+data.message+'</div>');
+                        window.location.href = data.instance_url;
+                    } else {
+                        notify.prepend('<div class="notify text-danger text-center btn-danger-outlined btn btn-full-width">'+data.message+'</div>');
+
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+            });
+
+         }); // experiences instance Booking
+
+         /* ------------------------------------------------------------------------ */
+         /*  Confirm Reservation
          /* ------------------------------------------------------------------------ */
          $('.confirm-reservation').on('click', function(e){
             e.preventDefault();
@@ -1914,7 +3006,6 @@ console.log(messageBody);
             });
 
          });
-
 
          /* ------------------------------------------------------------------------ */
         /*  Confirm Reservation
@@ -2031,7 +3122,7 @@ console.log(messageBody);
                 success: function(data) {
 
                     parentDIV.find('.alert').remove();
-                    if( data.success ) { 
+                    if( data.success ) {
                         $this.attr("disabled", true);
                         window.location.reload();
                     } else {
@@ -2077,7 +3168,7 @@ console.log(messageBody);
                 success: function(data) {
 
                     parentDIV.find('.alert').remove();
-                    if( data.success ) { 
+                    if( data.success ) {
                         $this.attr("disabled", true);
                         window.location.reload();
                     } else {
@@ -2137,7 +3228,7 @@ console.log(messageBody);
                 success: function(data) {
 
                     parentDIV.find('.alert').remove();
-                    if( data.success ) { 
+                    if( data.success ) {
                         $this.attr("disabled", true);
                         window.location.reload();
                     } else {
@@ -2185,7 +3276,7 @@ console.log(messageBody);
                 success: function(data) {
 
                     parentDIV.find('.alert').remove();
-                    if( data.success ) { 
+                    if( data.success ) {
                         $this.attr("disabled", true);
                         window.location.reload();
                     } else {
@@ -2204,6 +3295,254 @@ console.log(messageBody);
 
          });
 
+         // =============== ********** ================ //
+         // experience related new javascript code
+
+        /* ------------------------------------------------------------------------ */
+        /*  Confirm Reservation
+        /* ------------------------------------------------------------------------ */
+        $('.confirm-exp-reservation').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var reservation_id = $this.data('reservation_id');
+            var parentDIV = $this.parents('.user-dashboard-right');
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_confirm_exp_reservation',
+                    'reservation_id': reservation_id
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+
+                    parentDIV.find('.alert').remove();
+                    if( data.success ) {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                        $this.remove();
+                    } else {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+
+            });
+
+        });
+
+        /* ------------------------------------------------------------------------ */
+        /*  Confirm Reservation
+         /* ------------------------------------------------------------------------ */
+        $('.confirm-offsite-exp-reservation').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var reservation_id = $this.data('reservation_id');
+            var parentDIV = $this.parents('.user-dashboard-right');
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_confirm_offsite_reservation',
+                    'reservation_id': reservation_id
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+
+                    parentDIV.find('.alert').remove();
+                    if( data.success ) {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                        $this.remove();
+                    } else {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+
+            });
+
+        });
+
+        /* ------------------------------------------------------------------------ */
+        /*  Confirm Reservation
+         /* ------------------------------------------------------------------------ */
+        $('#guest_paid_exp_button').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var parentDIV = $this.parents('.user-dashboard-right');
+            var reservation_id = $('#reservation_id').val();
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_guest_made_payment',
+                    'reservation_id': reservation_id
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+
+                    parentDIV.find('.alert').remove();
+                    if( data.success ) {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                        $this.remove();
+                    } else {
+                        parentDIV.find('.dashboard-area').prepend(data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+
+            });
+
+        });
+
+        /* ------------------------------------------------------------------------ */
+        /*  Decline Reservation
+         /* ------------------------------------------------------------------------ */
+        $('#exp-decline').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var reservation_id = $('#reservationID').val();
+            var reason = $('#reason22').val();
+            var parentDIV = $this.parents('.user-dashboard-right');
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_decline_reservation',
+                    'reservation_id': reservation_id,
+                    'reason': reason
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+
+                    parentDIV.find('.alert').remove();
+                    if( data.success ) {
+                        $this.attr("disabled", true);
+                        window.location.reload();
+                    } else {
+                        parentDIV.find('.dashboard-area').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><i class="fa fa-close"></i></button>'+data.message+'</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+
+            });
+
+        });
+
+        /* ------------------------------------------------------------------------ */
+        /*  Decline Reservation
+         /* ------------------------------------------------------------------------ */
+        $("#decline-exp-reservation-btn").click(function(){
+            $('html, body').animate({
+                scrollTop: $('#decline-reservation').offset().top + 150
+            }, 'slow');
+        });
+
+        $("#cancel-exp-reservation-btn").click(function(){
+            $('html, body').animate({
+                scrollTop: $('#cancel-reservation').offset().top + 150
+            }, 'slow');
+        });
+
+        /* ------------------------------------------------------------------------ */
+        /*  Cancel Reservation
+         /* ------------------------------------------------------------------------ */
+        $('#exp-cancelled').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var reservation_id = $('#reservationID').val();
+            var reason = $('#reason').val();
+            var host_cancel = $('#host_cancel').val();
+            var parentDIV = $this.parents('.user-dashboard-right');
+
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_cancelled_reservation',
+                    'reservation_id': reservation_id,
+                    'host_cancel': host_cancel,
+                    'reason': reason
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+
+                    parentDIV.find('.alert').remove();
+                    if( data.success ) {
+                        $this.attr("disabled", true);
+                        window.location.reload();
+                    } else {
+                        parentDIV.find('.dashboard-area').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><i class="fa fa-close"></i></button>'+data.message+'</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+                }
+
+            });
+
+        });
+
+
+        // end of experience related new javascript code
+        // =============== ********** ================ //
+
         var homey_booking_paypal_payment = function($this, reservation_id, security) {
             $.ajax({
                 type: 'post',
@@ -2211,6 +3550,35 @@ console.log(messageBody);
                 dataType: 'json',
                 data: {
                     'action': 'homey_booking_paypal_payment',
+                    'reservation_id': reservation_id,
+                    'security': security,
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    $('#homey_notify').html('<div class="alert alert-success alert-dismissible" role="alert">'+paypal_connecting+'</div>');
+                },
+                success: function( data ) {
+                    if(data.success) {
+                        window.location.href = data.payment_execute_url;
+                    } else {
+                        $('#homey_notify').html('<div class="alert alert-danger alert-dismissible" role="alert">'+data.message+'</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                }
+            });
+        }
+
+        var homey_exp_booking_paypal_payment = function($this, reservation_id, security) {
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_exp_booking_paypal_payment',
                     'reservation_id': reservation_id,
                     'security': security,
                 },
@@ -2273,9 +3641,32 @@ console.log(messageBody);
             if(payment_gateway == undefined ) {
                 $('#homey_notify').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
             }
-            
+
             if(payment_gateway === 'paypal') {
                 homey_booking_paypal_payment($this, reservation_id, security);
+
+            } else if(payment_gateway === 'stripe') {
+                var hform = $(this).parents('.dashboard-area');
+                hform.find('.homey_stripe_simple button').trigger("click");
+                $('#homey_notify').html('');
+            }
+            return;
+        });
+
+        $('#make_exp_booking_payment').on('click', function(e){
+            e.preventDefault();
+
+            var $this = $(this);
+            var reservation_id = $('#reservation_id').val();
+            var security = $('#checkout-security').val();
+
+            var payment_gateway = $("input[name='payment_gateway']:checked").val();
+            if(payment_gateway == undefined ) {
+                $('#homey_notify').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
+            }
+
+            if(payment_gateway === 'paypal') {
+                homey_exp_booking_paypal_payment($this, reservation_id, security);
 
             } else if(payment_gateway === 'stripe') {
                 var hform = $(this).parents('.dashboard-area');
@@ -2296,7 +3687,7 @@ console.log(messageBody);
             if(payment_gateway == undefined ) {
                 $('#homey_notify').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
             }
-            
+
             if(payment_gateway === 'paypal') {
                 homey_hourly_booking_paypal_payment($this, reservation_id, security);
 
@@ -2309,7 +3700,7 @@ console.log(messageBody);
 
         });
 
-        var homey_instance_booking_paypal_payment = function($this, check_in, check_out, guests, extra_options, listing_id, renter_message, security) {
+        var homey_instance_booking_paypal_payment = function($this, check_in, check_out, guests, extra_options, listing_id, renter_message, security, reservor_name, reservor_phone) {
             //alert(extra_options); return;
             $.ajax({
                 type: 'post',
@@ -2324,6 +3715,43 @@ console.log(messageBody);
                     'listing_id': listing_id,
                     'renter_message': renter_message,
                     'security': security,
+                    'reservor_name': reservor_name,
+                    'reservor_phone': reservor_phone,
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                    $('#instance_noti').html('<div class="alert alert-success alert-dismissible" role="alert">'+paypal_connecting+'</div>');
+                },
+                success: function( data ) {
+                    if(data.success) {
+                        window.location.href = data.payment_execute_url;
+                    } else {
+                        $('#instance_noti').html('<div class="alert alert-danger alert-dismissible" role="alert">'+data.message+'</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    console.log(err.Message);
+                }
+            });
+        }
+
+        var homey_instance_exp_booking_paypal_payment = function($this, check_in, guests, extra_options, experience_id, renter_message, security, reservor_name, reservor_phone) {
+            $.ajax({
+                type: 'post',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                    'action': 'homey_instance_exp_booking_paypal_payment',
+                    'check_in': check_in,
+                    'guests': guests,
+                    'extra_options': extra_options,
+                    'experience_id': experience_id,
+                    'renter_message': renter_message,
+                    'security': security,
+                    'reservor_name': reservor_name,
+                    'reservor_phone': reservor_phone,
                 },
                 beforeSend: function( ) {
                     $this.children('i').remove();
@@ -2395,6 +3823,8 @@ console.log(messageBody);
             var listing_id = $('#listing_id').val();
             var renter_message = $('#renter_message').val();
             var security   = $('#checkout-security').val();
+            var reservor_name   = $('#first-name').val() +' '+ $('#last-name').val();
+            var reservor_phone   = $('#phone').val();
 
             var extra_options = [];
             var temp_opt;
@@ -2406,7 +3836,7 @@ console.log(messageBody);
                 temp_opt    =   extra_name;
                 temp_opt    =   temp_opt + '|' + extra_price;
                 temp_opt    =   temp_opt + '|' + extra_type;
-                extra_options.push(temp_opt);   
+                extra_options.push(temp_opt);
             });
 
             $('#instance_noti').empty();
@@ -2415,9 +3845,9 @@ console.log(messageBody);
             if(payment_gateway == undefined ) {
                 $('#instance_noti').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
             }
-            
+
             if(payment_gateway === 'paypal') {
-                homey_instance_booking_paypal_payment($this, check_in, check_out, guests, extra_options, listing_id, renter_message, security);
+                homey_instance_booking_paypal_payment($this, check_in, check_out, guests, extra_options, listing_id, renter_message, security, reservor_name, reservor_phone);
 
             } else if(payment_gateway === 'stripe') {
                 var hform = $(this).parents('form');
@@ -2427,7 +3857,52 @@ console.log(messageBody);
             return;
         });
 
-        $('#make_hourly_instance_booking_payment').on('click', function(e){ 
+        $('#make_instance_exp_booking_payment').on('click', function(e) {
+            e.preventDefault();
+
+            var $this = $(this);
+            var check_in   = $('#check_in_date').val();
+            //check_in = homey_convert_date(check_in);
+
+            var guests     = $('#guests').val();
+            var experience_id = $('#experience_id').val();
+            var renter_message = $('#renter_message').val();
+            var security   = $('#checkout-security').val();
+            var reservor_name   = $('#first-name').val() +' '+ $('#last-name').val();
+            var reservor_phone   = $('#phone').val();
+
+            var extra_options = [];
+            var temp_opt;
+            $('.homey_extra_price').each(function() {
+                var extra_name = $(this).data('name');
+                var extra_price = $(this).data('price');
+                var extra_type = $(this).data('type');
+                temp_opt    =   '';
+                temp_opt    =   extra_name;
+                temp_opt    =   temp_opt + '|' + extra_price;
+                temp_opt    =   temp_opt + '|' + extra_type;
+                extra_options.push(temp_opt);
+            });
+
+            $('#instance_noti').empty();
+
+            var payment_gateway = $("input[name='payment_gateway']:checked").val();
+            if(payment_gateway == undefined ) {
+                $('#instance_noti').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
+            }
+
+            if(payment_gateway === 'paypal') {
+                homey_instance_exp_booking_paypal_payment($this, check_in, guests, extra_options, experience_id, renter_message, security, reservor_name, reservor_phone);
+
+            } else if(payment_gateway === 'stripe') {
+                var hform = $(this).parents('form');
+                hform.find('.homey_stripe_simple button').trigger("click");
+
+            }
+            return;
+        });
+
+        $('#make_hourly_instance_booking_payment').on('click', function(e){
             e.preventDefault();
 
             var $this = $(this);
@@ -2452,7 +3927,7 @@ console.log(messageBody);
                 temp_opt    =   extra_name;
                 temp_opt    =   temp_opt + '|' + extra_price;
                 temp_opt    =   temp_opt + '|' + extra_type;
-                extra_options.push(temp_opt);   
+                extra_options.push(temp_opt);
             });
 
             $('#instance_noti').empty();
@@ -2461,7 +3936,7 @@ console.log(messageBody);
             if(payment_gateway == undefined ) {
                 $('#instance_noti').html('<div class="alert alert-danger alert-dismissible" role="alert">'+choose_gateway_text+'</div>');
             }
-            
+
             if(payment_gateway === 'paypal') {
                 homey_hourly_instance_booking_paypal_payment($this, check_in, check_in_hour, check_out_hour, start_hour, end_hour, guests, extra_options, listing_id, renter_message, security);
 
@@ -2474,12 +3949,57 @@ console.log(messageBody);
 
         });
 
+        // this is testing for login
+        var is_no_login_user_reg = $(".homey-booking-block-body-1").find('#email').val();
+
+        if( typeof is_no_login_user_reg != 'undefined')
+        {
+            if( is_no_login_user_reg != '')
+            {
+                $('.homey-booking-block-title-2').removeClass('inactive mb-0');
+                $('.homey-booking-block-body-2').slideDown('slow');
+
+                $('.homey-booking-block-title-1').addClass('mb-0');
+                $('.homey-booking-block-body-1').slideUp('slow');
+                $('.homey-booking-block-title-1 .text-success, .homey-booking-block-title-1 .edit-booking-form').removeClass('hidden');
+                $('.homey-booking-block-title-1 .text-success, .homey-booking-block-title-1 .edit-booking-form').show();
+
+                var renter_message = $('#renter_message').val();
+                $('#guest_message').val(renter_message);
+            }
+        }
+
+        // this is testing
+
+        var first_name = $('#first-name').val();
+        var last_name = $('#last-name').val();
+        var phone = $('#phone').val();
+        var renter_message = $('#renter_message').val();
+
+        if(first_name != '' && last_name != '' && phone != '')
+        {
+            $('.homey-booking-block-title-2').removeClass('inactive mb-0');
+            $('.homey-booking-block-body-2').slideDown('slow');
+
+            $('.homey-booking-block-title-1').addClass('mb-0');
+            $('.homey-booking-block-body-1').slideUp('slow');
+            $('.homey-booking-block-title-1 .text-success, .homey-booking-block-title-1 .edit-booking-form').removeClass('hidden');
+            $('.homey-booking-block-title-1 .text-success, .homey-booking-block-title-1 .edit-booking-form').show();
+            $('#guest_message').val(renter_message);
+        }
+
         $('button.homey-booking-step-1').on('click', function(e){
             e.preventDefault();
             var $this = $(this);
 
             var first_name = $('#first-name').val();
             var last_name = $('#last-name').val();
+            var email = $('#email').val();
+
+            if(typeof email == 'undefined') {
+                email = '';
+            }
+
             var phone = $('#phone').val();
             var renter_message = $('#renter_message').val();
 
@@ -2491,6 +4011,7 @@ console.log(messageBody);
                     'action': 'homey_instance_step_1',
                     'first_name': first_name,
                     'last_name': last_name,
+                    'email': email,
                     'phone': phone,
                 },
                 beforeSend: function( ) {
@@ -2499,6 +4020,11 @@ console.log(messageBody);
                     $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
                 },
                 success: function(data) {
+                    if(email != '') {
+                        $(".homey-booking-block-title-2, .homey-booking-block-title-3").remove();
+                        document.location.reload(true);
+                    }
+
                     if( data.success ) {
                         $('.homey-booking-block-title-2').removeClass('inactive mb-0');
                         $('.homey-booking-block-body-2').slideDown('slow');
@@ -2523,9 +4049,6 @@ console.log(messageBody);
             });
 
         });
-
-
-
 
         $('button.homey-booking-step-2').on('click', function(e){
             e.preventDefault();
@@ -2570,7 +4093,6 @@ console.log(messageBody);
             $('.homey-booking-block-body-2').slideDown('slow');
 
         });
-
 
         /*--------------------------------------------------------------------------
          *  Contact listing host
@@ -2657,7 +4179,6 @@ console.log(messageBody);
             });
         });
 
-        
          /*--------------------------------------------------------------------------
          *   Print Property
          * -------------------------------------------------------------------------*/
@@ -2679,7 +4200,40 @@ console.log(messageBody);
                     success: function (data) {
                         printWindow.document.write(data);
                         printWindow.document.close();
-                        printWindow.print();
+                        // printWindow.print();
+                        printWindow.focus();
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    }
+
+                });
+            });
+        }
+
+        /*--------------------------------------------------------------------------
+         *   Print Experiences
+         * -------------------------------------------------------------------------*/
+        if( $('#homey-print-experience').length > 0 ) {
+            $('#homey-print-experience').on('click', function (e) {
+                e.preventDefault();
+                var experienceID, printWindow;
+
+                experienceID = $(this).attr('data-experience-id');
+
+                printWindow = window.open('', 'Print Me', 'width=850 ,height=842');
+                $.ajax({
+                    type: 'POST',
+                    url: ajaxurl,
+                    data: {
+                        'action': 'homey_create_experience_print',
+                        'experience_id': experienceID,
+                    },
+                    success: function (data) {
+                        printWindow.document.write(data);
+                        printWindow.document.close();
+                        // printWindow.print();
                         printWindow.focus();
                     },
                     error: function (xhr, status, error) {
@@ -2709,6 +4263,7 @@ console.log(messageBody);
         var homey_login = function( current ) {
             var $form = current.parents('form');
             var $messages = $('.homey_login_messages');
+            var $reservation_login_required = $('#reservation_login_required').val();
 
             $.ajax({
                 type: 'post',
@@ -2717,12 +4272,20 @@ console.log(messageBody);
                 data: $form.serialize(),
                 beforeSend: function () {
                     $messages.empty().append('<p class="success text-success"> '+ login_sending +'</p>');
+
+                    jQuery(current).children('i').remove();
+                    jQuery(current).prepend('<i class="fa-left fa fa-spin fa-spinner"></i>');
                 },
                 success: function( response ) {
                     if( response.success ) {
                         $messages.empty().append('<p class="success text-success"><i class="fa fa-check"></i> '+ response.msg +'</p>');
 
                         var wp_http_referer_value = jQuery(document).find("input[name='_wp_http_referer']").val();
+
+                        if($reservation_login_required == 1 ){
+                            window.location.href = wp_http_referer_value;
+                            return false;
+                        }
 
                         if(wp_http_referer_value != '/' && login_redirect_type == 'same_page'){
                             if(wp_http_referer_value.indexOf("?") !== -1){
@@ -2746,16 +4309,20 @@ console.log(messageBody);
                         }
 
                     } else {
+                        jQuery(current).children('i').remove();
+
                         $messages.empty().append('<p class="error text-danger"><i class="fa fa-close"></i> '+ response.msg +'</p>');
                     }
 
                     if(homey_reCaptcha == 1) {
                         homeyReCaptchaReset();
                     }
-        
+
                 },
                 error: function(xhr, status, error) {
-                    $messages.empty().append('<p class="error text-danger"><i class="fa fa-close"></i>Error: Something wrong happened. If you are not able to login, contact to Website Administrator. </p>');
+                    jQuery(current).children('i').remove();
+
+                    $messages.empty().append('<p class="error text-danger"><i class="fa fa-close"></i>'+HOMEY_ajax_vars.homey_login_register_msg_text+'</p>');
                     var err = eval("(" + xhr.responseText + ")");
                     console.log(err.Message);
                 }
@@ -2775,6 +4342,9 @@ console.log(messageBody);
                 data: $form.serialize(),
                 beforeSend: function () {
                     $messages.empty().append('<p class="success text-success"> '+ login_sending +'</p>');
+
+                    jQuery(currnt).children('i').remove();
+                    jQuery(currnt).prepend('<i class="fa-left fa fa-spin fa-spinner"></i>');
                 },
                 success: function( response ) {
                     if( response.success ) {
@@ -2783,6 +4353,8 @@ console.log(messageBody);
                         $('#modal-register').modal('hide');
                         $('#modal-login').modal('show');
                     } else {
+                        jQuery(currnt).children('i').remove();
+
                         $messages.empty().append('<p class="error text-danger"><i class="fa fa-close"></i> '+ response.msg +'</p>');
                     }
                     if(homey_reCaptcha == 1) {
@@ -2793,6 +4365,8 @@ console.log(messageBody);
                     }
                 },
                 error: function(xhr, status, error) {
+                    jQuery(currnt).children('i').remove();
+
                     var err = eval("(" + xhr.responseText + ")");
                     console.log(err.Message);
                 }
@@ -2902,7 +4476,7 @@ console.log(messageBody);
                 beforeSend: function () {
                     $messages.empty().append('<p class="success text-success"> '+ login_sending +'</p>');
                 },
-                success: function (data) { 
+                success: function (data) {
                     window.location.href = data;
                 },
                 error: function(xhr, status, error) {
@@ -2961,7 +4535,7 @@ console.log(messageBody);
                 beforeSend: function () {
                     $messages.empty().append('<p class="success text-success"> '+ login_sending +'</p>');
                 },
-                success: function (data) { 
+                success: function (data) {
                     window.location.href = data;
                 },
                 error: function(xhr, status, error) {
@@ -3045,7 +4619,7 @@ console.log(messageBody);
 
 
         $('.btn_extra_expense').on('click', function(e) {
-            e.preventDefault(); 
+            e.preventDefault();
             var reservation_id = $('#resrv_id').val();
 
         });
@@ -3057,7 +4631,7 @@ console.log(messageBody);
         $('.homey-woocommerce-featured-pay').on('click', function(e) {
             e.preventDefault();
 
-            let listID = $(this).data('listid');
+            let listing_id = $(this).data('listid');
             let is_featured = $(this).data('featured');
 
             homey_processing_modal( processing_text );
@@ -3067,10 +4641,10 @@ console.log(messageBody);
                 url: ajaxurl,
                 data: {
                     'action': 'homey_featured_woo_pay',
-                    'listing_id': listID,
+                    'listing_id': listing_id,
                     'is_featured': is_featured,
                 },
-                success: function(data) { 
+                success: function(data) {
                     if ( data.success != false ) {
                         var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?listing_id='+listing_id+'&is_featured='+is_featured;
                         window.location.href = urlWithGetVars;
@@ -3102,9 +4676,62 @@ console.log(messageBody);
                     'action': 'homey_reservation_woo_pay',
                     'reservation_id': reservation_id,
                 },
-                success: function(data) { 
+                success: function(data) {
                     if ( data.success != false ) {
                         var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?reservation_id='+reservation_id;
+                        window.location.href = urlWithGetVars;
+                    } else {
+                        $('#homey_modal').modal('hide');
+                    }
+                },
+                error: function(errorThrown) {
+
+                }
+            }); // $.ajax
+
+        });
+
+        $('#make_woocommerce_instant_experience_payment').on('click', function(e) {
+            e.preventDefault();
+
+            homey_processing_modal( processing_text );
+
+            var $this = $(this);
+            var check_in   = $('#check_in_date').val();
+
+            var guests     = $('#guests').val();
+            var experience_id = $('#experience_id').val();
+            var renter_message = $('#renter_message').val();
+            var security   = $('#checkout-security').val();
+
+            var extra_options = [];
+            var temp_opt;
+            $('.homey_extra_price').each(function() {
+                var extra_name = $(this).data('name');
+                var extra_price = $(this).data('price');
+                var extra_type = $(this).data('type');
+                temp_opt    =   '';
+                temp_opt    =   extra_name;
+                temp_opt    =   temp_opt + '|' + extra_price;
+                temp_opt    =   temp_opt + '|' + extra_type;
+                extra_options.push(temp_opt);
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: ajaxurl,
+                data: {
+                    'action': 'homey_instant_reservation_woo_exp_pay',
+                    'check_in': check_in,
+                    'guests': guests,
+                    'extra_options': extra_options,
+                    'experience_id': experience_id,
+                    'renter_message': renter_message,
+                },
+                success: function(data) {
+                    if ( data.success != false ) {
+                        var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?check_in='+check_in+'&guests='+guests+'&extra_options[]='+extra_options+'&experience_id='+experience_id+'&renter_message='+renter_message;
+                        console.log(urlWithGetVars);
                         window.location.href = urlWithGetVars;
                     } else {
                         $('#homey_modal').modal('hide');
@@ -3142,7 +4769,7 @@ console.log(messageBody);
                 temp_opt    =   extra_name;
                 temp_opt    =   temp_opt + '|' + extra_price;
                 temp_opt    =   temp_opt + '|' + extra_type;
-                extra_options.push(temp_opt);   
+                extra_options.push(temp_opt);
             });
 
             $.ajax({
@@ -3157,9 +4784,9 @@ console.log(messageBody);
                     'listing_id': listing_id,
                     'renter_message': renter_message,
                 },
-                success: function(data) { 
+                success: function(data) {
                     if ( data.success != false ) {
-                        var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?check_in='+check_in+'&check_out='+check_out+'&guests='+guests+'&extra_options='+extra_options+'&listing_id='+listing_id+'&renter_message='+renter_message;
+                        var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?check_in='+check_in+'&check_out='+check_out+'&guests='+guests+'&extra_options[]='+extra_options+'&listing_id='+listing_id+'&renter_message='+renter_message;
                         window.location.href = urlWithGetVars;
                     } else {
                         $('#homey_modal').modal('hide');
@@ -3172,10 +4799,7 @@ console.log(messageBody);
 
         });
 
-
-        
-
-        $('#make_hourly_woocommerce_instant_booking_payment').on('click', function(e){ 
+        $('#make_hourly_woocommerce_instant_booking_payment').on('click', function(e){
             e.preventDefault();
 
             homey_processing_modal( processing_text );
@@ -3202,7 +4826,7 @@ console.log(messageBody);
                 temp_opt    =   extra_name;
                 temp_opt    =   temp_opt + '|' + extra_price;
                 temp_opt    =   temp_opt + '|' + extra_type;
-                extra_options.push(temp_opt);   
+                extra_options.push(temp_opt);
             });
 
             $('#instance_noti').empty();
@@ -3224,10 +4848,10 @@ console.log(messageBody);
                     'renter_message': renter_message,
                     'security': security,
                 },
-                
+
                 success: function( data ) {
                     if ( data.success != false ) {
-                        var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?start_hour='+start_hour+'&end_hour='+end_hour+'&check_in='+check_in+'&check_in_hour='+check_in_hour+'&check_out_hour='+check_out_hour+'&guests='+guests+'&extra_options='+extra_options+'&listing_id='+listing_id+'&renter_message='+renter_message;
+                        var urlWithGetVars = HOMEY_ajax_vars.woo_checkout_url+'?start_hour='+start_hour+'&end_hour='+end_hour+'&check_in='+check_in+'&check_in_hour='+check_in_hour+'&check_out_hour='+check_out_hour+'&guests='+guests+'&extra_options[]='+extra_options+'&listing_id='+listing_id+'&renter_message='+renter_message;
                         window.location.href = urlWithGetVars;
                     } else {
                         $('#homey_modal').modal('hide');
@@ -3239,7 +4863,7 @@ console.log(messageBody);
                 }
             });
 
-            
+
 
         });
 
@@ -3252,208 +4876,73 @@ console.log(messageBody);
 
     }// typeof HOMEY_ajax_vars
 
-    function save_booking_details(arrive, depart, guest, guest_message ){
+    function save_booking_details(arrive, depart, guest, guest_message, adult_guest, child_guest, new_reser_request_user_email){
         var currentRefererUrl = $("input[name='_wp_http_referer']").val();
         if(typeof currentRefererUrl != "undefined"){
-            var newRefereUrl = currentRefererUrl.split('?')[0]+'?arrive='+arrive+'&depart='+depart+'&guest='+guest+'&guest_message='+guest_message;
+            var newRefereUrl = currentRefererUrl.split('?')[0]+'?arrive='+arrive+'&depart='+depart+'&guest='+guest+'&adult_guest='+adult_guest+'&child_guest='+child_guest+'&guest_message='+guest_message+'&new_reser_request_user_email='+new_reser_request_user_email;
             $("input[name='_wp_http_referer']").val(newRefereUrl);
         }
     }
 
-    function save_hourl_booking_details(arrive, start, end, guest, guest_message ){
+    function save_hourl_booking_details(arrive, start, end, guest, guest_message, adult_guest, child_guest ){
         var currentRefererUrl = $("input[name='_wp_http_referer']").val();
         if(typeof currentRefererUrl != "undefined"){
-            var newRefereUrl = currentRefererUrl.split('?')[0]+'?arrive='+arrive+'&start='+start+'&end='+end+'&guest='+guest+'&guest_message='+guest_message;
+            var newRefereUrl = currentRefererUrl.split('?')[0]+'?arrive='+arrive+'&start='+start+'&end='+end+'&guest='+guest+'&adult_guest='+adult_guest+'&child_guest='+child_guest+'&guest_message='+guest_message;
             $("input[name='_wp_http_referer']").val(newRefereUrl);
         }
     }
 
-    // to complete auto fill the price zahid.k
-    if(jQuery('body').hasClass("single-listing")){
-
-        var extra_options = [];
-        var temp_opt;
-
-        jQuery('.homey_extra_price input').each(function() {
-
-            if( (jQuery(this).is(":checked")) ) {
-                var extra_name = jQuery(this).data('name');
-                var extra_price = jQuery(this).data('price');
-                var extra_type = jQuery(this).data('type');
-                temp_opt = '';
-                temp_opt = extra_name;
-                temp_opt = temp_opt + '|' + extra_price;
-                temp_opt = temp_opt + '|' + extra_type;
-                extra_options.push(temp_opt);
-            }
-
-        });
-
-        var check_in_date = jQuery('input[name="arrive"]').val();
-        check_in_date = homey_convert_date(check_in_date);
-
-        var start_hour = jQuery('select[name="start_hour"]').val();
-        var end_hour = jQuery('select[name="end_hour"]').val();
-
-        var guests = jQuery('input[name="guests"]').val();
-        var listing_id = jQuery('#listing_id').val();
-        var security = jQuery('#reservation-security').val();
-
-         if(typeof start_hour != 'undefined' && typeof end_hour != 'undefined'){
-            alert('abbb');
-            homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, listing_id, security, extra_options);
-        }
-    }
-
-    $("#place_order").click(function(){
-        $('html, body').animate({
-            scrollTop: $('.woocommerce-info').offset().top
-          }, 'slow');
-    });
-    // to complete auto fill the price zahid.k
-    
-    /* ------------------------------------------------------------------------ */
-    /*  */
-    /* ------------------------------------------------------------------------ */
-    var country_select_box = $('select[name=country]');
-    if($("select[name=country]").length > 0){
-        var selected_country = $("select[name=country]").val();
-        if(selected_country != "") {
-            jQuery.ajax({
-                type: 'post',
-                url: ajaxurl,
-                dataType: 'json',
-                data: {
-                    'action': 'sa_get_cities_against_country',
-                    'selected_country': selected_country
-                },
-                beforeSend: function () {
-
-                },
-                success: function (result) {
-                    if (result.success) {
-                        $('select[name=city]').children().remove();
-                        $('select[name=city]').selectpicker('refresh');
-                        $('select[name=city]').append(result.data.replace("\\", ""));
-                        $('select[name=city]').selectpicker('refresh');
-                        //console.log(result);
-                    } else {
-                        $('select[name=city]').children().remove();
-                        $('select[name=city]').selectpicker('refresh');
-                        $('select[name=city]').append(result.data.replace("\\", ""));
-                        $('select[name=city]').selectpicker('refresh');
-                        //console.log("result");
-                    }
-
-                    $('#sa_city_selectpicker').selectpicker('val','');
-                    $('#sa_city_selectpicker_mobile').selectpicker('val','');
-
-                },
-                complete: function () {
-
-                },
-                error: function (xhr, status, error) {
-                    var err = eval("(" + xhr.responseText + ")");
-                    console.log(err.Message);
-                }
-            });
+    function save_exp_booking_details(arrive, guest, guest_message, adult_guest, child_guest ){
+        var currentRefererUrl = $("input[name='_wp_http_referer']").val();
+        if(typeof currentRefererUrl != "undefined"){
+            var newRefereUrl = currentRefererUrl.split('?')[0]+'?arrive='+arrive+'&guest='+guest+'&adult_guest='+adult_guest+'&child_guest='+child_guest+'&guest_message='+guest_message;
+            $("input[name='_wp_http_referer']").val(newRefereUrl);
         }
     }
 
 
-    $("select[name=country]").on('change', function () {
-        var selected_country = $(this).val();
-        
-        jQuery.ajax({
-            type: 'post',
-            url: ajaxurl,
-            dataType: 'json',
-            data: {
-                'action': 'sa_get_cities_against_country',
-                'selected_country': selected_country
-            },
-            beforeSend: function( ) {
-                if(selected_country == "")
-                {
-                    alert("select country");
-                }
-            },
-            success: function( result ) {
-                if( result.success ) {
-                    $('select[name=city]').children().remove();
-                    $('select[name=city]').selectpicker('refresh');
-                    $('select[name=city]').append( result.data.replace("\\", "") );
-                    $('select[name=city]').selectpicker('refresh');
-                    //console.log(result);
-                } else {
-                    $('select[name=city]').children().remove();
-                    $('select[name=city]').selectpicker('refresh');
-                    $('select[name=city]').append( result.data.replace("\\", "") );
-                    $('select[name=city]').selectpicker('refresh');
-                    //console.log("result");
-                }
-                
-                $('#sa_city_selectpicker').selectpicker('val','');
-                $('#sa_city_selectpicker_mobile').selectpicker('val','');
+// to complete auto fill the price zahid.k
+if(jQuery('body').hasClass("single-listing")){
 
-            },
-            complete: function(){
+    var extra_options = [];
+    var temp_opt;
 
-            },
-            error: function(xhr, status, error) {
-                var err = eval("(" + xhr.responseText + ")");
-                console.log(err.Message);
-            }
-        });
+    jQuery('.homey_extra_price input').each(function() {
 
-        console.log(selected_country);
-    });
-
-    $(".input_sa_on_mobile").find("button.dropdown-toggle").each(function(i, itm){
-        $(this).css('width', '100%');
-        if(i == 0){
-            $(this).css('margin-bottom', '10px');
+        if( (jQuery(this).is(":checked")) ) {
+            var extra_name = jQuery(this).data('name');
+            var extra_price = jQuery(this).data('price');
+            var extra_type = jQuery(this).data('type');
+            temp_opt = '';
+            temp_opt = extra_name;
+            temp_opt = temp_opt + '|' + extra_price;
+            temp_opt = temp_opt + '|' + extra_type;
+            extra_options.push(temp_opt);
         }
+
     });
 
+    var check_in_date = jQuery('input[name="arrive"]').val();
+    check_in_date = homey_convert_date(check_in_date);
 
-    /* ------------------------------------------------------------------------ */
-    /* city and states aganist add selected country onn add listing */
-    /* ------------------------------------------------------------------------ */
-    var sa_homey_country = $('#homey_country');
-    sa_homey_country.on('change', function(){
-        var country_selected = $(this).val();
+    var start_hour = jQuery('select[name="start_hour"]').val();
+    var end_hour = jQuery('select[name="end_hour"]').val();
 
-        jQuery.ajax({
-            type: 'post',
-            url: ajaxurl,
-            dataType: 'json',
-            data: {
-                'action': 'sa_homey_get_data_list_terms_specific',
-                'selected_country': country_selected
-            },
-            beforeSend: function( ) {
-                if(country_selected == "")
-                {
-                    alert("select country");
-                }
-            },
-            success: function( result ) {
-                $('#countyState').empty();
-                $('#countyState').append(result.data.state);
+    var guests = jQuery('input[name="guests"]').val();
+    var listing_id = jQuery('#listing_id').val();
+    var security = jQuery('#reservation-security').val();
 
-                $('#city').empty();
-                $('#city').append(result.data.city)
-            },
-            complete: function(){
+    if(typeof start_hour != 'undefined' && typeof end_hour != 'undefined'){
+        homey_calculate_hourly_booking_cost(check_in_date, start_hour, end_hour, guests, listing_id, security, extra_options);
+    }
+}
 
-            },
-            error: function(xhr, status, error) {
-                var err = eval("(" + xhr.responseText + ")");
-                console.log(err.Message);
-            }
-        });
-
-        console.log(country_selected);
+    jQuery("#place_order").click(function(){
+        jQuery('html, body').animate({
+            scrollTop: jQuery('.woocommerce-info').offset().top
+        }, 'slow');
     });
+    // to complete auto fill the price zahid.k
+
 }); // end document ready
+

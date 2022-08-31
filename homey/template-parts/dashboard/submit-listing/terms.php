@@ -27,9 +27,33 @@ $checkinout_hours = '';
             <?php if($hide_fields['cancel_policy'] != 1) { ?>
             <div class="row">
                 <div class="col-sm-12 col-xs-12">
+                    <!--<div class="form-group">
+                    <label for="cancel"><?php echo esc_attr(homey_option('ad_cancel_policy')).homey_req('cancellation_policy'); ?></label>
+                    <textarea name="cancellation_policy" class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_cancel_policy_plac'), 'homey'); ?>" <?php homey_required('cancellation_policy'); ?>><?php echo $cancellation_policy; ?></textarea>
+                </div>-->
+
                     <div class="form-group">
                         <label for="cancel"><?php echo esc_attr(homey_option('ad_cancel_policy')).homey_req('cancellation_policy'); ?></label>
-                        <input type="text" name="cancellation_policy" class="form-control" <?php homey_required('cancellation_policy'); ?> placeholder="<?php echo esc_attr(homey_option('ad_cancel_policy_plac')); ?>">
+                        <select name="cancellation_policy" class="selectpicker" data-live-search="false" data-live-search-style="begins" title="<?php echo esc_attr(homey_option('ad_cancel_policy')); ?>">
+                            <option value=""><?php echo esc_html__("Select Cancellation Policy", "homey"); ?></option>
+                            <?php
+
+                            $args = array(
+                                'post_type' => 'homey_cancel_policy',
+                                'posts_per_page' => 100
+                            );
+
+                            $policies_data = '';
+
+                            $policies_qry = new WP_Query($args);
+                            if ($policies_qry->have_posts()):
+                                while ($policies_qry->have_posts()): $policies_qry->the_post();
+                                    echo '<option value="'.get_the_ID().'">'.get_the_excerpt().'</option>';
+                                endwhile;
+                            endif;
+                            ?>
+                        </select>
+                        <?php  wp_reset_postdata(); ?>
                     </div>
                 </div>
             </div>
@@ -141,7 +165,7 @@ $checkinout_hours = '';
                     
                 </div>
 
-            <?php } elseif( $homey_booking_type == 'per_day' ) { ?>
+            <?php } elseif( $homey_booking_type == 'per_day_date' || $homey_booking_type == 'per_day' ) { ?>
                 <div class="row">
                     <?php if($hide_fields['checkin_after'] != 1) { ?>
                     <div class="col-sm-6 col-xs-12">

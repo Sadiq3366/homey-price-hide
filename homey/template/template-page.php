@@ -28,7 +28,7 @@ if($sidebar_meta['homey_sidebar'] != 'yes') {
                 <div class="page-title">
                     <div class="block-top-title">
                         <?php get_template_part('template-parts/breadcrumb'); ?>
-                        <h1 class="listing-title"><?php the_title(); ?></h1>
+                        <h1 class="listing-title"><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
                     </div><!-- block-top-title -->
                 </div><!-- page-title -->
             </div>

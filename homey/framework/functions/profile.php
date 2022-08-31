@@ -604,7 +604,7 @@ if( !function_exists('homey_make_superhost_idverify') ):
 
         if(!empty($user_id)) {
             //send email that document is verified.
-            $message = esc_html__('Congratulations, your document has been verified for the platform', 'homey');
+            $message = esc_html__('Congratulations, your document has been verified for the platform.', 'homey');
             $user_info = get_userdata( $user_id );
             $user_email = $user_info->user_email;
             $subject = sprintf( esc_html__('Your document has been verified for the platform %s', 'homey'), get_bloginfo('name') );
@@ -679,8 +679,12 @@ if(!function_exists('homey_get_role_name')) {
     function homey_get_role_name($user_id) {
 
         $user_meta = get_userdata($user_id);
-        $user_roles = $user_meta->roles; 
-        $user_role = $user_roles[0];
+        $user_roles = $user_meta->roles;
+        $user_role = '';
+
+        foreach ($user_roles as $role){
+            $user_role = $role;
+        }
 
         $is_superhost = get_the_author_meta( 'is_superhost' , $user_id);
 
@@ -748,17 +752,13 @@ if( !function_exists('homey_get_author') ) {
                 if(!empty($photo)) {
                     $author[ 'photo' ] = $photo;
                 } else {
-                    $author[ 'photo' ] = '<img src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
+                    $author[ 'photo' ] = '<img id="profile-img-753" src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
                 }
                 $author['is_photo'] = true;
             }
         } else {
-            $author[ 'photo' ] = '<img src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
+            $author[ 'photo' ] = '<img id="profile-img-758" src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
         }
-
-
-        
-        
 
         $author[ 'listing_count' ] = count_user_posts( $ID , 'listing' );
         $native_language  = get_the_author_meta( $prefix.'native_language');
@@ -841,7 +841,7 @@ if( !function_exists('homey_get_author') ) {
 
 
 if( !function_exists('homey_get_author_by_id') ) {
-    function homey_get_author_by_id($w = '36', $h = '36', $classes = 'img-responsive img-circle', $ID) {
+    function homey_get_author_by_id($w = '36', $h = '36', $classes = 'img-responsive img-circle', $ID = "") {
         
         global $homey_local;
         $author = array();
@@ -874,16 +874,20 @@ if( !function_exists('homey_get_author_by_id') ) {
                 if(!empty($photo)) {
                     $author[ 'photo' ] = $photo;
                 } else {
-                    $author[ 'photo' ] = '<img src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
+                    $author[ 'photo' ] = '<img id="profile-img-879" src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
                 }
 
                 $author['is_photo'] = true;
             }
         } else {
-            $author[ 'photo' ] = '<img src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
+            $author[ 'photo' ] = '<img id="profile-img-885" src="'.esc_url($custom_img).'" class="'.esc_attr($classes).'" alt="'.esc_attr($author[ 'name' ]).'" width="'.esc_attr($w).'" height="'.esc_attr($h).'">';
         }
 
-        $author[ 'listing_count' ] = count_user_posts( $ID , 'listing' );
+        //counting listings with statues
+        $author[ 'all_listing_count' ]          = homey_hm_user_listing_count($ID);
+        $author[ 'publish_listing_count' ]      = homey_hm_user_publish_listing_count($ID);
+        $author[ 'all_featured_listing_count' ] = homey_featured_listing_count($ID);
+
         $native_language  = get_the_author_meta( $prefix.'native_language' , $ID );
         $other_language  =  get_the_author_meta( $prefix.'other_language' , $ID );
         if(!empty($other_language) && !empty($native_language)) {
@@ -1020,14 +1024,48 @@ if(!function_exists('homey_reservation_count')) {
     }
 }
 
+if(!function_exists('homey_experience_reservation_count')) {
+    function homey_experience_reservation_count($user_id) {
+        $args = array(
+            'post_type'        =>  'homey_e_reservation',
+            'posts_per_page'    => -1,
+        );
+
+        if( homey_is_renter() ) {
+            $meta_query[] = array(
+                'key' => 'experience_renter',
+                'value' => $user_id,
+                'compare' => '='
+            );
+            $args['meta_query'] = $meta_query;
+        } else {
+            $meta_query[] = array(
+                'key' => 'experience_owner',
+                'value' => $user_id,
+                'compare' => '='
+            );
+            $args['meta_query'] = $meta_query;
+        }
+
+        $Qry = new WP_Query($args);
+        $founds = $Qry->found_posts;
+
+        return $founds;
+
+    }
+}
+
 if(!function_exists('homey_featured_listing_count')) {
     function homey_featured_listing_count($user_id)
     {
         global $wpdb;
-        $sql = 'SELECT COUNT("ID") as total_featured_listings FROM '.$wpdb->prefix.'posts AS p INNER JOIN '. $wpdb->prefix.'postmeta AS pm ON p.ID =  pm.post_id WHERE p.post_author = '.$user_id.' AND pm.meta_key = "homey_featured"';
+        $sql = 'SELECT COUNT("ID") as total_featured_listings 
+                    FROM '.$wpdb->prefix.'posts AS p 
+                    INNER JOIN '. $wpdb->prefix.'postmeta AS pm ON p.ID =  pm.post_id 
+                    WHERE p.post_author = '.$user_id.' AND pm.meta_key = "homey_featured" AND pm.meta_value = 1';
   
       $total_featured_listings = $wpdb->get_results($sql);
-      return $total_featured_listings[0]->total_featured_listings;
+        return isset($total_featured_listings[0]->total_featured_listings) ? $total_featured_listings[0]->total_featured_listings : 0;
     }
 }
 
@@ -1036,6 +1074,51 @@ if(!function_exists('homey_hm_user_listing_count')) {
     {
       global $wpdb;
       $sql = 'SELECT COUNT("ID") as total_listings FROM '.$wpdb->prefix.'posts AS p WHERE p.post_author = '.$user_id.' AND p.post_type = "listing"';
+      $total_listings = $wpdb->get_results($sql);
+      return isset($total_listings[0]->total_listings) ? $total_listings[0]->total_listings : 0;
+    }
+}
+
+if(!function_exists('homey_hm_user_publish_listing_count')) {
+    function homey_hm_user_publish_listing_count($user_id)
+    {
+      global $wpdb;
+      $sql = 'SELECT COUNT("ID") as total_listings FROM '.$wpdb->prefix.'posts AS p WHERE p.post_status ="publish" AND p.post_author = '.$user_id.' AND p.post_type = "listing"';
+      $total_listings = $wpdb->get_results($sql);
+      return $total_listings[0]->total_listings;
+    }
+}
+
+//experiences counting function
+if(!function_exists('homey_featured_experience_count')) {
+    function homey_featured_experience_count($user_id)
+    {
+        global $wpdb;
+        $sql = 'SELECT COUNT("ID") as total_featured_listings 
+                    FROM '.$wpdb->prefix.'posts AS p 
+                    INNER JOIN '. $wpdb->prefix.'postmeta AS pm ON p.ID =  pm.post_id 
+                    WHERE p.post_author = '.$user_id.' AND pm.meta_key = "homey_featured" AND pm.meta_value = 1';
+
+      $total_featured_listings = $wpdb->get_results($sql);
+        return isset($total_featured_listings[0]->total_featured_listings) ? $total_featured_listings[0]->total_featured_listings : 0;
+    }
+}
+
+if(!function_exists('homey_hm_user_experience_count')) {
+    function homey_hm_user_experience_count($user_id)
+    {
+      global $wpdb;
+      $sql = 'SELECT COUNT("ID") as total_listings FROM '.$wpdb->prefix.'posts AS p WHERE p.post_author = '.$user_id.' AND p.post_type = "listing"';
+      $total_listings = $wpdb->get_results($sql);
+      return isset($total_listings[0]->total_listings) ? $total_listings[0]->total_listings : 0;
+    }
+}
+
+if(!function_exists('homey_hm_user_publish_experience_count')) {
+    function homey_hm_user_publish_experience_count($user_id)
+    {
+      global $wpdb;
+      $sql = 'SELECT COUNT("ID") as total_listings FROM '.$wpdb->prefix.'posts AS p WHERE p.post_status ="publish" AND p.post_author = '.$user_id.' AND p.post_type = "listing"';
       $total_listings = $wpdb->get_results($sql);
       return $total_listings[0]->total_listings;
     }
@@ -1213,6 +1296,45 @@ if( !function_exists('homey_reset_password_2') ) {
     }
 }
 
+/*-----------------------------------------------------------------------------------*/
+// Remove user photo
+/*-----------------------------------------------------------------------------------*/
+add_action( 'wp_ajax_homey_delete_user_account', 'homey_delete_user_account' );
+if( !function_exists('homey_delete_user_account') ) {
+    function homey_delete_user_account() {
+        global $wpdb;
+        $remove_account = false;
+
+        $verify_nonce = $_REQUEST['verify_nonce'];
+        if ( ! wp_verify_nonce( $verify_nonce, 'homey_upload_nonce' ) ) {
+            echo json_encode( array( 'success' => false , 'reason' => 'Invalid request' ) );
+            die;
+        }
+
+        if (isset($_POST['user_id'])) {
+            $user_id = intval($_POST['user_id']);
+
+            if ( $user_id > 0 ) {
+                $remove_account = wp_delete_user($user_id);
+                $sql = "DELETE a,b,c
+                        FROM {$wpdb->prefix}posts a
+                            LEFT JOIN {$wpdb->prefix}term_relationships b
+                                ON (a.ID = b.object_id)
+                            LEFT JOIN {$wpdb->prefix}postmeta c
+                                ON (a.ID = c.post_id)
+                        WHERE a.post_author = {$user_id} AND a.post_type = 'homey_invoice';";
+                $wpdb->get_results($sql);
+
+            }
+        }
+
+        echo json_encode(array(
+            'success' => $remove_account,
+        ));
+        wp_die();
+
+    }
+}
 
 
 

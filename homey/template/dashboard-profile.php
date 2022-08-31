@@ -5,6 +5,35 @@
 /*-----------------------------------------------------------------------------------*/
 // Social Logins
 /*-----------------------------------------------------------------------------------*/
+
+if( isset($_GET['verification_id']) ){
+    $args = array(
+        'meta_query' => array(
+            array(
+                'key' => 'verification_id',
+                'value' => $_GET['verification_id'],
+                'compare' => '='
+            )
+        )
+    );
+     
+    $verify_users = get_users($args); 
+    $verify_user_id = 0;
+    if ($verify_users) {  
+      foreach ($verify_users as $user) {  
+        $verify_user_id = $user->ID;
+        update_user_meta($verify_user_id, 'is_email_verified', 1);
+        update_user_meta($verify_user_id, 'verification_id', '');
+      }
+    }
+
+    if($verify_user_id > 0){
+        nocache_headers();
+        header("Location: ". home_url('/?auth_message=your-profile-is-activated') );
+        die();
+    }
+}
+
 if( ( isset($_GET['code']) && isset($_GET['state']) ) ){
     homey_facebook_login($_GET);
 
@@ -20,12 +49,14 @@ if( ( isset($_GET['code']) && isset($_GET['state']) ) ){
     }
 }
 
+
 get_header();
 global $current_user, $author_info;
 
 wp_get_current_user();
 $userID = $current_user->ID;
 $user_email = $current_user->user_email;
+
 $admin_email =  get_bloginfo('admin_email');
 $author_info = homey_get_author_by_id('100', '100', 'img-circle', $userID);
 $offsite_payment = homey_option('off-site-payment');
@@ -34,7 +65,7 @@ $offsite_payment = homey_option('off-site-payment');
 <section id="body-area">
 
     <div class="dashboard-page-title">
-        <h1><?php the_title(); ?></h1>
+        <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
     </div><!-- .dashboard-page-title -->
 
     <?php get_template_part('template-parts/dashboard/side-menu'); ?>
@@ -46,6 +77,7 @@ $offsite_payment = homey_option('off-site-payment');
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="dashboard-area">
 
+                            <div style="display: none;" id="profile_mandatory_message" class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">×</span></button><?php echo esc_html__('To book please fill all mandatory fields.', 'homey'); ?></div>
                             <div id="profile_message"></div>
 
                             <?php 
@@ -68,6 +100,9 @@ $offsite_payment = homey_option('off-site-payment');
 
                                 if(!homey_is_renter()) {
                                     get_template_part('template-parts/dashboard/profile/social');
+                                }
+                                if(!homey_is_admin()) {
+                                    get_template_part('template-parts/dashboard/profile/delete');
                                 }
 
                             }

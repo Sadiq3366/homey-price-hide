@@ -7,8 +7,8 @@ if(homey_is_transparent_logo()) {
 
 $menu_sticky = homey_option('menu-sticky');
 ?>
-<header id="homey_nav_sticky_mobile" class="header-nav header-mobile hidden-md hidden-lg" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
-    <div class="header-mobile-wrap">
+<header id="homey_nav_sticky_mobile" class="header-nav header-mobile hidden-md hidden-lg no-cache-<?php echo strtotime("now"); ?>" data-sticky="<?php echo esc_attr( $menu_sticky ); ?>">
+    <div class="header-mobile-wrap no-cache-<?php echo strtotime("now"); ?>">
         <div class="container">
             <div class="row">
                 <div class="col-xs-3">
@@ -18,22 +18,22 @@ $menu_sticky = homey_option('menu-sticky');
                 </div>
                 <div class="col-xs-6">
                     <div class="mobile-logo text-center">
-                        <h1>
-                            <a href="<?php echo esc_url(site_url('/')); ?>">
-                                <?php if( !empty( $mobile_logo ) ) { ?>
-                                    <img src="<?php echo esc_url( $mobile_logo ); ?>" alt="<?php bloginfo( 'name' );?>" title="<?php bloginfo( 'name' ); ?> - <?php bloginfo( 'description' ); ?>">
-                                <?php } else {
-                                        bloginfo( 'name' );
-                                    } ?>
-                            </a>
-                        </h1>
+                        
+                        <a href="<?php echo esc_url(site_url('/')); ?>">
+                            <?php if( !empty( $mobile_logo ) ) { ?>
+                                <img src="<?php echo esc_url( $mobile_logo ); ?>" alt="<?php bloginfo( 'name' );?>" title="<?php bloginfo( 'name' ); ?> - <?php bloginfo( 'description' ); ?>">
+                            <?php } else {
+                                    bloginfo( 'name' );
+                                } ?>
+                        </a>
+                        
                     </div><!-- mobile-logo -->
                 </div>
                 <div class="col-xs-3">
                     <?php if(homey_is_login_register()) { ?>
                     <div class="user-menu text-right">
-                        <button type="button" class="btn btn-mobile-nav user-mobile-nav" id="sa-user-mobile-nav">
-                            <i class="fa fa-search" aria-hidden="true"></i>
+                        <button type="button" class="btn btn-mobile-nav user-mobile-nav" data-toggle="collapse" data-target="#user-nav" aria-expanded="false">
+                            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
                             <?php echo homey_messages_notification( 'user-alert' ); ?>
                         </button>
                     </div><!-- user-menu -->
@@ -43,14 +43,14 @@ $menu_sticky = homey_option('menu-sticky');
         </div><!-- container -->
     </div><!-- header-mobile-wrap -->
     
-    <div class="container">
+    <div class="container no-cache-<?php echo strtotime("now"); ?>">
         <div class="row">
             <div class="mobile-nav-wrap">
                 <?php get_template_part ('template-parts/header/mobile-menu'); ?>
             </div><!-- mobile-nav-wrap -->    
         </div>        
     </div><!-- container -->
-    <div class="container">
+    <div class="container no-cache-<?php echo strtotime("now"); ?>">
         <div class="row">
             <div class="user-nav-wrap">
                 <?php if( class_exists('Homey_login_register') ): ?>

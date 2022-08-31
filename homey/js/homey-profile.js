@@ -19,6 +19,13 @@ jQuery(document).ready(function($) {
         var processing_text = homeyProfile.processing_text;
         var gdpr_agree_text = homeyProfile.gdpr_agree_text;
 
+        var profile_picture_req_text = homeyProfile.profile_picture_req_text;
+        var first_name_req_text = homeyProfile.first_name_req_text;
+        var last_name_req_text = homeyProfile.last_name_req_text;
+        var tell_about_req_text = homeyProfile.tell_about_req_text;
+        var mobile_num_req_text = homeyProfile.mobile_num_req_text;
+        var phone_num_req_text = homeyProfile.phone_num_req_text;
+
 
         /*-------------------------------------------------------------------
          *  Delete Profile Photo
@@ -46,6 +53,7 @@ jQuery(document).ready(function($) {
                 success: function(data) {
                     if(data.success) {
                         $('#homey_profile_photo').empty();
+                        window.location.reload(true);
                     } else {
                         
                     }
@@ -61,9 +69,49 @@ jQuery(document).ready(function($) {
             
          });
 
-         /*-------------------------------------------------------------------
-         *  Delete Profile Photo
-         * ------------------------------------------------------------------*/
+        /*-------------------------------------------------------------------
+        *  Delete Profile Account
+        * ------------------------------------------------------------------*/
+        $('.delete_user_account_confirmed').on('click', function(e) {
+            e.preventDefault();
+
+            var $this = $(this);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url:   ajaxURL,
+                data: {
+                    'action'       : 'homey_delete_user_account',
+                    'verify_nonce' : homey_upload_nonce,
+                    'user_id'      : user_id,
+                },
+                beforeSend: function( ) {
+                    $this.children('i').remove();
+                    $this.prepend('<i class="fa-left '+process_loader_spinner+'"></i>');
+                },
+                success: function(data) {
+                    if(data.success) {
+                        window.location.href = homey_site_url;
+                    } else {
+
+                    }
+                },
+                error: function(errorThrown) {
+
+                },
+                complete: function(){
+                    $this.children('i').removeClass(process_loader_spinner);
+
+                }
+            });
+
+        });
+
+
+        /*-------------------------------------------------------------------
+        *  Delete Profile Photo
+        * ------------------------------------------------------------------*/
          $('#delete_verify_id').on('click', function(e) {
             e.preventDefault();
 
@@ -197,6 +245,65 @@ jQuery(document).ready(function($) {
                 securityprofile = $('#homey_profile_security').val(),
                 user_role    = $('select[name="role"] option:selected').val();
 
+            if( typeof $("#profile-pic-id").val() == "undefined" ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+profile_picture_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
+
+            if( firstname.trim().length <= 0 ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+first_name_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
+
+            if( lastname.trim().length <= 0 ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+last_name_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
+
+            if( bio.trim().length <= 0 ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+tell_about_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
+
+            if( em_relationship.trim().length <= 0 ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+mobile_num_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
+
+            if( em_phone.trim().length <= 0 ){
+                jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+phone_num_req_text+'</div>');
+
+                $('html,body').animate({
+                    scrollTop: $(".user-dashboard-right").offset().top
+                }, 'slow');
+
+                return false;
+            }
 
             $.ajax({
                 type: 'POST',
@@ -246,6 +353,8 @@ jQuery(document).ready(function($) {
                         $('html,body').animate({
                             scrollTop: $(".user-dashboard-right").offset().top
                         }, 'slow');
+
+                        window.location.reload(true);
                     } else {
                         jQuery('#profile_message').empty().append('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+ data.msg +'</div>');
                         $('html,body').animate({
@@ -438,9 +547,10 @@ jQuery(document).ready(function($) {
 
                 var homey_profile_thumb = '<img class="img-circle" src="' + response.url + '" alt="" />' +
                     '<input type="hidden" class="profile-pic-id" id="profile-pic-id" name="profile-pic-id" value="' + response.attachment_id + '"/>';
-    
+
 
                 document.getElementById( "imageholder-" + file.id ).innerHTML = homey_profile_thumb;
+                window.location.reload(true);
 
             } else {
                 console.log ( response );
@@ -500,6 +610,10 @@ jQuery(document).ready(function($) {
             }
         });
 
+    }
+
+    if($("#lastname").val() =='' || $("#firstname").val() =='' || typeof $("#profile-pic-id").val() == "undefined" || $("#bio").val().trim().length <= 0 || $("#em_phone").val().trim().length <= 0 || $("#em_relationship").val().trim().length <= 0 ){
+        $("#profile_mandatory_message").show();
     }
 
 });

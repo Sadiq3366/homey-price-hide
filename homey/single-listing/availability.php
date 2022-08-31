@@ -23,14 +23,14 @@ if($min_book_days > 1) {
                         <?php if($hide_labels['sn_min_stay_is'] != 1 && !empty($min_book_days)) { ?>
                         <li>
                             <i class="fa fa-calendar-o" aria-hidden="true"></i> 
-                            <?php echo esc_attr(homey_option('sn_min_stay_is'));?> <strong><?php echo esc_attr($min_book_days); ?> <?php echo esc_attr(homey_get_price_label($min_book_days));?></strong>
+                            <?php echo esc_attr(homey_option('sn_min_stay_is'));?> <strong><?php echo esc_attr($min_book_days); ?> <?php echo esc_attr(homey_get_availability_label($min_book_days));?></strong>
                         </li>
                         <?php } ?>
 
                         <?php if($hide_labels['sn_max_stay_is'] != 1 && !empty($max_book_days)) { ?>
                         <li>
                             <i class="fa fa-calendar-o" aria-hidden="true"></i> 
-                            <?php echo esc_attr(homey_option('sn_max_stay_is'));?> <strong><?php echo esc_attr($max_book_days); ?> <?php echo esc_attr(homey_get_price_label($max_book_days));?></strong>
+                            <?php echo esc_attr(homey_option('sn_max_stay_is'));?> <strong><?php echo esc_attr($max_book_days); ?> <?php echo esc_attr(homey_get_availability_label($max_book_days));?></strong>
                         </li>
                         <?php } ?>
                     </ul>
@@ -43,21 +43,28 @@ if($min_book_days > 1) {
 
                     <div class="calendar-arrow"></div>
 
-                    <?php homeyAvailabilityCalendar(); ?> 
+                    <?php
+                        $homey_booking_type = homey_booking_type_by_id(get_the_ID());
+                        if($homey_booking_type == "per_day_date"){
+                            homeyAvailabilityCalendarDayDate(0);
+                        }else{
+                            homeyAvailabilityCalendar(0);
+                        }
+                     ?>
 
-                    <!-- <div class="availability-notes">
+                    <div class="availability-notes">
                         <ul class="list-inline">
                             <li class="day-available">
-                                <span><?php //echo esc_attr(homey_option('sn_avail_label')); ?></span>
+                                <span><?php echo esc_attr(homey_option('sn_avail_label')); ?></span>
                             </li>
                             <li class="day-pending">
-                                <span><?php //echo esc_attr(homey_option('sn_pending_label')); ?></span>
+                                <span><?php echo esc_attr(homey_option('sn_pending_label')); ?></span>
                             </li>
                             <li class="day-booked">
-                                <span><?php //echo esc_attr(homey_option('sn_booked_label')); ?></span>
+                                <span><?php echo esc_attr(homey_option('sn_booked_label')); ?></span>
                             </li>
                         </ul>
-                    </div> -->
+                    </div>
 
                     <div class="calendar-navigation custom-actions">
                         <button class="listing-cal-prev btn btn-action pull-left disabled"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>

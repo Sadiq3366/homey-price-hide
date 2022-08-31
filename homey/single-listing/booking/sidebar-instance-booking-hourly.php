@@ -20,7 +20,7 @@ $end_hour_unix = strtotime($end_hour);
 
 $booking_hide_fields = homey_option('booking_hide_fields');
 
-$check_in_date = date("d/m/Y", $check_in_unix);
+$check_in_date = date(get_homey_to_std_date_format(), $check_in_unix);
 $check_in_time = date(homey_time_format(), $start_hour_unix);
 $check_out_time = date(homey_time_format(), $end_hour_unix);
 

@@ -8,7 +8,8 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
     <div class="block">
         <div class="block-title">
             <div class="block-left">
-                <h2 class="title"><?php echo esc_html(homey_option('ad_section_info'));?></h2>
+                <h2 class="title"><?php echo esc_html__(homey_option('ad_section_info'), 'homey');?></h2>
+                <p class="description-block mb-0"><?php echo esc_html__('Fill all the mandatory fields', 'homey'); ?></p>
             </div><!-- block-left -->
         </div>
         <div class="block-body">
@@ -41,7 +42,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="listing_title"><?php echo esc_attr(homey_option('ad_title')).homey_req('listing_title'); ?></label>
-                        <input type="text" name="listing_title" id="listing_title" class="form-control" <?php homey_required('listing_title'); ?> placeholder="<?php echo esc_attr(homey_option('ad_title_plac'));?>">
+                        <input type="text" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_title')), 'homey'); ?>" name="listing_title" id="listing_title" class="form-control" <?php homey_required('listing_title'); ?> placeholder="<?php echo esc_attr(homey_option('ad_title_plac'));?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -155,7 +156,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="listing_bedrooms"> <?php echo esc_attr(homey_option('ad_no_of_bedrooms')).homey_req('listing_bedrooms'); ?> </label>
-                        <input type="text" name="listing_bedrooms" id="listing_bedrooms" <?php homey_required('listing_bedrooms'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_bedrooms_plac')); ?>">
+                        <input type="text" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_no_of_bedrooms')), 'homey'); ?>" name="listing_bedrooms" id="listing_bedrooms" <?php homey_required('listing_bedrooms'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_bedrooms_plac')); ?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -164,7 +165,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="guests"> <?php echo esc_attr(homey_option('ad_no_of_guests')).homey_req('guests'); ?> </label>
-                        <input type="text" name="guests" id="guests" <?php homey_required('guests'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_guests_plac')); ?>">
+                        <input type="text" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_no_of_guests')), 'homey'); ?>" name="guests" id="guests" <?php homey_required('guests'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_guests_plac')); ?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -173,7 +174,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="beds"> <?php echo esc_attr(homey_option('ad_no_of_beds')).homey_req('beds'); ?> </label>
-                        <input type="text" name="beds" id="beds" <?php homey_required('beds'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_beds_plac')); ?>">
+                        <input type="text" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_no_of_beds')), 'homey'); ?>" name="beds" id="beds" <?php homey_required('beds'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_beds_plac')); ?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -182,7 +183,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="baths"> <?php echo esc_attr(homey_option('ad_no_of_bathrooms')).homey_req('baths'); ?> </label>
-                        <input type="text" name="baths" id="baths" <?php homey_required('baths'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_bathrooms_plac')); ?>">
+                        <input type="text"  data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_no_of_bathrooms')), 'homey'); ?>"  name="baths" id="baths" <?php homey_required('baths'); ?> class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_no_of_bathrooms_plac')); ?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -191,7 +192,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="listing_rooms"> <?php echo esc_attr(homey_option('ad_listing_rooms')).homey_req('listing_rooms'); ?> </label>
-                        <input type="text" class="form-control" name="listing_rooms" id="listing_rooms" <?php homey_required('listing_rooms'); ?> placeholder="<?php echo esc_attr(homey_option('ad_listing_rooms_plac'));?>">
+                        <input type="text" class="form-control" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_listing_rooms')), 'homey'); ?>"  name="listing_rooms" id="listing_rooms" <?php homey_required('listing_rooms'); ?> placeholder="<?php echo esc_attr(homey_option('ad_listing_rooms_plac'));?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -200,7 +201,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="listing_size"> <?php echo esc_attr(homey_option('ad_listing_size')).homey_req('listing_size'); ?> </label>
-                        <input type="text" class="form-control" name="listing_size" id="listing_size" <?php homey_required('listing_size'); ?> placeholder="<?php echo esc_attr(homey_option('ad_size_placeholder'));?>">
+                        <input type="text" class="form-control" data-input-title="<?php echo esc_html__(esc_attr(homey_option('ad_listing_size')), 'homey'); ?>" name="listing_size" id="listing_size" <?php homey_required('listing_size'); ?> placeholder="<?php echo esc_attr(homey_option('ad_size_placeholder'));?>">
                     </div>
                 </div>
                 <?php } ?>
@@ -209,7 +210,7 @@ $openning_hours_list_array = explode( ',', $openning_hours_list );
                 <div class="col-sm-6 col-xs-12">
                     <div class="form-group">
                         <label for="listing_size_unit"> <?php echo esc_attr(homey_option('ad_listing_size_unit')).homey_req('listing_size_unit'); ?> </label>
-                        <input value="<?php echo esc_attr(homey_option('homey_sa_unit_of_measure'));?>" type="text" class="form-control" name="listing_size_unit" id="listing_size_unit" <?php homey_required('listing_size_unit'); ?> placeholder="<?php echo esc_attr(homey_option('ad_listing_size_unit_plac'));?>">
+                        <input type="text" class="form-control" name="listing_size_unit" id="listing_size_unit" <?php homey_required('listing_size_unit'); ?> placeholder="<?php echo esc_attr(homey_option('ad_listing_size_unit_plac'));?>">
                     </div>
                 </div>
                 <?php } ?>

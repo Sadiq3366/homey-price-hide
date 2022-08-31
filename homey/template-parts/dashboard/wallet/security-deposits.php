@@ -42,7 +42,7 @@ $guest_security_deposits = homey_get_security_deposit($limit);
                         <a href="<?php echo esc_url($resrv_link); ?>"><?php echo esc_attr($reservation_id); ?></a>
                     </td>
                     <td data-label="<?php esc_html_e('Date', 'homey'); ?>">
-                        <?php echo esc_attr($date); ?><br/>
+                        <?php echo homey_format_date_simple(esc_attr($date)); ?><br/>
                         <?php echo esc_html__('at', 'homey'); ?>
                         <?php echo esc_attr($time); ?>
                     </td>

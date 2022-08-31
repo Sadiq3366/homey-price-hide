@@ -17,13 +17,15 @@ $allowed_html_array = array(
 );
 $enable_paypal = homey_option('enable_paypal');
 $enable_stripe = homey_option('enable_stripe');
+$enable_wireTransfer = '';
+
 $is_upgrade = 0; $listing_id = '';
 if( !empty( $upgrade_id ) ) {
     $is_upgrade = 1;
     $listing_id = $upgrade_id;
 }
 
-$checked_paypal = $checked_stripe = $checked_bank = '';
+$checked_paypal = $checked_stripe = $checked_bank = $woo_commerce_gateway_class = '';
 if($enable_paypal != 0 ) {
     $checked_paypal = 'checked';
 } elseif( $enable_paypal != 1 && $enable_stripe != 0 ) {
@@ -31,7 +33,7 @@ if($enable_paypal != 0 ) {
 } elseif( $enable_paypal != 1 && $enable_stripe != 1 && $enable_wireTransfer != 0 ) {
     $checked_bank = 'checked';
 } else {
-
+    $woo_commerce_gateway_class = "homey-woocommerce-featured-pay";
 }
 $stripe_processor_link = homey_get_template_link('template/template-stripe-charge.php');
 if(isset($is_membership_info['is_allowed_membership'])){
@@ -54,7 +56,7 @@ if(isset($is_membership_info['is_allowed_membership'])){
                             <div class="block-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <h3>What we can type here.</h3>
+                                        <h3><?php esc_html_e('What we can type here.', 'homey'); ?></h3>
                                     </div>
                                 </div>
                             </div>
@@ -69,7 +71,7 @@ if(isset($is_membership_info['is_allowed_membership'])){
                                             <ul>
                                                 <li>
                                                     <?php esc_html_e('Upgrade to featured', 'homey'); ?> 
-                                                    <span>You are allowed to make total <?php echo $is_membership_info['total_allowed_featured_listing']; ?> Featured listings.</span>
+                                                    <span><?php echo esc_html__('You are allowed to make total', 'homey'); ?> <?php echo $is_membership_info['total_allowed_featured_listing']; ?> <?php esc_html_e('Featured listings.', 'homey'); ?></span>
                                                 </li>
                                                 
                                                 <li class="total">
@@ -122,7 +124,11 @@ if(isset($is_membership_info['is_allowed_membership'])){
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="payment-method">
-                                            <?php if( $enable_paypal != 0 ) { ?>
+                                            <?php
+                                                if( $enable_paypal != 0 && $price_featured_listing < 1) {
+                                                    echo esc_html__('Error, price should be greater than zero.', 'homey');
+                                                }
+                                            if( $enable_paypal != 0 && $price_featured_listing > 0) { ?>
                                             <div class="payment-method-block paypal-method">
                                                 <div class="form-group">
                                                     <label class="control control--radio radio-tab">
@@ -184,7 +190,12 @@ if(isset($is_membership_info['is_allowed_membership'])){
                         </div><!-- .block -->
 
                         <?php
-                        if( $enable_stripe != 0 ) {
+
+                        if( $enable_stripe != 0 && $price_featured_listing < 1) {
+                            echo esc_html__('Error, price should be greater than zero.', 'homey');
+                        }
+
+                        if( $enable_stripe != 0 && $price_featured_listing > 0) {
                             homey_stripe_payment_for_featured();
                         }?>
 
@@ -192,7 +203,7 @@ if(isset($is_membership_info['is_allowed_membership'])){
                         <div id="without_stripe" class="payment-buttons">
                             <input type="hidden" id="listing_id" name="listing_id" value="<?php echo intval( $listing_id ); ?>">
                             <input type="hidden" id="is_upgrade" name="is_upgrade" value="<?php echo intval($is_upgrade); ?>">
-                            <button id="homey_complete_order" class="btn btn-success btn-full-width"><?php echo esc_html__('Process Payment', 'homey'); ?></button>
+                            <button id="homey_complete_order" data-listid="<?php echo intval( $listing_id ); ?>" class="<?php echo $woo_commerce_gateway_class; ?> btn btn-success btn-full-width"><?php echo esc_html__('Process Payment', 'homey'); ?></button>
 
                         </div>
                     </div><!-- .dashboard-area -->

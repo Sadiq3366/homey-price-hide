@@ -14,7 +14,8 @@ $get_end_hour = homey_get_field_meta('end_hour');
 $smoke = homey_get_field_meta('smoke'); 
 $pets = homey_get_field_meta('pets'); 
 $party = homey_get_field_meta('party'); 
-$children = homey_get_field_meta('children'); 
+$children = homey_get_field_meta('children');
+
 $additional_rules = isset($listing_meta_data['homey_additional_rules'][0]) ? $listing_meta_data['homey_additional_rules'][0] : ''; 
 $cancellation_policy = isset($listing_meta_data['homey_cancellation_policy'][0]) ? $listing_meta_data['homey_cancellation_policy'][0] : ''; 
 
@@ -41,9 +42,34 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'rules') {
         <?php if($hide_fields['cancel_policy'] != 1) { ?>
         <div class="row">
             <div class="col-sm-12 col-xs-12">
+                <!--<div class="form-group">
+                    <label for="cancel"><?php echo esc_attr(homey_option('ad_cancel_policy')).homey_req('cancellation_policy'); ?></label>
+                    <textarea name="cancellation_policy" class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_cancel_policy_plac'), 'homey'); ?>" <?php homey_required('cancellation_policy'); ?>><?php echo $cancellation_policy; ?></textarea>
+                </div>-->
+
                 <div class="form-group">
                     <label for="cancel"><?php echo esc_attr(homey_option('ad_cancel_policy')).homey_req('cancellation_policy'); ?></label>
-                    <input type="text" name="cancellation_policy" <?php homey_required('cancellation_policy'); ?> value="<?php echo ''.($cancellation_policy); ?>" class="form-control" placeholder="<?php echo esc_attr(homey_option('ad_cancel_policy_plac')); ?>">
+                    <select name="cancellation_policy" class="selectpicker" data-live-search="false" data-live-search-style="begins" title="<?php echo esc_attr(homey_option('ad_cancel_policy')); ?>">
+                        <option value=""><?php echo esc_html__("Select Cancellation Policy", "homey"); ?></option>
+                        <?php
+
+            $args = array(
+                'post_type' => 'homey_cancel_policy',
+                'posts_per_page' => 100
+            );
+
+            $policies_data = '';
+
+            $policies_qry = new WP_Query($args);
+            if ($policies_qry->have_posts()):
+                while ($policies_qry->have_posts()): $policies_qry->the_post();
+                    $is_selected = $cancellation_policy == get_the_ID() ? "selected='selected'" : '';
+                    echo '<option '.$is_selected.' value="'.get_the_ID().'">'.get_the_excerpt().'</option>';
+                    endwhile;
+            endif;
+            ?>
+                    </select>
+                    <?php  wp_reset_postdata(); ?>
                 </div>
             </div>
         </div>
@@ -164,7 +190,7 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'rules') {
                 
             </div>
 
-        <?php } elseif( $homey_booking_type == 'per_day' ) { ?>
+        <?php } elseif( $homey_booking_type == 'per_day_date' || $homey_booking_type == 'per_day' ) { ?>
         <div class="row">
             <?php if($hide_fields['checkin_after'] != 1) { ?>
             <div class="col-sm-6 col-xs-12">
@@ -339,3 +365,4 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'rules') {
         
     </div>
 </div>
+

@@ -76,22 +76,13 @@ if(isset($_GET['tab']) && $_GET['tab'] == 'media') {
                             ?>
                         </div>
 
-                        <hr class="row-separator"> 
+                        <div id="upload-progress-images"></div>
 
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label for="sa_folder_name"><?php echo  esc_html__( 'Images Folder Name', 'homey' ); ?></label>
-                                    <input type="text" class="form-control" name="sa_folder_name" id="sa_folder_name" placeholder="<?php echo esc_html__( 'Enter images folder name', 'homey' ); ?>">
-                                </div>
-                            </div>
-                        </div>
-                        
                         <?php if($hide_fields['video_url'] != 1) { ?>
                         <hr class="row-separator"> 
                         <h3 class="sub-title"><?php echo esc_attr(homey_option('ad_video_heading')); ?></h3>
                         <div class="row">
-                            <div class="col-sm-12">                               
+                            <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="video_url"><?php echo esc_attr(homey_option('ad_video_url')); ?></label>
                                     <input type="text" class="form-control" name="video_url" value="<?php echo esc_url($video_url); ?>" placeholder="<?php echo esc_attr(homey_option('ad_video_placeholder')); ?>">

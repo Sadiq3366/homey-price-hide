@@ -38,7 +38,7 @@ if ( !function_exists( 'homey_listing_area_edit_meta_fields' ) ) :
         if(is_object ($term)) {
             $term_id      =  $term->term_id;
             $term_meta    =  get_option( "_homey_listing_area_$term_id" );
-            $parent_city  =  $term_meta['parent_city'] ? $term_meta['parent_city'] : '';
+            $parent_city  =  isset($term_meta['parent_city']) ? $term_meta['parent_city'] : '';
             $all_cities   =  homey_get_all_cities($parent_city);
 
         } else {

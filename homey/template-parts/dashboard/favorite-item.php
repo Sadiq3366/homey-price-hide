@@ -22,6 +22,11 @@ $edit_link  = add_query_arg( 'edit_listing', $post_id, $edit_link ) ;
 $delete_link  = add_query_arg( 'listing_id', $post_id, $dashboard_listings ) ;
 $property_status = get_post_status ( $post->ID );
 $price_separator = homey_option('currency_separator');
+
+
+$cgl_beds = homey_option('cgl_beds');
+$cgl_baths = homey_option('cgl_baths');
+$cgl_guests = homey_option('cgl_guests');
 ?>
 
 <tr>
@@ -48,9 +53,19 @@ $price_separator = homey_option('currency_separator');
         <strong><?php echo homey_formatted_price($listing_price, false); ?><?php echo esc_attr($price_separator); ?><?php echo homey_get_price_label(); ?></strong><br>
         <?php } ?>
     </td>
-    <td data-label="<?php echo homey_option('glc_bedrooms_label') ;?>"><?php echo esc_attr($bedrooms); ?></td>
-    <td data-label="<?php echo homey_option('glc_baths_label') ;?>"><?php echo esc_attr($baths); ?></td>
-    <td data-label="<?php echo homey_option('glc_guests_label') ;?>"><?php echo esc_attr($guests); ?></td>
+
+    <?php if($cgl_beds != 0) { ?>
+        <td data-label="<?php echo homey_option('glc_bedrooms_label') ;?>"><?php echo esc_attr($bedrooms); ?></td>
+    <?php } ?>
+
+    <?php if($cgl_baths != 0) { ?>
+        <td data-label="<?php echo homey_option('glc_baths_label') ;?>"><?php echo esc_attr($baths); ?></td>
+    <?php } ?>
+
+    <?php if($cgl_guests != 0) { ?>
+        <td data-label="<?php echo homey_option('glc_guests_label') ;?>"><?php echo esc_attr($guests); ?></td>
+    <?php } ?>
+
     <td data-label="<?php echo homey_option('actions_label') ;?>">
         <div class="custom-actions">
             <button data-listid="<?php echo intval( $post->ID ); ?>" class="remove_fav btn-action" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo esc_attr($homey_local['delete_btn']); ?>"><i class="fa fa-trash"></i></button>

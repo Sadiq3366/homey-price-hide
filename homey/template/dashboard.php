@@ -47,7 +47,7 @@ get_header();
         } elseif($user_detail) {
             echo esc_html__('User Profile', 'homey');
         } else {
-            the_title();
+            echo esc_html__(the_title('', '', false), 'homey');
         } 
         ?>
         </h1>

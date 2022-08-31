@@ -3,6 +3,7 @@ global $wp_query, $homey_local, $homey_prefix;
 $current_author = $wp_query->get_queried_object();
 $author_id = $current_author->ID;
 $author_meta = get_user_meta( $author_id );
+$user_meta = homey_get_author_by_id('100', '100', 'img-circle', $author_id);
 
 $author = homey_get_author_by_id('70', '70', 'img-circle media-object avatar', $author_id);
 $facebook = $author['facebook'];
@@ -14,6 +15,12 @@ $googleplus = $author['googleplus'];
 $youtube = $author['youtube'];
 $vimeo = $author['vimeo'];
 $doc_verified = $author['doc_verified'];
+
+// Emergency Contact
+$em_contact_name = $user_meta['em_contact_name'];
+$em_relationship = $user_meta['em_relationship'];
+$em_email = $user_meta['em_email'];
+$em_phone = $user_meta['em_phone'];
 
 $show_social = true;
 if(empty($facebook) && empty($twitter) && empty($linkedin) && empty($pinterest) && empty($instagram) && empty($googleplus) && empty($youtube) && empty($vimeo)) {
@@ -168,7 +175,61 @@ if($hide_host_contact == 1) {
                             </div>
                         </div><!-- block-body -->
                     </div><!-- block -->
-
+                    <?php if(homey_is_admin()){ ?>
+                    <!--zahid.k-->
+                    <div class="block">
+                        <div class="block-title">
+                            <h2 class="title"><?php esc_html_e('Emergency Contact', 'homey'); ?></h2>
+                        </div>
+                        <div class="block-body">
+                            <ul class="list-unstyled list-lined">
+                                <li>
+                                    <strong><?php esc_html_e('Contact Name', 'homey'); ?></strong>
+                                    <?php
+                                    if(!empty($em_contact_name)) {
+                                        echo esc_attr($em_contact_name);
+                                    } else {
+                                        echo '-';
+                                    }
+                                    ?>
+                                </li>
+                                <li>
+                                    <strong><?php esc_html_e('Relationship', 'homey'); ?></strong>
+                                    <?php
+                                    if(!empty($em_relationship)) {
+                                        echo esc_attr($em_relationship);
+                                    } else {
+                                        echo '-';
+                                    }
+                                    ?>
+                                </li>
+                            </ul>
+                            <ul class="list-unstyled list-lined mb-0">
+                                <li>
+                                    <strong><?php esc_html_e('Phone Number', 'homey'); ?></strong>
+                                    <?php
+                                    if(!empty($em_phone)) {
+                                        echo esc_attr($em_phone);
+                                    } else {
+                                        echo '-';
+                                    }
+                                    ?>
+                                </li>
+                                <li>
+                                    <strong><?php esc_html_e('Email', 'homey'); ?></strong>
+                                    <?php
+                                    if(!empty($em_email)) {
+                                        echo esc_attr($em_email);
+                                    } else {
+                                        echo '-';
+                                    }
+                                    ?>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--zahid.k-->
+                    <?php } ?>
                 </div><!-- col-xs-12 col-sm-12 col-md-8 col-lg-8 -->
 
                 <?php if($hide_host_contact != 1) { ?>
@@ -245,6 +306,7 @@ if($hide_host_contact == 1) {
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#listings" aria-controls="listings" role="tab" data-toggle="tab"><?php echo esc_attr($homey_local['pr_listing_label']); ?></a></li>
+                        <li role="presentation"><a href="#experiences" aria-controls="experiences" role="tab" data-toggle="tab"><?php echo esc_attr($homey_local['pr_experience_label']); ?></a></li>
                         <li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab"><?php echo esc_attr($homey_local['rating_reviews_label']); ?></a></li>
                     </ul>
 
@@ -307,13 +369,70 @@ if($hide_host_contact == 1) {
                                 ?>
                             </div><!-- host-property-section -->
                         </div>
+                        <div role="tabpanel" class="tab-pane fade" id="experiences">
+                            <div class="host-property-section">
+                                <?php
+                                $per_page_experiences = 7;
+                                $author_args = array(
+                                    'post_type' => 'experience',
+                                    'posts_per_page' => "{$per_page_experiences}",
+                                    'author' => $author_id
+                                );
+
+                                $wp_query = new WP_Query( $author_args );
+
+                                if ( $wp_query->have_posts() ) :
+                                    $experience_founds = $wp_query->found_posts;
+                                ?>
+                                <div id="experiences_module_section" class="experience-wrap host-experience-wrap">
+                                    <div id="module_experiences" class="item-row item-list-view">
+                                        <?php
+                                        while ( $wp_query->have_posts() ) : $wp_query->the_post();
+
+                                            get_template_part('template-parts/experience/experience-item');
+
+                                        endwhile;
+                                        ?>
+                                    </div>
+
+                                    <?php if($experience_founds > $per_page_experiences) { ?>
+                                    <div class="homey-loadmore loadmore text-center">
+                                        <a
+                                        data-paged="2"
+                                        data-limit="<?php echo $per_page_experiences; ?>"
+                                        data-style="list"
+                                        data-author="yes"
+                                        data-authorid="<?php echo esc_attr($author_id); ?>"
+                                        data-country=""
+                                        data-state=""
+                                        data-city=""
+                                        data-area=""
+                                        data-featured=""
+                                        data-offset=""
+                                        data-sortby=""
+                                        href="#"
+                                        class="btn btn-primary btn-long">
+                                            <i id="spinner-icon" class="fa fa-spinner fa-pulse fa-spin fa-fw" style="display: none;"></i>
+                                            <?php echo esc_attr($homey_local['loadmore_btn']); ?>
+                                        </a>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                                <?php
+                                wp_reset_postdata();
+                                else:
+
+                                endif;
+                                ?>
+                            </div><!-- host-property-section -->
+                        </div>
                         <div role="tabpanel" class="tab-pane fade" id="reviews">
                             <div class="host-rating-section">
                                 <div class="block">
                                     <div class="block-body">
                                         <div class="reviews-section">
                                             <ul class="list-unstyled">
-                                                <?php echo ''.$reviews['reviews_data']; ?>
+                                                <?php echo $reviews['reviews_data']; ?>
                                             </ul>
                                         </div><!-- reviews-section -->
                                     </div><!-- block-body -->

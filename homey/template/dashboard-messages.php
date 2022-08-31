@@ -9,6 +9,7 @@ if ( !is_user_logged_in() ) {
 get_header();
 global $current_user, $wpdb, $userID, $homey_threads;
 
+$sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 'DESC';
 $messages_page = homey_get_template_link('template/dashboard-messages.php');
 $mine_messages_link = add_query_arg( 'mine', '1', $messages_page );
 
@@ -29,7 +30,7 @@ if(homey_is_admin()) {
             SELECT COUNT(sender_id) as total_results
             FROM $tabel 
             WHERE sender_id = %d OR receiver_id = %d
-            ORDER BY seen ASC
+            ORDER BY id ".$sort."
              LIMIT %d, %d
             ",
             $userID,
@@ -43,7 +44,7 @@ if(homey_is_admin()) {
             SELECT * 
             FROM $tabel 
             WHERE sender_id = %d OR receiver_id = %d
-            ORDER BY seen ASC
+            ORDER BY id ".$sort."
             LIMIT %d, %d
             ",
             $userID,
@@ -54,11 +55,11 @@ if(homey_is_admin()) {
     } else {
         $total_query = 'SELECT COUNT(sender_id) as total_results
         FROM '.$tabel.' 
-        ORDER BY seen ASC';
+        ORDER BY id '.$sort;
 
         $message_query = 'SELECT * 
         FROM '.$tabel.' 
-        ORDER BY seen ASC LIMIT '.$offset.', '.$items_per_page;
+        ORDER BY id '.$sort.' LIMIT '.$offset.', '.$items_per_page;
     }
 
 } else {
@@ -67,7 +68,7 @@ if(homey_is_admin()) {
         SELECT COUNT(sender_id) as total_results
         FROM $tabel 
         WHERE sender_id = %d OR receiver_id = %d
-        ORDER BY seen ASC
+        ORDER BY id ".$sort."
         ",
         $userID,
         $userID
@@ -78,7 +79,7 @@ if(homey_is_admin()) {
         SELECT * 
         FROM $tabel 
         WHERE sender_id = %d OR receiver_id = %d
-        ORDER BY seen ASC LIMIT %d, %d
+        ORDER BY id ".$sort." LIMIT %d, %d
         ",
         $userID,
         $userID,
@@ -96,7 +97,7 @@ $homey_threads = $wpdb->get_results( $message_query );
     <section id="body-area">
 
         <div class="dashboard-page-title">
-            <h1><?php the_title(); ?></h1>
+            <h1><?php echo esc_html__(the_title('', '', false), 'homey'); ?></h1>
         </div><!-- .dashboard-page-title -->
 
         <?php get_template_part('template-parts/dashboard/side-menu'); ?>
@@ -128,6 +129,16 @@ $homey_threads = $wpdb->get_results( $message_query );
                                                             <a class="btn btn-primary btn-slim" href="<?php echo esc_url($mine_messages_link); ?>"><?php esc_html_e('Mine', 'homey'); ?></a>
                                                         </div>
                                                     <?php } ?>
+                                                </div>
+
+                                                <div class="block-right">
+                                                    <form>
+                                                        <label for="" class="title"><?php echo esc_html__('Sort', 'homey'); ?></label>
+                                                        <select onchange="this.form.submit();" name="sort">
+                                                            <option <?php echo @$_REQUEST['sort'] == 'asc' ? 'selected' : ''; ?> value="asc">ASC</option>
+                                                            <option <?php echo @$_REQUEST['sort'] == 'desc' ? 'selected' : ''; ?> value="desc">DESC</option>
+                                                        </select>
+                                                    </form>
                                                 </div>
                                             </div>
 

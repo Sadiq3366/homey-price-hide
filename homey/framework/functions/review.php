@@ -84,9 +84,13 @@ if( !function_exists('homey_add_review') ) {
         update_post_meta($review_id, 'reviewer_id', $review_owner_id);
         update_post_meta($review_reservation_id, 'review_id', $review_id);
         update_post_meta($review_id, 'review_reservation_id', $review_reservation_id);
-        update_post_meta($review_id, 'homey_rating', $rating);
-
-        homey_add_listing_rating($review_listing_id);
+    	update_post_meta($review_id, 'homey_rating', $rating);
+    	
+    	//if user is not listing owner then ratting should be added - zk
+        if($userID != $review_listing_owner_id ){ 
+        	homey_add_listing_rating($review_listing_id);
+        }
+        //if user is not listing owner then ratting should be added - zk      
 
         homey_send_review_email($review_listing_id, $review_id, $rating, $review_content, $review_listing_owner_id, $review_reservation_id);
       
@@ -247,7 +251,7 @@ if(!function_exists('homey_send_review_email')) {
         $email_body .= esc_html__('You can write your review at', 'homey').' '.'<a href="'.esc_url($write_review_link).'">'.$write_review_link.'</a><br/>';
 
 
-        $headers = 'From: No Reply <noreply@'.$_SERVER['HTTP_HOST'].'>' . "\r\n";
+        $headers = 'From: No Reply <noreply@'.isset( $_SERVER['HTTP_HOST'] ) ? str_replace( 'www.', '', sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) : 'noreply.com'.'>' . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
@@ -262,6 +266,7 @@ if(!function_exists('homey_send_review_email')) {
 if(!function_exists('homey_add_listing_rating')) {
 	function homey_add_listing_rating($listing_id) {
 		$args = array(
+            'posts_per_page' => -1,
 		    'post_type'   => 'homey_review',
 		    'meta_key' => 'reservation_listing_id',
 		    'meta_value' => $listing_id,
@@ -277,12 +282,14 @@ if(!function_exists('homey_add_listing_rating')) {
 
 			while($review_query->have_posts()): $review_query->the_post();
 				$homey_rating = get_post_meta(get_the_ID(), 'homey_rating', true);
+
 				$total_stars = $total_stars + $homey_rating;
 
 			endwhile; 
 			wp_reset_postdata();
 
 			$rating = $total_stars/$total_review;
+			$rating = $rating > 4.5 ? 5 : $rating;
 
 			update_post_meta($listing_id, 'listing_total_rating', $rating);
 
@@ -624,7 +631,8 @@ if(!function_exists('homey_get_host_reviews')) {
 		$review_query = new WP_Query($review_args);
 
 		if($review_query->have_posts()) {
-		    $total_review = $review_query->found_posts;
+		    //$total_review = $review_query->found_posts;
+		    $total_review =0;
 
 		    $is_host_have_reviews = true;
 
@@ -636,48 +644,55 @@ if(!function_exists('homey_get_host_reviews')) {
 		        $review_label = $homey_local['rating_review_label'];
 		    }
 
-		    while($review_query->have_posts()): $review_query->the_post(); 
-		        $review_author = homey_get_author('70', '70', 'img-circle');
-		        $homey_rating = get_post_meta(get_the_ID(), 'homey_rating', true);
-		        $listing_id = get_post_meta(get_the_ID(), 'reservation_listing_id', true);
+		    while($review_query->have_posts()): $review_query->the_post();
+                $reviewer_id = get_post_meta(get_the_ID(), 'reviewer_id', true);
 
-		        $total_stars = $total_stars + $homey_rating;
+	            if($author_id != $reviewer_id){
+		    		$total_review++;
+	                $review_author = homey_get_author('70', '70', 'img-circle');
+	                    $homey_rating = get_post_meta(get_the_ID(), 'homey_rating', true);
+	                    // print_r(get_post_meta(get_the_ID()));
+	                    $listing_id = get_post_meta(get_the_ID(), 'reservation_listing_id', true);
 
-		        $all_reviews .= '
-		        <li class="review-block">
-                    <div class="media">
-                        <div class="media-left">
-                            <a href="'.$review_author['link'].'" target="_blank" class="media-object">
-                                '.$review_author['photo'].'
-                            </a>
-                        </div>
-                        <div class="media-body media-middle">
-                            <div class="msg-user-info">
-                                <div class="msg-user-left">
-                                    <strong>'.esc_attr($review_author['name']).'</strong>
-                                    <div>on <a href="'.get_permalink($listing_id).'">'.get_the_title($listing_id).'</a> 
-                                    <span class="rating">
-                                    	'.homey_get_review_stars($homey_rating, true, true, false).'
-                                    </span>
-                                    </div>
-                                    <div class="message-date">
-                                        
-		                                    <i class="fa fa-calendar"></i> '.esc_attr( get_the_time( get_option( 'date_format' ) )).'
-		                                    <i class="fa fa-clock-o"></i> '.esc_attr( get_the_time( get_option( 'time_format' ) )).'
-		                                
-                                    </div>
-                                </div>
-                            </div>
-                            <p>
-                            '.get_the_content().'
-                            </p>
-                        </div>
-                    </div>
-                </li>';
+	                    $total_stars = $total_stars + $homey_rating;
 
-		    endwhile; 
+	                    $all_reviews .= '
+	                    <li class="review-block">
+	                        <div class="media">
+	                            <div class="media-left">
+	                                <a href="'.$review_author['link'].'" target="_blank" class="media-object">
+	                                    '.$review_author['photo'].'
+	                                </a>
+	                            </div>
+	                            <div class="media-body media-middle">
+	                                <div class="msg-user-info">
+	                                    <div class="msg-user-left">
+	                                        <strong>'.esc_attr($review_author['name']).'</strong>
+	                                        <div>'.esc_html__('on', 'homey').' <a href="'.get_permalink($listing_id).'">'.get_the_title($listing_id).'</a> 
+	                                        <span class="rating">
+	                                            '.homey_get_review_stars($homey_rating, true, true, false).'
+	                                        </span>
+	                                        </div>
+	                                        <div class="message-date">
+	                                            
+	                                                <i class="fa fa-calendar"></i> '.esc_attr( get_the_time( get_option( 'date_format' ) )).'
+	                                                <i class="fa fa-clock-o"></i> '.esc_attr( get_the_time( get_option( 'time_format' ) )).'
+	                                            
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <p>
+	                                '.get_the_content().'
+	                                </p>
+	                            </div>
+	                        </div>
+	                    </li>';
+		    	}                
+            endwhile; 
 
 		    $rating = $total_stars/$total_review;
+		    $rating = $rating > 4.5 ? 5 : $rating;
+
 		    $host_rating = homey_get_review_stars($rating, true, $is_label = true, $is_label_as_text = true);
 		    wp_reset_postdata();
 		}
@@ -772,4 +787,28 @@ if(!function_exists('homey_get_guest_reviews')) {
 
 		return $return_reviews;
 	}
+}
+
+if(!function_exists('homey_update_listing_ratings')) {
+    function homey_update_listing_ratings($listing_id = -1)
+    {
+        if(is_array($listing_id)){
+            foreach ($listing_id as $id) {
+                homey_add_listing_rating( $id );
+            }
+        }else if ( $listing_id > 0){
+            homey_add_listing_rating( $listing_id );
+        }
+
+    }
+}
+
+if(isset($_GET['reset_reviews'])){
+    $ids = get_posts(array(
+        'fields'          => 'ids', // Only get post IDs
+        'posts_per_page'  => -1,
+        'post_type'  => 'listing'
+    ));
+
+    homey_update_listing_ratings($ids);
 }

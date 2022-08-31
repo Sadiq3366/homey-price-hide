@@ -1641,7 +1641,7 @@ img {
 }
 
 .radio-tab {
-	padding: 8px 12px;
+	padding: 8px 40px 8px 12px;
 	margin-bottom: 0;
 }
 .radio-tab .control__indicator {
@@ -4150,6 +4150,19 @@ button:active, button:hover, button:focus {
 
 .modal-contact-host-form {
 	padding: 30px;
+}
+/* alert labes
+/* ----------------------------------------------------------- */
+.board-panel-menu > li .msg-alert,
+.board-panel-menu > li .new-booking-alert {
+    top: -32px;
+    right: 110px;
+    left:  auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e43012;
+    position: relative;
 }
 
 /* dashboard listing and reservations
@@ -7491,9 +7504,9 @@ button:active, button:hover, button:focus {
 .search-calendar {
 	width: 600px;
 	right: 50%;
-	-webkit-transform: translateX(50%);
-	-ms-transform: translateX(50%);
-	transform: translateX(50%);
+	-webkit-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
 }
 @media (max-width: 991px) {
 	.search-calendar {
@@ -7639,9 +7652,6 @@ button:active, button:hover, button:focus {
 		margin-top: 0;
 		z-index: 9999 !important;
 	}
-}
-.pac-container:after {
-	display: none !important;
 }
 .pac-container .pac-item {
 	line-height: 40px;
@@ -8323,7 +8333,7 @@ button:active, button:hover, button:focus {
 	padding: 0 50px 0 0 !important;
 }
 .overlay-search-module .search-banner .search-destination .on-focus {
-    padding: 0 15px !important;
+    padding: 0 50px 0 15px !important;
 }
 .overlay-search-module .search-banner .search-filter-mobile-btn {
 	margin-bottom: 10px;
@@ -8821,6 +8831,11 @@ button:active, button:hover, button:focus {
 	}
 }
 
+/* content maps
+/* ----------------------------------------------------------- */
+.content-area .map-section {
+  z-index: 0;
+}
 /* google maps info window
 /* ----------------------------------------------------------- */
 .gm-style * {
@@ -10969,7 +10984,13 @@ form[class^=wp-block] {
 .modal-calendar-availability .control:last-of-type {
 	margin-left: 0;
 }
+.single-listing-calendar .days li.prev-month + li.day-booked {
+  background-color: #fdd2d2 !important;
+}
 
+.single-listing-calendar .days li.prev-month + li.day-pending {
+  background-color: #ffeedb !important;
+}
 /* search calendar
 /* ----------------------------------------------------------- */
 .search-calendar {
@@ -12325,8 +12346,8 @@ div.wpcf7-response-output {
 }
 .add-frontend-property .control__indicator {
 	position: absolute;
-	top: 2px;
-	right: 0;
+	/*top: 2px;*/
+	right: 12px;
 	height: 20px;
 	width: 20px;
 	background: #e6e6e6;

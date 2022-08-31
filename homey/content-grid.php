@@ -3,7 +3,7 @@
 	<div class="media">
 		<div class="item-blog-image">
 			<div class="item-media item-media-thumb">
-				<a href="<?php the_permalink(); ?>">
+				<a href="<?php the_permalink(); ?>" class="hover-effect">
                 <?php
                 if( has_post_thumbnail( $post->ID ) ) {
                     the_post_thumbnail( 'homey-listing-thumb',  array('class' => 'img-responsive' ) );

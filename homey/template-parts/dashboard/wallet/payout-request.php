@@ -3,7 +3,13 @@ global $current_user, $post, $homey_local, $reservation_page_link, $wallet_page_
 $current_user = wp_get_current_user();
 $userID       = $current_user->ID;
 $local = homey_get_localization();
-$available_balance = homey_get_host_available_earnings($userID);
+
+if(homey_is_renter($userID)){
+    $available_balance = homey_get_get_security_deposit($userID);
+}else{
+    $available_balance = homey_get_host_available_earnings($userID);
+}
+
 $minimum_payout_amount = homey_get_minimum_payout_amount();
 
 $dashboard_profile = homey_get_template_link_dash('template/dashboard-profile.php');

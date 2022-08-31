@@ -52,7 +52,7 @@ if(isset($_GET['payout_id'])) {
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="form-group">
                     <label><?php echo esc_html__('ID', 'homey'); ?></label>
-                    <input name="payout_id" type="text" class="form-control" value="<?php echo esc_attr($payout_id); ?>" placeholder="Enter the payout ID">
+                    <input name="payout_id" type="text" class="form-control" value="<?php echo esc_attr($payout_id); ?>" placeholder="<?php echo esc_html__("Enter the payout ID", "homey");?>" >
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
@@ -114,11 +114,11 @@ if(isset($_GET['payout_id'])) {
                         $date_processed = $payout->date_processed;
 
                         $date_requested_unix = strtotime($date_requested);
-                        $request_date = homey_return_formatted_date($date_requested_unix);
+                        $request_date = homey_translate_word_by_word(homey_return_formatted_date($date_requested_unix));
                         $request_time = homey_get_formatted_time($date_requested_unix);
 
                         $date_processed_unix = strtotime($date_processed);
-                        $processed_date = homey_return_formatted_date($date_processed_unix);
+                        $processed_date = homey_translate_word_by_word(homey_return_formatted_date($date_processed_unix));
                         $processed_time = homey_get_formatted_time($date_processed_unix);
 
                         $price_prefix = '';
@@ -149,7 +149,7 @@ if(isset($_GET['payout_id'])) {
 
                     <tr>
                         <td data-label="<?php esc_html_e('Date Requested', 'homey')?>">
-                            <?php echo esc_attr($request_date); ?><br/>
+                            <?php echo $request_date; ?><br/>
                             <?php echo esc_html__('at', 'homey'); ?>
                             <?php echo esc_attr($request_time); ?>
                         </td>
@@ -193,7 +193,7 @@ if(isset($_GET['payout_id'])) {
                             if($date_processed == '0000-00-00 00:00:00') {
                                 echo '-';
                             } else {
-                                echo esc_attr($processed_date).'<br/>';
+                                echo $processed_date.'<br/>';
                                 echo esc_html__('at', 'homey'); 
                                 echo ' '.esc_attr($processed_time);
                             }

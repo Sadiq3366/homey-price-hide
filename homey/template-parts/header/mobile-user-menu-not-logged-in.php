@@ -1,10 +1,10 @@
 <?php
 global $homey_local;
-$nav_login = homey_option('nav_login');
-$nav_register = homey_option('nav_register');
-$become_host_btn = homey_option('become_host_btn');
+$nav_login = esc_html__(homey_option('nav_login'), 'homey');
+$nav_register = esc_html__(homey_option('nav_register'), 'homey');
+$become_host_btn = esc_html__(homey_option('become_host_btn'), 'homey');
 $become_host_link = homey_option('become_host_link');
-$become_host_label = homey_option('become_host_label');
+$become_host_label = esc_html__(homey_option('become_host_label'), 'homey');
 
 if($nav_login || $nav_register || $become_host_btn) { ?>
 <nav id="user-nav" class="nav-dropdown main-nav-dropdown collapse navbar-collapse">

@@ -2,6 +2,11 @@
 global $homey_local;
 $compared = isset($_COOKIE['homey_compare_listings']) ? $_COOKIE['homey_compare_listings'] : '';
 $ids = explode(',', $compared);
+
+if(!isset($_COOKIE['homey_compare_listings'])){
+    $ids = isset($_GET['ids']) ? explode(',', $_GET['ids']) : '';
+}
+
 ?>
 <div id="compare-property-panel" class="compare-property-panel compare-property-panel-vertical compare-property-panel-right">
 	<button class="compare-property-label" style="display: none;">

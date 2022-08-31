@@ -1,6 +1,9 @@
 <?php
-global $homey_local, $edit_listing_id, $hide_fields;
+global $homey_local, $edit_listing_id, $hide_fields, $homey_booking_type;
 $custom_weekend_price = isset($hide_fields['custom_weekend_price']) ? $hide_fields['custom_weekend_price'] : 0;
+
+$homey_local_label = $homey_booking_type == 'per_day_date' ? $homey_local['day_daily_label'] : $homey_local['nightly_label'];
+$homey_local_label_plac = $homey_booking_type == 'per_day_date' ? $homey_local['day_daily_plac'] : $homey_local['nightly_plac'];
 ?>
 <hr id="custom_period_prices" class="row-separator">
         <!-- Custom Period Prices -->
@@ -25,16 +28,22 @@ $custom_weekend_price = isset($hide_fields['custom_weekend_price']) ? $hide_fiel
 <div class="row">    
     <div class="col-sm-6 col-xs-12">
         <div class="form-group">
-            <label><?php echo esc_attr($homey_local['nightly_label']); ?></label>
-            <input type="text" name="cus_night_price" id="cus_night_price" class="form-control" placeholder="<?php echo esc_attr($homey_local['nightly_plac']); ?>">
+            <label><?php echo esc_attr($homey_local_label); ?></label>
+            <input type="text" name="cus_night_price" id="cus_night_price" class="form-control" placeholder="<?php echo esc_attr($homey_local_label_plac); ?>">
         </div>
     </div>
+
+    <?php
+    $booking_hide_fields = homey_option('booking_hide_fields');
+    if ( $booking_hide_fields['guests'] != 1 ) {
+?>
     <div class="col-sm-6 col-xs-12">
         <div class="form-group">
             <label><?php echo esc_attr($homey_local['addinal_guests_label']); ?></label>
             <input type="text" name="cus_additional_guest_price" id="cus_additional_guest_price" class="form-control" placeholder="<?php echo esc_attr($homey_local['addinal_guests_plac']); ?>">
         </div>
     </div>
+<?php } ?>
     <?php if($custom_weekend_price != 1) { ?>
     <div class="col-sm-6 col-xs-12">
         <div class="form-group">
@@ -59,11 +68,15 @@ $custom_weekend_price = isset($hide_fields['custom_weekend_price']) ? $hide_fiel
             <tr>
                 <th><?php echo esc_attr($homey_local['start_date']); ?></th>
                 <th><?php echo esc_attr($homey_local['end_date']); ?></th>
-                <th><?php echo esc_attr($homey_local['nightly_label']); ?></th>
+                <th><?php echo esc_attr($homey_local_label); ?></th>
                 <?php if($custom_weekend_price != 1) { ?>
                     <th><?php echo esc_attr($homey_local['weekends_label']); ?></th>
                 <?php } ?>
+
+                <?php if ( $booking_hide_fields['guests'] != 1 ) { ?>
                 <th><?php echo esc_attr($homey_local['addinal_guests_label']); ?></th>
+                <?php } ?>
+                
                 <th><?php echo esc_attr($homey_local['actions_label']); ?></th>
             </tr>
         </thead>

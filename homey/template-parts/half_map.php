@@ -1,6 +1,6 @@
 <?php
 global $post, $wp_query, $paged;
-$zoom_level = homey_option('halfmap_zoom_level');
+$zoom_level = homey_option('singlemap_zoom_level');
 $search_layout = homey_option('search_posts_layout');
 $search_num_posts = homey_option('search_num_posts');
 $search_default_order = homey_option('search_default_order');
@@ -12,7 +12,7 @@ if($search_layout == 'grid') {
 }
 ?>
 
-<section class="half-map-wrap map-on-right clearfix">
+<section class="half-map-wrap map-on-left clearfix">
         
     <div class="half-map-right-wrap">
         <div id="homey-halfmap" 

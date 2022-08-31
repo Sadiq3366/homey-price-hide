@@ -1,6 +1,6 @@
 <?php
 if ( get_option( 'homey_1_3_db' ) == false ) {
-    add_action( 'admin_notices', 'homey_db_update_notice' );
+    //add_action( 'admin_notices', 'homey_db_update_notice' );
 
     if ( isset( $_REQUEST['homey_update_bd'] ) && $_REQUEST['homey_update_bd'] == true ) {
 	    add_action( 'admin_init', 'homey_update_resrv_meta' );
